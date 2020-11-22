@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://addons/rengo/RenVM/Lexer.gd" type="Script" id=1]
+[ext_resource path="res://addons/rengo/RenVM/Interpreter.gd" type="Script" id=2]
+[ext_resource path="res://addons/rengo/RenVM/Parser.gd" type="Script" id=3]
+
+[node name="Interpreter" type="Node"]
+script = ExtResource( 2 )
+
+[node name="Parser" type="Node" parent="."]
+script = ExtResource( 3 )
+
+[node name="RenLexer" type="Node" parent="Parser"]
+script = ExtResource( 1 )
