@@ -1,0 +1,49 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[ {
+"base": "Node",
+"class": "RenInterpreter",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/Interpreter.gd"
+}, {
+"base": "Node",
+"class": "RenLexer",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/Lexer.gd"
+}, {
+"base": "Node",
+"class": "RenParser",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/Parser.gd"
+} ]
+_global_script_class_icons={
+"RenInterpreter": "",
+"RenLexer": "",
+"RenParser": ""
+}
+
+[application]
+
+config/name="RenGo"
+config/icon="res://icon.png"
+
+[autoload]
+
+RenGlobal="*res://addons/rengo/RenVM/RenGlobal.gd"
+RenConsts="*res://addons/rengo/RenVM/RenConsts.gd"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "rengo" )
+
+[rendering]
+
+environment/default_environment="res://default_env.tres"
