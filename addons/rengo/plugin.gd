@@ -3,7 +3,6 @@ extends EditorPlugin
 
 
 const SINGLETONS = {
-    'RenGlobal': 'res://addons/rengo/RenVM/RenGlobal.gd',
     'RenConsts': 'res://addons/rengo/RenVM/RenConsts.gd'
    }
 

@@ -2,11 +2,11 @@ extends Node
 class_name RenLexer
 
 
-var ttype = RenConsts.TType
+const quotes = '\"' + "\'"   # Adding two string because one string messes up syntax highligting in vscode
+
 var valid_id_chars: String = RenConsts.valid_id_chars
-var token = RenGlobal.Token
 var keywords: Dictionary = RenConsts.KEYWORDS
-var operators: Dictionary = RenConsts.OPERATORS
+var TOKEN_LOOKUP: Dictionary = RenConsts.TOKEN_LOOKUP
 
 
 export(String, FILE) var source_file
@@ -14,7 +14,7 @@ export(String, FILE) var source_file
 var lines: PoolStringArray = []
 
 var pos: int = -1  # pos in line
-var line: int = 0  # index of current line
+var line: int = 0
 var current_line: String
 var current_char: String 
 var current_indent: int = 0
@@ -109,14 +109,25 @@ func advance() -> void:
         
         # Push Block start / block end tokens to queue when indent changes
         if current_indent != last_block_indent:
-            if current_indent > last_block_indent:
+            if current_indent > last_block_indent:                                # Entering new block
+
                 for i in range(floor((current_indent - last_block_indent) / 4)):
-                    pending_tokens.append(token.new(ttype.BLOCK_START))
-            else:
+                    pending_tokens.append(
+                        RenToken.new(
+                            RenToken.types.BLOCK_START
+                        )
+                    )
+            else:                                                                 # Exiting blocks
                 for i in range(floor((last_block_indent - current_indent) / 4)):
-                    pending_tokens.append(token.new(ttype.BLOCK_END))
+                    pending_tokens.append(
+                        RenToken.new(
+                            RenToken.types.BLOCK_END
+                            )
+                        )
+
             last_block_indent = current_indent
-        # reset position in string and set char to newline
+        
+            # reset position in string and set char to newline
         pos = -1
         current_char = '\n'
     else:
@@ -184,9 +195,9 @@ func id():
         result += current_char
         self.advance()
 
-    var token_type = keywords.get(result, ttype.IDENTIFIER)
+    var token_type = keywords.get(result, RenToken.types.IDENTIFIER)
     
-    pending_tokens.append(token.new(token_type, result))
+    pending_tokens.append(RenToken.new(token_type, result))
     
     return pending_tokens.pop_front()
 
@@ -218,7 +229,7 @@ func string():
     if not string_end:
         error('String missing closing quote.')
     
-    pending_tokens.append(token.new(ttype.DT_STRING, result))
+    pending_tokens.append(RenToken.new(RenToken.types.DT_STRING, result))
 
     return pending_tokens.pop_front()
 
@@ -226,41 +237,42 @@ func string():
 func get_next_token():
     if not pending_tokens.empty():
         return pending_tokens.pop_front()
-    
+    breakpoint
     while not current_char.empty():
         var character: String = current_char
         if character == ' ':
             skip_whitespace()
             continue
         elif character == '\n':
+            pending_tokens.append(RenToken.new(RenToken.types.EOL))
             advance()
-            continue
+            return pending_tokens.pop_front()
         
         character = current_char
         if character.is_valid_integer():
             return number()
-        elif character in '\"\'':
+        elif character in quotes:
             return string()
         elif character.is_valid_identifier():
             return id()
-        elif operators.has(character):
+        elif TOKEN_LOOKUP.has(character):
             var two_char_op = character + peek()
-            if operators.has(two_char_op) and len(two_char_op) == 2:
-                var current_token = token.new(operators[two_char_op], two_char_op)
+            if TOKEN_LOOKUP.has(two_char_op) and len(two_char_op) == 2:
+                var current_token = RenToken.new(TOKEN_LOOKUP[two_char_op], two_char_op)
                 advance()
                 advance()
                 return current_token
             else:
-                var current_token = token.new(operators[character], character)
+                var current_token = RenToken.new(TOKEN_LOOKUP[character], character)
                 advance()
                 return current_token
         else:
             error('Unexpected character: \"{char}\"')
     
-    var end = token.new(ttype.BLOCK_END)
+    var end = RenToken.new(RenToken.types.BLOCK_END)
     for i in range(floor(current_indent / 4)):
         pending_tokens.append(end)
 
     pending_tokens.append(end)
-    pending_tokens.append(token.new(ttype.EOF))
+    pending_tokens.append(RenToken.new(RenToken.types.EOF))
     return pending_tokens.pop_front()

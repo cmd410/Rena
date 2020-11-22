@@ -10,24 +10,114 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Node",
+"class": "RenAST",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/AST/AST.gd"
+}, {
+"base": "RenAST",
+"class": "RenAssign",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/AST/Assign.gd"
+}, {
+"base": "RenAST",
+"class": "RenBinOp",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/AST/BinOp.gd"
+}, {
+"base": "RenAST",
+"class": "RenCompound",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/AST/Compound.gd"
+}, {
+"base": "Node",
 "class": "RenInterpreter",
 "language": "GDScript",
 "path": "res://addons/rengo/RenVM/Interpreter.gd"
+}, {
+"base": "RenAST",
+"class": "RenJump",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/AST/Jump.gd"
+}, {
+"base": "RenCompound",
+"class": "RenLabel",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/AST/Label.gd"
 }, {
 "base": "Node",
 "class": "RenLexer",
 "language": "GDScript",
 "path": "res://addons/rengo/RenVM/Lexer.gd"
 }, {
+"base": "RenCompound",
+"class": "RenMenu",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/AST/Menu.gd"
+}, {
+"base": "RenCompound",
+"class": "RenMenuOption",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/AST/MenuOption.gd"
+}, {
+"base": "RenValue",
+"class": "RenNum",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/AST/Num.gd"
+}, {
 "base": "Node",
 "class": "RenParser",
 "language": "GDScript",
 "path": "res://addons/rengo/RenVM/Parser.gd"
+}, {
+"base": "RenAST",
+"class": "RenSay",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/AST/Say.gd"
+}, {
+"base": "RenValue",
+"class": "RenString",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/AST/String.gd"
+}, {
+"base": "Reference",
+"class": "RenToken",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/Token.gd"
+}, {
+"base": "RenAST",
+"class": "RenUnOp",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/AST/UnOp.gd"
+}, {
+"base": "RenAST",
+"class": "RenValue",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/AST/Value.gd"
+}, {
+"base": "RenValue",
+"class": "RenVar",
+"language": "GDScript",
+"path": "res://addons/rengo/RenVM/AST/Var.gd"
 } ]
 _global_script_class_icons={
+"RenAST": "",
+"RenAssign": "",
+"RenBinOp": "",
+"RenCompound": "",
 "RenInterpreter": "",
+"RenJump": "",
+"RenLabel": "",
 "RenLexer": "",
-"RenParser": ""
+"RenMenu": "",
+"RenMenuOption": "",
+"RenNum": "",
+"RenParser": "",
+"RenSay": "",
+"RenString": "",
+"RenToken": "",
+"RenUnOp": "",
+"RenValue": "",
+"RenVar": ""
 }
 
 [application]
@@ -37,7 +127,6 @@ config/icon="res://icon.png"
 
 [autoload]
 
-RenGlobal="*res://addons/rengo/RenVM/RenGlobal.gd"
 RenConsts="*res://addons/rengo/RenVM/RenConsts.gd"
 
 [editor_plugins]
