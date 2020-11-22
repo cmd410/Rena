@@ -11,7 +11,7 @@ var operators: Dictionary = RenConsts.OPERATORS
 
 export(String, FILE) var source_file
 
-var lines: PoolStringArray
+var lines: PoolStringArray = []
 
 var pos: int = -1  # pos in line
 var line: int = 0  # index of current line
@@ -24,12 +24,40 @@ var pending_tokens: Array = []
 
 
 func _ready() -> void:
-    # Get text from file
-    var file = File.new()
-    file.open(source_file, File.READ)
-    var text = file.get_as_text()
-    file.close()
+    if source_file:
+        set_source_file(source_file)
 
+
+func has_source() -> bool:
+    """Returns True if lexer got non-empty source file
+    """
+    return not lines.empty()
+
+
+func read_file() -> String:
+    var file: File = File.new()
+    file.open(source_file, File.READ)
+    
+    var text: String = file.get_as_text()
+    file.close()
+    
+    return text
+
+
+func set_source_file(filename: String) -> void:
+    if filename != source_file:
+        source_file = filename
+
+        # Reset parameters for each new file
+        line = 0
+        pos = -1
+        current_indent = 0
+        last_block_indent = -4
+        pending_tokens.clear()
+        lines = PoolStringArray()
+
+    # Get text from file
+    var text = read_file()
     lines = text.split('\n')
     current_line = lines[line]
     advance()
