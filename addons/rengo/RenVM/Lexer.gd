@@ -26,6 +26,10 @@ var pending_tokens: Array = []
 func _ready() -> void:
     if source_file:
         set_source_file(source_file)
+        var token = get_next_token()
+        while token.token_type != RenToken.types.EOF:
+            print(token)
+            token = get_next_token()
 
 
 func has_source() -> bool:
@@ -83,51 +87,54 @@ func error(msg: String = '') -> void:
     assert(false, msg)
 
 
+func update_indent():
+    var detented_line = current_line.dedent()
+        
+    # Skip empty lines and comments
+    while detented_line.empty() or detented_line[0] == '#':
+        line += 1
+        if line > len(lines) - 1:
+            current_char = ''  # empty current char for EOF 
+            break
+        current_line = lines[line]
+        detented_line = current_line.dedent()
+    
+    current_indent = len(current_line) - len(detented_line)
+    
+    # Push Block start / block end tokens to queue when indent changes
+    if current_indent != last_block_indent:
+        if current_indent > last_block_indent:                                # Entering new block
+            for i in range(floor((current_indent - last_block_indent) / 4)):
+                pending_tokens.append(
+                    RenToken.new(
+                        RenToken.types.BLOCK_START
+                    )
+                )
+        else:                                                                 # Exiting blocks
+            for i in range(floor((last_block_indent - current_indent) / 4)):
+                pending_tokens.append(
+                    RenToken.new(
+                        RenToken.types.BLOCK_END
+                        )
+                    )
+        last_block_indent = current_indent
+
+
 func advance() -> void:
     """Advaces lexer position
     updating current_char variable
     """
     pos += 1
+    if pos == 0:
+        update_indent()
     if pos > len(current_line) - 1:
         line += 1
         if line > len(lines) - 1:
             current_char = ''
             return
         current_line = lines[line]
-        var detented_line = current_line.dedent()
-        
-        # Skip empty lines and comments
-        while detented_line.empty() or detented_line[0] == '#':
-            line += 1
-            if line > len(lines) - 1:
-                current_char = ''  # empty current char for EOF 
-                break
-            current_line = lines[line]
-            detented_line = current_line.dedent()
-        
-        current_indent = len(current_line) - len(detented_line)
-        
-        # Push Block start / block end tokens to queue when indent changes
-        if current_indent != last_block_indent:
-            if current_indent > last_block_indent:                                # Entering new block
-
-                for i in range(floor((current_indent - last_block_indent) / 4)):
-                    pending_tokens.append(
-                        RenToken.new(
-                            RenToken.types.BLOCK_START
-                        )
-                    )
-            else:                                                                 # Exiting blocks
-                for i in range(floor((last_block_indent - current_indent) / 4)):
-                    pending_tokens.append(
-                        RenToken.new(
-                            RenToken.types.BLOCK_END
-                            )
-                        )
-
-            last_block_indent = current_indent
-        
-            # reset position in string and set char to newline
+        update_indent()
+        # reset position in string and set char to newline
         pos = -1
         current_char = '\n'
     else:
@@ -181,10 +188,14 @@ func number():
         else:
             break
     
+    var token: RenToken
     if is_float:
-        return float(result)
+        token = RenToken.new(RenToken.types.FLOAT, float(result))
     else:
-        return int(result)
+        token = RenToken.new(RenToken.types.INTEGER, int(result))
+    
+    pending_tokens.append(token)
+    return pending_tokens.pop_front()
 
 
 func id():
@@ -195,7 +206,7 @@ func id():
         result += current_char
         self.advance()
 
-    var token_type = keywords.get(result, RenToken.types.IDENTIFIER)
+    var token_type = keywords.get(result, RenToken.types.ID)
     
     pending_tokens.append(RenToken.new(token_type, result))
     
@@ -229,7 +240,7 @@ func string():
     if not string_end:
         error('String missing closing quote.')
     
-    pending_tokens.append(RenToken.new(RenToken.types.DT_STRING, result))
+    pending_tokens.append(RenToken.new(RenToken.types.STRING, result))
 
     return pending_tokens.pop_front()
 
@@ -237,16 +248,12 @@ func string():
 func get_next_token():
     if not pending_tokens.empty():
         return pending_tokens.pop_front()
-    breakpoint
+
     while not current_char.empty():
         var character: String = current_char
-        if character == ' ':
+        if character in ' \t':
             skip_whitespace()
             continue
-        elif character == '\n':
-            pending_tokens.append(RenToken.new(RenToken.types.EOL))
-            advance()
-            return pending_tokens.pop_front()
         
         character = current_char
         if character.is_valid_integer():
