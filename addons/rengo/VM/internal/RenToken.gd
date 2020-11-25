@@ -5,18 +5,48 @@ class_name RenToken
 const EOL = 'EOL'
 const EOF = 'EOF'
 
-const PLUS = '+'
-const MINUS = '-'
-const MUL = '*'
-const DIV = '/'
+const INT       = 'INT'
+const FLOAT     = 'FLOAT'
+const STR       = 'STR'
+const BOOL      = 'BOOL'
+const ID        = 'ID'
+const DATA_UNIT = [INT, FLOAT, STR, BOOL, ID]
+
+const PLUS     = '+'
+const MINUS    = '-'
+const MUL      = '*'
+const DIV      = '/'
+const MOD      = '%'
 const FLOORDIV = '//'
-const MOD = '%'
+const EQUAL    = '='
+const POW      = '**'
+const ARITHM   = [PLUS, MINUS]
+const TERM     = [MUL, DIV, MOD, FLOORDIV, POW]
+const OPERATOR = [PLUS, MINUS, MUL, DIV, MOD,
+                  FLOORDIV, EQUAL, POW]
 
 const LPAREN = '('
 const RPAREN = ')'
+const LBRACK = '['
+const RBRACK = ']'
+const LCURL  = '{'
+const RCURL  = '}'
+const DQUOTE = '\"'
+const SQUOTE = "\'"
+const QUOTE  = [DQUOTE, SQUOTE]
+const DELIM  = [
+    LPAREN, RPAREN, LBRACK, RBRACK, LCURL,
+    RCURL, DQUOTE, SQUOTE, EOL
+]
 
 const BLOCK_START = 'START'
-const BLOCK_END = 'END'
+const BLOCK_END   = 'END'
+
+
+const KEYWORDS = {
+    'True': BOOL,
+    'False': BOOL,
+}
 
 
 var token_type
@@ -29,7 +59,19 @@ func _init(token_type, value=null):
     self.value = value
 
 
-func test_type(token_type) -> bool:
+func _to_string():
+    if self.value == null:
+        return 'Token(%s)' % [self.token_type]
+    elif self.value is String:
+        if self.value == self.token_type:
+            return 'Token(%s)' % [self.token_type]
+        else:
+            return 'Token(%s, \"%s\")' % [self.token_type, self.value]
+    else:
+        return 'Token(%s, %s)' % [self.token_type, self.value]
+
+
+func is_type(token_type) -> bool:
     """Return true if token matches given token type
     """
     if token_type is String:
@@ -39,11 +81,11 @@ func test_type(token_type) -> bool:
     else:
         assert(false, 'Tested token must be either string or array.')
         return false
-    
+
 
 func is_arithm():
-    return self.test_type([PLUS, MINUS])
+    return self.is_type([PLUS, MINUS])
 
 
 func is_mul():
-    return self.test_type([MUL, DIV, FLOORDIV, MOD])
+    return self.is_type([MUL, DIV, FLOORDIV, MOD])

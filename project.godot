@@ -9,43 +9,103 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "",
+"base": "Node",
+"class": "RenAST",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/RenAST.gd"
+}, {
+"base": "RenAST",
+"class": "RenBinOp",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/RenBinOp.gd"
+}, {
+"base": "RenValue",
+"class": "RenBool",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/RenBool.gd"
+}, {
+"base": "RenResult",
 "class": "RenERR",
 "language": "GDScript",
 "path": "res://addons/RenGo/VM/internal/RenERR.gd"
 }, {
-"base": "",
+"base": "RenRef",
+"class": "RenLexer",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/Lexer.gd"
+}, {
+"base": "RenValue",
+"class": "RenNum",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/RenNum.gd"
+}, {
+"base": "RenResult",
 "class": "RenOK",
 "language": "GDScript",
 "path": "res://addons/RenGo/VM/internal/RenOK.gd"
+}, {
+"base": "RenRef",
+"class": "RenParser",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/Parser.gd"
 }, {
 "base": "Reference",
 "class": "RenRef",
 "language": "GDScript",
 "path": "res://addons/RenGo/VM/internal/RenRef.gd"
 }, {
-"base": "",
+"base": "RenRef",
 "class": "RenResult",
 "language": "GDScript",
 "path": "res://addons/RenGo/VM/internal/RenResult.gd"
+}, {
+"base": "RenValue",
+"class": "RenString",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/RenString.gd"
 }, {
 "base": "RenRef",
 "class": "RenToken",
 "language": "GDScript",
 "path": "res://addons/RenGo/VM/internal/RenToken.gd"
+}, {
+"base": "RenAST",
+"class": "RenValue",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/RenValue.gd"
+}, {
+"base": "RenValue",
+"class": "RenVar",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/RenVar.gd"
 } ]
 _global_script_class_icons={
+"RenAST": "",
+"RenBinOp": "",
+"RenBool": "",
 "RenERR": "",
+"RenLexer": "",
+"RenNum": "",
 "RenOK": "",
+"RenParser": "",
 "RenRef": "",
 "RenResult": "",
-"RenToken": ""
+"RenString": "",
+"RenToken": "",
+"RenValue": "",
+"RenVar": ""
 }
 
 [application]
 
 config/name="RenGo"
 config/icon="res://icon.png"
+
+[debug]
+
+gdscript/warnings/unsafe_property_access=true
+gdscript/warnings/unsafe_method_access=true
+gdscript/warnings/unsafe_call_argument=true
 
 [editor_plugins]
 

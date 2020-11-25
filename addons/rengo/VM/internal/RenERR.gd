@@ -6,6 +6,9 @@ class_name RenERR
 const TOKEN_UNEXPECTED = 'UnexpectedToken'
 const TOKEN_UNKNOWN = 'UnknownToken'
 const SOURCE_EMPTY = 'EmptySource'
+const PARSING_ERROR = 'ParsingError'
+const CODING_ERROR = 'DeveloperIsStupidError'
+const PARSE_ERROR = 'ParseError'
 
 
 var err_data: Dictionary
@@ -23,6 +26,5 @@ func _to_string():
     pos: {pos}
     
     {line}
-
     {message}
     """.format(self.err_data)
