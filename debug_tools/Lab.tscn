@@ -35,6 +35,12 @@ margin_left = 344.0
 margin_right = 1024.0
 margin_bottom = 416.0
 size_flags_horizontal = 3
+highlight_current_line = true
+syntax_highlighting = true
+show_line_numbers = true
+draw_tabs = true
+draw_spaces = true
+highlight_all_occurrences = true
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
 margin_top = 420.0

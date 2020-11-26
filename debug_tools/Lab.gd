@@ -48,4 +48,5 @@ func _on_BuildAST_pressed():
         return
     
     var ast_root = result.value
+    tree.clear()
     populate_tree(null, ast_root)
