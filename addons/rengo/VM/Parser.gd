@@ -11,7 +11,10 @@ var current_token: RenToken = null
 
 func _init(lexer: RenLexer):
     self.lexer = lexer as RenLexer
-    self.current_token = lexer.get_next_token().value
+    var result = lexer.get_next_token()
+    if result is RenERR:
+        return
+    self.current_token = result.value
     assert(self.lexer != null, 'Parser needs a valid lexer!')
 
 
@@ -137,6 +140,8 @@ func compound() -> RenResult:
 
 
 func script():
+    if self.current_token == null:
+        return error('ParserInitError', 'Parser got no tokens to process.')
     var result = compound()
     if result is RenERR:
         return result
