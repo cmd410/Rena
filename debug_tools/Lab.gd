@@ -1,9 +1,13 @@
 extends Control
 
 
-onready var tree = get_node("VBoxContainer/HBoxContainer/Tree") as Tree
-onready var text_edit = get_node("VBoxContainer/HBoxContainer/TextEdit") as TextEdit
-onready var log_container = get_node("VBoxContainer/HBoxContainer2/LOG") as TextEdit
+onready var tree = get_node("VBoxContainer/HBoxContainer4/HBoxContainer/VBoxContainer/Tree") as Tree
+onready var text_edit = get_node("VBoxContainer/HBoxContainer4/HBoxContainer/TextEdit") as TextEdit
+onready var log_container = get_node("VBoxContainer/HBoxContainer4/HBoxContainer2/VBoxContainer/LOG") as TextEdit
+
+onready var cchar = get_node("VBoxContainer/HBoxContainer4/HBoxContainer2/VBoxContainer/HBoxContainer/CChar") as CheckBox
+onready var ctoken = get_node("VBoxContainer/HBoxContainer4/HBoxContainer2/VBoxContainer/HBoxContainer/CToken") as CheckBox
+onready var errors = get_node("VBoxContainer/HBoxContainer4/HBoxContainer2/VBoxContainer/HBoxContainer/Errors") as CheckBox
 
 
 func _ready():
@@ -20,14 +24,27 @@ func cls():
 
 func _on_Tokenize_pressed():
     var lexer: RenLexer = RenLexer.new(text_edit.text)
+    if ctoken.pressed:
+        lexer.connect("new_token", self, '_on_token_parsed')
+    if errors.pressed:
+        lexer.connect("exception", self, '_on_error')
+    if cchar.pressed:
+        lexer.connect("advanced", self, "_on_token_parsed")
     cls()
     while not lexer.depleted:
         var result = lexer.get_next_token()
         if result is RenOK:
             printf(result.value)
         else:
-            printf(result)
             break
+
+
+func _on_token_parsed(token):
+    printf(token)
+
+
+func _on_error(err):
+    printf(err)
 
 
 func populate_tree(tree_item: TreeItem, node: Node):
@@ -39,7 +56,9 @@ func populate_tree(tree_item: TreeItem, node: Node):
 
 func _on_BuildAST_pressed():
     var lexer = RenLexer.new(text_edit.text)
+    lexer.connect("new_token", self, '_on_token_parsed')
     var parser = RenParser.new(lexer)
+    parser.connect("exception", self, '_on_error')
     cls()
     
     var result = parser.script()
