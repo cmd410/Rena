@@ -117,6 +117,14 @@ func update_indent():
         self.last_indent = self.current_indent
         self.current_indent = new_indent
 
+    
+func hop(n: int) -> RenResult:
+    for i in range(n):
+        var res = advance()
+        if res is RenERR:
+            return res
+    return RenOK.new(0)
+
 
 func advance() -> RenResult:
     if self.lines.empty():
@@ -187,6 +195,16 @@ func id() -> RenResult:
 func string():
     # TODO Add separate multiline support
     var quote_type = self.current_char
+    var is_multiline = false
+    while peek() == quote_type:
+        advance()
+        quote_type += self.current_char
+        if len(quote_type) == 3:
+            is_multiline = true
+            break
+    if not is_multiline and len(quote_type) > 1:
+        return error(RenERR.PARSING_ERROR, """Too many quotes for single line, too less for multiline.
+                                              Consider escaping quotes with \\ if you want to include them in the string.""")
     advance()
     var result: String = ''
     var end: bool = false
@@ -228,22 +246,42 @@ func string():
                             l = c
                             advance()
                         'u':
-                            # FIXME parsing unicode chars is seriously wrong
                             advance()
                             var a = peek(1) + peek(2)
-                            advance()
-                            var b = peek(1) + peek(2)
-                            advance()
-                            advance()
-                            advance()
-                            if not (a.is_valid_hex_number() and b.is_valid_hex_number()
-                                    and len(a + b) == 4):
+                            if not len(a) == 2:
+                                return error(
+                                        RenERR.PARSING_ERROR,
+                                        'Cannot parse unicode character \\u%s' % [a]
+                                    )
+                            var b = peek(3) + peek(4)
+                            if not len(b) == 2:
                                 return error(
                                         RenERR.PARSING_ERROR,
                                         'Cannot parse unicode character \\u%s' % [a+b]
                                     )
-                            var url_encoded = '%' + a + '%' + b
-                            c = url_encoded.percent_decode()
+                            hop(4)
+                            if not (a.is_valid_hex_number() and b.is_valid_hex_number()):
+                                return error(
+                                        RenERR.PARSING_ERROR,
+                                        'Cannot parse unicode character \\u%s' % [a+b]
+                                    )
+                            c = char(('0x' + a + b).hex_to_int())
+                            l = c
+                        'x':
+                            advance()
+                            var a = peek(1) + peek(2)
+                            if not len(a) == 2:
+                                return error(
+                                        RenERR.PARSING_ERROR,
+                                        'Cannot parse unicode character \\u%s' % [a]
+                                    )
+                            hop(2)
+                            if not (a.is_valid_hex_number()):
+                                return error(
+                                        RenERR.PARSING_ERROR,
+                                        'Cannot parse ascii character \\x%s' % [a]
+                                    )
+                            c = char(('0x' + a).hex_to_int())
                             l = c
                     result += c
                     last_char = l
