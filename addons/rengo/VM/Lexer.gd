@@ -11,37 +11,37 @@ signal block_enter()
 signal block_exit()
 
 
-var lines: PoolStringArray
+var text: String
 
+var linepos: int = 0
 var lineno: int = 0
-var linepos: int = -1
-
+var pos: int = 0
+var indent_stack: Array = []
 var current_char: String = ''
-var current_line: String = ''
-var meaningfull: bool
 
-var current_indent: int = 0
-var last_indent: int = -4
-
-var queued_tokens: Array = []
+var started: bool = false
 var depleted: bool = false
+
 
 const VALID_IDS = ('qwertyuiopasdfghjklzxcvbnm' +
                    'QWERTYUIOPASDFGHJKLZXCVBNM' +
                    '1234567890_')
 
+var enter_token = RenToken.new(RenToken.BLOCK_START)
+var exit_token = RenToken.new(RenToken.BLOCK_END)
+
 
 func _init(text: String):
-    self.lines = text.split('\n')
-    if not self.lines.empty():
-        self.current_line = self.lines[0]
+    self.text = text
+    if not self.text.empty():
+        self.current_char = self.text[0]
 
 
 func get_lexer_state() -> Dictionary:
     var state = {
         'lineno': self.lineno + 1,
         'pos': self.linepos,
-        'line': self.current_line
+        'line': self.text.split('\n')[self.lineno]
     }
     return state
 
@@ -70,11 +70,11 @@ func token_notify(token: RenToken):
 
 
 func peek(offset: int = 1) -> String:
-    var peek_index = self.linepos + offset
-    if peek_index >= len(self.current_line):
+    var peek_index = self.pos + offset
+    if peek_index >= len(self.text):
         return ''
     else:
-        return self.current_line[peek_index]
+        return self.text[peek_index]
 
 
 func skip_spaces():
@@ -82,40 +82,16 @@ func skip_spaces():
         advance()
 
 
-func update_indent():
-    var dedented_line = current_line.dedent()
-    var new_indent: int = len(current_line) - len(dedented_line)
-    
-    if not dedented_line.empty():
-        self.meaningfull = dedented_line[0] != '#'
-    else:
-        self.meaningfull = false
-
-    if not self.meaningfull or new_indent == last_indent:
-        return
-    
-    elif new_indent != self.last_indent:  # Indent changed
+func get_indent() -> int:
+    var indent = self.indent_stack[-1]
+    var i = 0
+    if self.current_char == ' ' and peek(-1) == '\n':
+        while peek(i) == ' ':
+            i += 1
+        if peek(i) != '\n':
+            indent = i
+    return indent
         
-        self.current_line = dedented_line
-        
-        # Block start
-        if new_indent > self.last_indent:
-            var blocks_depth = floor((new_indent - self.last_indent) / 4)
-            var block_start = RenToken.new(RenToken.BLOCK_START)
-
-            for i in range(blocks_depth):
-                self.queued_tokens.push_back(block_start)
-        
-        # Block end
-        else:
-            var blocks_depth = floor((self.last_indent - new_indent) / 4)
-            var block_end = RenToken.new(RenToken.BLOCK_END)
-
-            for i in range(blocks_depth):
-                self.queued_tokens.push_back(block_end)
-        
-        self.last_indent = self.current_indent
-        self.current_indent = new_indent
 
     
 func hop(n: int) -> RenResult:
@@ -127,54 +103,38 @@ func hop(n: int) -> RenResult:
 
 
 func advance() -> RenResult:
-    if self.lines.empty():
-        return error(RenERR.SOURCE_EMPTY, 'Lexer was given empty string')
-
-    self.linepos += 1
-    if self.linepos == -1:
-        self.current_char = '\n'
-        return RenOK.new(0)
-    # If out of line
-    if self.linepos >= len(self.current_line):
+    self.pos += 1
+    self.linepos +=1
+    if self.current_char == '\n':
         self.lineno += 1
-        
-        # If lines ended
-        if self.lineno >= len(self.lines):
-            self.current_line = ''
-            self.current_char = ''
-            self.current_indent = -4
-            return RenOK.new(0)
-        else:
-            self.current_line = self.lines[self.lineno]
-
-        self.linepos = -2
-        self.current_char = '\n'
-    else:
-        self.current_char = self.current_line[self.linepos]
+        self.linepos = 0
     
+    if self.pos >= len(self.text):
+        self.current_char = ''
+        return RenOK.new(0)
+    
+    self.current_char = self.text[self.pos]
+
     emit_signal('advanced', self.current_char)
     return RenOK.new(0)
 
 
 func number() -> RenResult:
-    var result: String = self.current_char
+    var result: String = ''
     var is_float: bool = false
     while true:
-        var next_char = peek()
-        if (next_char.is_valid_integer() or next_char in ['_','.']):
-            advance()
-        else:
-            break
-
         if self.current_char.is_valid_integer():
             result += self.current_char
+            advance()
         elif self.current_char == '_':
+            advance()
             continue
         elif self.current_char == '.':
             if is_float:
                 return error(RenERR.PARSING_ERROR, 'Failed to parse float number, too many dots.')
             is_float = true
             result += self.current_char
+            advance()
         else:
             break
 
@@ -189,22 +149,15 @@ func id() -> RenResult:
     while self.current_char in VALID_IDS:
         result += self.current_char
         advance()
-    return RenOK.new(result)
+    
+    if RenToken.KEYWORDS.has(result):
+        return RenOK.new(RenToken.new(RenToken.KEYWORDS[result], result))
+    else:
+        return RenOK.new(RenToken.new(RenToken.ID, result))
 
 
-func string():
-    # TODO Add separate multiline support
+func string() -> RenResult:
     var quote_type = self.current_char
-    var is_multiline = false
-    while peek() == quote_type:
-        advance()
-        quote_type += self.current_char
-        if len(quote_type) == 3:
-            is_multiline = true
-            break
-    if not is_multiline and len(quote_type) > 1:
-        return error(RenERR.PARSING_ERROR, """Too many quotes for single line, too less for multiline.
-                                              Consider escaping quotes with \\ if you want to include them in the string.""")
     advance()
     var result: String = ''
     var end: bool = false
@@ -235,57 +188,38 @@ func string():
                     match peek():
                         'n':
                             c = '\n'
-                            l = c
                             advance()
                         't':
                             c = '\t'
-                            l = c
                             advance()
                         'r':
                             c = '\r'
-                            l = c
                             advance()
-                        'u':
+                        'u', 'x':
                             advance()
+                            var form = self.current_char
                             var a = peek(1) + peek(2)
-                            if not len(a) == 2:
+                            var b = ''
+                            var ml = 4
+                            if form == 'u':
+                                b = peek(3) + peek(4)
+                                ml = 6
+                            var hex = '0x' + a + b
+                            print(hex, ' ' ,ml, ' ', len(hex))
+                            hop(ml-2)
+                            if not (hex.is_valid_hex_number(true) and len(hex) == ml):
                                 return error(
                                         RenERR.PARSING_ERROR,
-                                        'Cannot parse unicode character \\u%s' % [a]
+                                        'Cannot parse character \"\\%s%s\"' % [form, a+b]
                                     )
-                            var b = peek(3) + peek(4)
-                            if not len(b) == 2:
-                                return error(
-                                        RenERR.PARSING_ERROR,
-                                        'Cannot parse unicode character \\u%s' % [a+b]
-                                    )
-                            hop(4)
-                            if not (a.is_valid_hex_number() and b.is_valid_hex_number()):
-                                return error(
-                                        RenERR.PARSING_ERROR,
-                                        'Cannot parse unicode character \\u%s' % [a+b]
-                                    )
-                            c = char(('0x' + a + b).hex_to_int())
-                            l = c
-                        'x':
-                            advance()
-                            var a = peek(1) + peek(2)
-                            if not len(a) == 2:
-                                return error(
-                                        RenERR.PARSING_ERROR,
-                                        'Cannot parse unicode character \\u%s' % [a]
-                                    )
-                            hop(2)
-                            if not (a.is_valid_hex_number()):
-                                return error(
-                                        RenERR.PARSING_ERROR,
-                                        'Cannot parse ascii character \\x%s' % [a]
-                                    )
-                            c = char(('0x' + a).hex_to_int())
-                            l = c
+                            c = char(hex.hex_to_int())
+
                     result += c
+                    l = c
                     last_char = l
                     advance()
+            '':
+                return error(RenERR.PARSING_ERROR, 'Unexpected EOF while parsing string')
             _:
                 result += self.current_char
                 last_char = self.current_char
@@ -297,78 +231,70 @@ func string():
 
 
 func get_next_token() -> RenResult:
-    var token: RenToken = null
-    # Check if we got some tokens to be sent already
-    if self.queued_tokens:
-        token = self.queued_tokens.pop_front()
-    else:
-        if self.lineno == 0 and self.linepos == -1:
-            update_indent()
-        # If no tokens go to next characters
-        var res = advance()
-        if res is RenERR:
-            return res
-        
-        if self.current_char == ' ':
-            skip_spaces()
+    if not self.started:
+        self.indent_stack.push_back(0)
+        self.started = true
+        return RenOK.new(enter_token)
 
-        if not self.current_char.empty():
-            # Parse number if first char is integer
-            if self.current_char.is_valid_integer():
-                var num = number()
-                if num is RenERR:
-                    return num
-                self.queued_tokens.append(num.value)
+    while not self.current_char.empty():
+        var c = self.current_char
+
+        match c:
+            ' ':
+                if peek(-1) == '\n':
+                    var indent = get_indent()
+                    
+                    if indent > indent_stack[-1]:
+                        indent_stack.push_back(indent)
+                        hop(indent)
+                        return RenOK.new(enter_token)
+                    
+                    elif indent < indent_stack[-1]:
+
+                        while indent != indent_stack[-1]:
+                            self.exit_length += 1
+                            indent_stack.pop_back()
+                            if indent_stack[-1] == 0 and indent != 0:
+                                return error('IndentedationError', 'Indentation does not match any block')
+                        hop(indent)
+                        self.exit_length -= 1
+                        return RenOK.new(exit_token)
+                else:
+                    skip_spaces()
             
-            # Could it be identifier?
-            elif self.current_char.is_valid_identifier():
-                var iden = id().value
-                var type = RenToken.ID
-                if RenToken.KEYWORDS.has(iden):
-                    type = RenToken.KEYWORDS[iden]
-                self.queued_tokens.append(RenToken.new(type, iden))
-            
-            elif self.current_char in RenToken.QUOTE:
-                var result = string()
-                if result is RenERR:
-                    return result
-                self.queued_tokens.append(result.value)
-            # If its none of above, look it up in operators then
-            else:
-                var token_type = null
-                var token_value = null
-                var double_char = self.current_char + peek()
-
-                match double_char:
-                    '//', '**':
-                        token_type = double_char
-                        token_value = double_char
-                        advance()
-                    _:
-                        match self.current_char:
-                            '+', '-', '*', '/', '%', '(', ')', '=':
-                                token_type = self.current_char
-                                token_value = self.current_char
-                            '\n':
-                                token_type = RenToken.EOL
-                            _:
-                                return error(RenERR.TOKEN_UNKNOWN, 'Lexer got unknown token: \"%s\"' % [self.current_char])
-
-                self.queued_tokens.push_back(RenToken.new(token_type, token_value))
+            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0':
                 
-                # we need to update indent on every new line
-                if token_type == RenToken.EOL:
-                    update_indent()
-            token = self.queued_tokens.pop_front()
-        else:
-            # If line is empty we reached EOF
-            # Close all blocks before sending EOF token
-            var end = RenToken.new(RenToken.BLOCK_END)
-            for i in range(floor((self.current_indent + 4)/4) + 1):
-                self.queued_tokens.push_back(end)
-            
-            self.queued_tokens.push_back(RenToken.new(RenToken.EOF))
-            token = self.queued_tokens.pop_front()
+                if peek(-1) == '\n':
+                    while len(self.indent_stack) > 1:
+                        self.indent_stack.pop_back()
+                        return RenOK.new(exit_token)
+                
+                return number()
+
+            '\n':
+                advance()
+                return RenOK.new(RenToken.new(RenToken.EOL))
+
+            '\"', "\'":
+                if peek(-1) == '\n':
+                    while len(self.indent_stack) > 1:
+                        self.indent_stack.pop_back()
+                        return RenOK.new(exit_token)
+
+                return string()
+            _:
+                if peek(-1) == '\n':
+                    while len(self.indent_stack) > 1:
+                        self.indent_stack.pop_back()
+                        return RenOK.new(exit_token)
+                if c.is_valid_identifier():
+                    return id()
+                else:
+                    return error(RenERR.TOKEN_UNEXPECTED, 'Lexer got unexpected character: "%s"' % [c])
+        #advance()
+    while not self.indent_stack.empty():
+        self.indent_stack.pop_back()
+        return RenOK.new(exit_token)
     
-    token_notify(token)
-    return RenOK.new(token)
+    self.depleted = true
+    return RenOK.new(RenToken.new(RenToken.EOF))
