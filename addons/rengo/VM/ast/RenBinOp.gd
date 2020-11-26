@@ -9,8 +9,4 @@ func _init(left: RenAST, token: RenToken, right: RenAST):
 
 
 func _to_string():
-    return 'BinOp<%s %s %s>' % [
-        get_child(0),
-        self.token.token_type,
-        get_child(1)
-    ]
+    return 'BinOp<%s>' % [self.token.token_type]

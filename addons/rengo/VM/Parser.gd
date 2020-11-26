@@ -57,11 +57,61 @@ func factor() -> RenResult:
                     RenERR.CODING_ERROR,
                     'Unmathced data unit type %s in factor function.' % [token]
                 )
+    elif self.current_token.token_type == RenToken.LPAREN:
+        eat(RenToken.LPAREN)
+        var result = arithm()
+        if result is RenERR:
+            return result
+        var node = result.value
+        result = eat(RenToken.RPAREN)
+        if result is RenERR:
+            return result
+        return RenOK.new(node)
     else:
         return error(
             RenERR.TOKEN_UNEXPECTED,
             'Expected number, string, boolean or identifier, got %s.' % [self.current_token]
         )
+
+
+func term() -> RenResult:
+    var result = factor()
+    if result is RenERR:
+        return result
+
+    var node = result.value
+    while self.current_token.is_type(RenToken.TERM):
+        var token = self.current_token
+        result = eat(RenToken.TERM)
+        if result is RenERR:
+            return result
+        result = factor()
+        if result is RenERR:
+            return result
+        
+        node = RenBinOp.new(node, token, result.value)
+
+    return RenOK.new(node)
+
+
+func arithm() -> RenResult:
+    var result = term()
+    if result is RenERR:
+        return result
+
+    var node = result.value
+    while self.current_token.is_type(RenToken.ARITHM):
+        var token = self.current_token
+        result = eat(RenToken.ARITHM)
+        if result is RenERR:
+            return result
+        result = term()
+        if result is RenERR:
+            return result
+        
+        node = RenBinOp.new(node, token, result.value)
+
+    return RenOK.new(node)
 
 
 func compound() -> RenResult:
@@ -70,8 +120,11 @@ func compound() -> RenResult:
         return result
 
     var node = RenAST.new()
-    while current_token.token_type != RenToken.BLOCK_END:
-        result = factor()   # WIP temporary testing functions
+    while self.current_token.token_type != RenToken.BLOCK_END:
+        while self.current_token.token_type == RenToken.EOL:
+            eat(RenToken.EOL)
+
+        result = arithm()   # WIP temporary testing functions
         
         if result is RenERR:
             return result

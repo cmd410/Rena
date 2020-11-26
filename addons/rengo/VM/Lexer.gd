@@ -69,7 +69,7 @@ func token_notify(token: RenToken):
             emit_signal('block_exit')
 
 
-func peek(offset: int = 1):
+func peek(offset: int = 1) -> String:
     var peek_index = self.linepos + offset
     if peek_index >= len(self.current_line):
         return ''
@@ -80,18 +80,6 @@ func peek(offset: int = 1):
 func skip_spaces():
     while self.current_char == ' ':
         advance()
-
-
-func skip_empty_lines():
-    var line = self.current_line.dedent()
-    while line.empty() or line[0] == '#':
-        self.lineno += 1
-        if self.lineno >= len(self.lines):
-            self.current_line = ''
-            break
-        self.current_line = self.lines[self.lineno]
-        self.linepos = -1
-        line = self.current_line.dedent()
 
 
 func update_indent():
@@ -133,8 +121,11 @@ func update_indent():
 func advance() -> RenResult:
     if self.lines.empty():
         return error(RenERR.SOURCE_EMPTY, 'Lexer was given empty string')
-    
+
     self.linepos += 1
+    if self.linepos == -1:
+        self.current_char = '\n'
+        return RenOK.new(0)
     # If out of line
     if self.linepos >= len(self.current_line):
         self.lineno += 1
@@ -148,7 +139,7 @@ func advance() -> RenResult:
         else:
             self.current_line = self.lines[self.lineno]
 
-        self.linepos = -1
+        self.linepos = -2
         self.current_char = '\n'
     else:
         self.current_char = self.current_line[self.linepos]
@@ -158,23 +149,27 @@ func advance() -> RenResult:
 
 
 func number() -> RenResult:
-    var result: String = ''
+    var result: String = self.current_char
     var is_float: bool = false
     while true:
+        var next_char = peek()
+        if (next_char.is_valid_integer() or next_char in ['_','.']):
+            advance()
+        else:
+            break
+
         if self.current_char.is_valid_integer():
             result += self.current_char
-            advance()
         elif self.current_char == '_':
-            advance()
+            continue
         elif self.current_char == '.':
             if is_float:
                 return error(RenERR.PARSING_ERROR, 'Failed to parse float number, too many dots.')
             is_float = true
             result += self.current_char
-            advance()
         else:
             break
-    
+
     if is_float:
         return RenOK.new(RenToken.new(RenToken.FLOAT, float(result)))
     else:
@@ -190,6 +185,7 @@ func id() -> RenResult:
 
 
 func string():
+    # TODO Add separate multiline support
     var quote_type = self.current_char
     advance()
     var result: String = ''
@@ -263,8 +259,6 @@ func string():
 
 
 func get_next_token() -> RenResult:
-    #skip_empty_lines()
-    
     var token: RenToken = null
     # Check if we got some tokens to be sent already
     if self.queued_tokens:
@@ -314,14 +308,14 @@ func get_next_token() -> RenResult:
                         advance()
                     _:
                         match self.current_char:
-                            '+', '-', '*', '/', '%', '(', ')', '=', '\n':
+                            '+', '-', '*', '/', '%', '(', ')', '=':
                                 token_type = self.current_char
                                 token_value = self.current_char
                             '\n':
                                 token_type = RenToken.EOL
                             _:
                                 return error(RenERR.TOKEN_UNKNOWN, 'Lexer got unknown token: \"%s\"' % [self.current_char])
-                        
+
                 self.queued_tokens.push_back(RenToken.new(token_type, token_value))
                 
                 # we need to update indent on every new line
