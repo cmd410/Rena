@@ -17,6 +17,7 @@ var linepos: int = 0
 var lineno: int = 0
 var pos: int = 0
 var indent_stack: Array = []
+var queued_exits: Array = []
 var current_char: String = ''
 
 var started: bool = false
@@ -32,7 +33,7 @@ var exit_token = RenToken.new(RenToken.BLOCK_END)
 
 
 func _init(text: String):
-    self.text = text
+    self.text = text.replace('\t', '    ')
     if not self.text.empty():
         self.current_char = self.text[0]
 
@@ -235,58 +236,50 @@ func get_next_token() -> RenResult:
         self.indent_stack.push_back(0)
         self.started = true
         return RenOK.new(enter_token)
-
+    
+    if not queued_exits.empty():
+        return RenOK.new(queued_exits.pop_front())
+    
     while not self.current_char.empty():
         var c = self.current_char
-
+        if c != ' ':
+            if peek(-1) == '\n':
+                while len(self.indent_stack) > 1:
+                    self.indent_stack.pop_back()
+                    return RenOK.new(exit_token)
         match c:
             ' ':
                 if peek(-1) == '\n':
                     var indent = get_indent()
+                    hop(indent)
                     
                     if indent > indent_stack[-1]:
                         indent_stack.push_back(indent)
-                        hop(indent)
                         return RenOK.new(enter_token)
                     
                     elif indent < indent_stack[-1]:
 
                         while indent != indent_stack[-1]:
-                            self.exit_length += 1
                             indent_stack.pop_back()
+                            queued_exits.push_back(exit_token)
                             if indent_stack[-1] == 0 and indent != 0:
                                 return error('IndentedationError', 'Indentation does not match any block')
-                        hop(indent)
-                        self.exit_length -= 1
-                        return RenOK.new(exit_token)
+                        return RenOK.new(queued_exits.pop_back())
                 else:
                     skip_spaces()
             
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0':
-                
-                if peek(-1) == '\n':
-                    while len(self.indent_stack) > 1:
-                        self.indent_stack.pop_back()
-                        return RenOK.new(exit_token)
-                
                 return number()
-
+            '+', '-', '*', '/', '%', '=', '(', ')', '[', ']', '{', '}', ':':
+                advance()
+                return RenOK.new(RenToken.new(c))
             '\n':
                 advance()
                 return RenOK.new(RenToken.new(RenToken.EOL))
 
             '\"', "\'":
-                if peek(-1) == '\n':
-                    while len(self.indent_stack) > 1:
-                        self.indent_stack.pop_back()
-                        return RenOK.new(exit_token)
-
                 return string()
             _:
-                if peek(-1) == '\n':
-                    while len(self.indent_stack) > 1:
-                        self.indent_stack.pop_back()
-                        return RenOK.new(exit_token)
                 if c.is_valid_identifier():
                     return id()
                 else:

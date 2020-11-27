@@ -25,6 +25,7 @@ const TERM     = [MUL, DIV, MOD, FLOORDIV, POW]
 const OPERATOR = [PLUS, MINUS, MUL, DIV, MOD,
                   FLOORDIV, EQUAL, POW]
 
+const COLON  = ':'
 const LPAREN = '('
 const RPAREN = ')'
 const LBRACK = '['
@@ -42,10 +43,26 @@ const DELIM  = [
 const BLOCK_START = 'START'
 const BLOCK_END   = 'END'
 
+const LABEL =  'LABEL'
+const MENU  =  'MENU'
+const IF =     'IF'
+const ELIF =   'ELIF'
+const ELSE =   'ELSE'
+const AND =    'AND'
+const OR =     'OR'
+const DEFINE = 'DEFINE'
 
 const KEYWORDS = {
     'True': BOOL,
     'False': BOOL,
+    'label': LABEL,
+    'menu': MENU,
+    'if': IF,
+    'elif': ELIF,
+    'else': ELSE,
+    'and': AND,
+    'or': OR,
+    'define': DEFINE
 }
 
 
