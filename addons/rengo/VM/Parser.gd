@@ -38,6 +38,11 @@ func eat(token_type) -> RenResult:
         )
 
 
+func skip_lines():
+    while self.current_token.token_type == RenToken.EOL:
+        eat(RenToken.EOL)
+
+
 func factor() -> RenResult:
     if self.current_token.is_type(RenToken.DATA_UNIT):
         var token = current_token
@@ -117,6 +122,95 @@ func arithm() -> RenResult:
     return RenOK.new(node)
 
 
+func variable() -> RenResult:
+    var token = self.current_token
+    var res = eat(RenToken.ID)
+    if res is RenERR:
+        return res
+    return RenOK.new(RenVar.new(token))
+
+
+func assignment() -> RenResult:
+    var res = variable()
+    if res is RenERR:
+        return res
+    
+    var id = res.value
+    
+    var op = self.current_token
+    res = eat(RenToken.EQUAL)
+    if res is RenERR:
+        return res
+
+    res = arithm()
+    if res is RenERR:
+        return res
+    else:
+        return RenOK.new(RenBinOp.new(id, op, res.value))
+
+
+func label() -> RenResult:
+    
+    var res = eat(RenToken.LABEL)
+    if res is RenERR:
+        return res
+    
+    var token = self.current_token
+    
+    res = eat(RenToken.ID)
+    if res is RenERR:
+        return res
+    
+    res = eat(RenToken.COLON)
+    if res is RenERR:
+        return res
+    
+    res = eat(RenToken.EOL)
+    if res is RenERR:
+        return res
+    
+    res = compound()
+    res = eat(RenToken.EOL)
+    if res is RenERR:
+        return res
+    
+    var node = RenLabel.new(token)
+    node.add_child(res.value)
+    return RenOK.new(node)
+
+
+func statement() -> RenResult:
+    skip_lines()
+    var node = null
+    match self.current_token.token_type:
+        RenToken.DEFINE:
+            var res = eat(RenToken.DEFINE)
+            if res is RenERR:
+                return res
+            res = assignment()
+            if res is RenERR:
+                return res
+            node = res.value
+        RenToken.LABEL:
+            var res = label()
+            if res is RenERR:
+                return res
+            node = res.value
+        _:
+            return error(RenERR.TOKEN_UNEXPECTED, 'Got unexpected token: %s' % [self.current_token])
+    
+    match self.current_token.token_type:
+        RenToken.EOL:
+            var res = eat(RenToken.EOL)
+            if res is RenERR:
+                return res
+        RenToken.BLOCK_END:
+            pass
+        _:
+           return error(RenERR.TOKEN_UNEXPECTED, 'Unexpeced end of line.')
+    return RenOK.new(node)
+
+
 func compound() -> RenResult:
     var result = eat(RenToken.BLOCK_START)
     if result is RenERR:
@@ -124,16 +218,11 @@ func compound() -> RenResult:
 
     var node = RenAST.new()
     while self.current_token.token_type != RenToken.BLOCK_END:
-        while self.current_token.token_type == RenToken.EOL:
-            eat(RenToken.EOL)
-
-        result = arithm()   # WIP temporary testing functions
-        
+        skip_lines()
+        result = statement()
         if result is RenERR:
             return result
-        
         node.add_child(result.value)
-    
     eat(RenToken.BLOCK_END)
 
     return RenOK.new(node)
