@@ -1,13 +1,13 @@
 extends Control
 
 
-onready var tree = get_node("VBoxContainer/HBoxContainer4/HBoxContainer/VBoxContainer/Tree") as Tree
-onready var text_edit = get_node("VBoxContainer/HBoxContainer4/HBoxContainer/TextEdit") as TextEdit
-onready var log_container = get_node("VBoxContainer/HBoxContainer4/HBoxContainer2/VBoxContainer/LOG") as TextEdit
+onready var tree = get_node("VBox/HBox2/HBox/HBox/VBox/Tree") as Tree
+onready var text_edit = get_node("VBox/HBox2/HBox/HBox/TextEdit") as TextEdit
+onready var log_container = get_node("VBox/HBox2/HBox/HBox2/VBox2/LOG") as TextEdit
 
-onready var cchar = get_node("VBoxContainer/HBoxContainer4/HBoxContainer2/VBoxContainer/HBoxContainer/CChar") as CheckBox
-onready var ctoken = get_node("VBoxContainer/HBoxContainer4/HBoxContainer2/VBoxContainer/HBoxContainer/CToken") as CheckBox
-onready var errors = get_node("VBoxContainer/HBoxContainer4/HBoxContainer2/VBoxContainer/HBoxContainer/Errors") as CheckBox
+onready var cchar = get_node("VBox/HBox2/HBox/HBox2/VBox2/HBox/CChar") as CheckBox
+onready var ctoken = get_node("VBox/HBox2/HBox/HBox2/VBox2/HBox/CToken") as CheckBox
+onready var errors = get_node("VBox/HBox2/HBox/HBox2/VBox2/HBox/Errors") as CheckBox
 
 
 func _ready():
