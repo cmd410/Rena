@@ -1,9 +1,17 @@
 extends TextEdit
 
-const COLORS = [Color(0.8, 0, 0.4), Color(0.2, 0.8, 0.2)]
+const COLORS = [
+    Color(0.8, 0, 0.4), Color(0.2, 0.8, 0.2), Color(0.9, 0.6, 0.25),
+    Color(0.83, 0.24, 0.2)
+]
 
 const KEYWORDS = {
-    'label': COLORS[0]
+    'label': COLORS[0],
+    'if': COLORS[2],
+    'elif': COLORS[2],
+    'else': COLORS[2],
+    'and': COLORS[3],
+    'or': COLORS[3]
    }
 
 
