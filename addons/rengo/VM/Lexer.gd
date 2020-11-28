@@ -242,7 +242,7 @@ func get_next_token() -> RenResult:
     
     while not self.current_char.empty():
         var c = self.current_char
-        if c != ' ':
+        if not c in [' ', '\n']:
             if peek(-1) == '\n':
                 while len(self.indent_stack) > 1:
                     self.indent_stack.pop_back()

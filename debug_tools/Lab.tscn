@@ -132,7 +132,15 @@ define me = \"Me\"
 label start:
     a \"Hi there!\"
     me \"Oh, hi alice. How's it goin?\"
-"
+
+    menu:
+        \"What do i do?\"
+
+        \"Run away\":
+            \"You run away as fast as yo can.\"
+
+        \"Stay\":
+            \"You stay.\""
 highlight_current_line = true
 syntax_highlighting = true
 show_line_numbers = true

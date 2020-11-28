@@ -200,6 +200,79 @@ func say() -> RenResult:
     return RenOK.new(node)
 
 
+func menu() -> RenResult:
+    var res = eat(RenToken.MENU)
+    if res is RenERR:
+        return res
+    res = eat(RenToken.COLON)
+    if res is RenERR:
+        return res
+    res = eat(RenToken.EOL)
+    if res is RenERR:
+        return res
+    
+    skip_lines()
+    res = eat(RenToken.BLOCK_START)
+    if res is RenERR:
+        return res
+
+    var token = self.current_token
+    res = eat(RenToken.STR)
+    if res is RenERR:
+        return res
+    
+    var menu = null
+    # Parsing first menu option or line
+    match current_token.token_type:
+        RenToken.EOL:
+            menu = RenMenu.new(token.value)
+            res = eat(RenToken.EOL)
+            if res is RenERR:
+                return res
+        RenToken.COLON:
+            var option = RenOption.new(token)
+            menu = RenMenu.new()
+            menu.add_child(option)
+            res = eat(RenToken.COLON)
+            if res is RenERR:
+                return res
+            res = eat(RenToken.EOL)
+            if res is RenERR:
+                return res
+            skip_lines()
+            res = compound()
+            if res is RenERR:
+                return res
+            option.add_child(res.value)
+        _:
+            return error(RenERR.TOKEN_UNKNOWN, 'Unexpected token while p: %s')
+    
+    skip_lines()
+    
+    while self.current_token.token_type == RenToken.STR:
+        token = self.current_token
+        res = eat(RenToken.STR)
+        if res is RenERR:
+            return res
+        res = eat(RenToken.COLON)
+        if res is RenERR:
+            return res
+        res = eat(RenToken.EOL)
+        if res is RenERR:
+            return res
+        skip_lines()
+        res = compound()
+        if res is RenERR:
+            return res
+        var option = RenOption.new(token)
+        option.add_child(res.value)
+        menu.add_child(option)
+        skip_lines()
+    res = eat(RenToken.BLOCK_END)
+    if res is RenERR:
+        return res
+    return RenOK.new(menu)
+
 func statement() -> RenResult:
     skip_lines()
     var node = null
@@ -219,6 +292,11 @@ func statement() -> RenResult:
             node = res.value
         RenToken.ID, RenToken.STR:
             var res = say()
+            if res is RenERR:
+                return res
+            node = res.value
+        RenToken.MENU:
+            var res = menu()
             if res is RenERR:
                 return res
             node = res.value
@@ -246,6 +324,7 @@ func compound() -> RenResult:
     var node = RenAST.new()
     while self.current_token.token_type != RenToken.BLOCK_END:
         result = statement()
+        skip_lines()
         if result is RenERR:
             return result
         node.add_child(result.value)

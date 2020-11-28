@@ -7,4 +7,4 @@ var token: RenToken = null
 
 
 func _to_string():
-    return 'ASTNode<%s>' % len(get_children())
+    return 'ASTNode<%s>' % [get_child_count()]
