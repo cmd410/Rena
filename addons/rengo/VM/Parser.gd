@@ -165,17 +165,38 @@ func label() -> RenResult:
     if res is RenERR:
         return res
     
-    res = eat(RenToken.EOL)
+    res = eat(RenToken.EOL) 
     if res is RenERR:
         return res
     
     res = compound()
-    res = eat(RenToken.EOL)
     if res is RenERR:
         return res
     
     var node = RenLabel.new(token)
     node.add_child(res.value)
+    return RenOK.new(node)
+
+
+func say() -> RenResult:
+    var tokens: Array = []
+    while not self.current_token.token_type in [RenToken.EOL, RenToken.BLOCK_END]:
+        match self.current_token.token_type:
+            RenToken.ID, RenToken.STR:
+                tokens.append(self.current_token)
+                eat([RenToken.ID, RenToken.STR])
+            _:
+                return error(RenERR.TOKEN_UNEXPECTED, 'Unexpected token in say statement: %s' % [self.current_token])
+    if tokens.empty():
+        return error(RenERR.TOKEN_UNEXPECTED, 'Unexpected end of say statement')
+    
+    var node = RenSay.new()
+    for token in tokens:
+        match token.token_type:
+            RenToken.ID:
+                node.add_child(RenVar.new(token))
+            RenToken.STR:
+                node.add_child(RenString.new(token))
     return RenOK.new(node)
 
 
@@ -196,6 +217,11 @@ func statement() -> RenResult:
             if res is RenERR:
                 return res
             node = res.value
+        RenToken.ID, RenToken.STR:
+            var res = say()
+            if res is RenERR:
+                return res
+            node = res.value
         _:
             return error(RenERR.TOKEN_UNEXPECTED, 'Got unexpected token: %s' % [self.current_token])
     
@@ -212,13 +238,13 @@ func statement() -> RenResult:
 
 
 func compound() -> RenResult:
+    skip_lines()
     var result = eat(RenToken.BLOCK_START)
     if result is RenERR:
         return result
 
     var node = RenAST.new()
     while self.current_token.token_type != RenToken.BLOCK_END:
-        skip_lines()
         result = statement()
         if result is RenERR:
             return result

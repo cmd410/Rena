@@ -7,6 +7,8 @@ const COLORS = [
 
 const KEYWORDS = {
     'label': COLORS[0],
+    'menu': COLORS[0],
+    'define': COLORS[2],
     'if': COLORS[2],
     'elif': COLORS[2],
     'else': COLORS[2],

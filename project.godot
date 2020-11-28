@@ -64,6 +64,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/RenGo/VM/internal/RenResult.gd"
 }, {
+"base": "RenAST",
+"class": "RenSay",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/RenSay.gd"
+}, {
 "base": "RenValue",
 "class": "RenString",
 "language": "GDScript",
@@ -96,6 +101,7 @@ _global_script_class_icons={
 "RenParser": "",
 "RenRef": "",
 "RenResult": "",
+"RenSay": "",
 "RenString": "",
 "RenToken": "",
 "RenValue": "",

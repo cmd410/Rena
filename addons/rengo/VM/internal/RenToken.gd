@@ -66,6 +66,12 @@ const KEYWORDS = {
 }
 
 
+const DOUBLEOPS = {
+    '**': POW,
+    '//': FLOORDIV
+}
+
+
 var token_type
 var value
 

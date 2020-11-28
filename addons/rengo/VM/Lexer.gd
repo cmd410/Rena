@@ -33,7 +33,7 @@ var exit_token = RenToken.new(RenToken.BLOCK_END)
 
 
 func _init(text: String):
-    self.text = text.replace('\t', '    ')
+    self.text = text
     if not self.text.empty():
         self.current_char = self.text[0]
 
@@ -247,6 +247,12 @@ func get_next_token() -> RenResult:
                 while len(self.indent_stack) > 1:
                     self.indent_stack.pop_back()
                     return RenOK.new(exit_token)
+        
+        var doubleop = c + peek(1)
+        if RenToken.DOUBLEOPS.has(doubleop):
+            var token_type = RenToken.DOUBLEOPS[doubleop]
+            hop(2)
+            return RenOK.new(RenToken.new(token_type))
         match c:
             ' ':
                 if peek(-1) == '\n':
