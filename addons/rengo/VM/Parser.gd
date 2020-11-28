@@ -277,14 +277,17 @@ func statement() -> RenResult:
     skip_lines()
     var node = null
     match self.current_token.token_type:
-        RenToken.DEFINE:
-            var res = eat(RenToken.DEFINE)
+        RenToken.DEFINE, RenToken.DEFAULT:
+            var token = self.current_token
+            var res = eat([RenToken.DEFINE, RenToken.DEFAULT])
             if res is RenERR:
                 return res
+            
+            node = RenDef.new(token)
             res = assignment()
             if res is RenERR:
                 return res
-            node = res.value
+            node.add_child(res.value)
         RenToken.LABEL:
             var res = label()
             if res is RenERR:

@@ -51,6 +51,7 @@ const ELSE =   'ELSE'
 const AND =    'AND'
 const OR =     'OR'
 const DEFINE = 'DEFINE'
+const DEFAULT = 'DEFAULT'
 
 const KEYWORDS = {
     'True': BOOL,
@@ -62,7 +63,8 @@ const KEYWORDS = {
     'else': ELSE,
     'and': AND,
     'or': OR,
-    'define': DEFINE
+    'define': DEFINE,
+    'default': DEFAULT
 }
 
 

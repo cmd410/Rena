@@ -91,6 +91,8 @@ func get_indent() -> int:
             i += 1
         if peek(i) != '\n':
             indent = i
+        else:
+            hop(i)
     return indent
         
 
