@@ -65,6 +65,13 @@ func factor() -> RenResult:
                     RenERR.CODING_ERROR,
                     'Unmathced data unit type %s in factor function.' % [token]
                 )
+    elif self.current_token.is_type(RenToken.ARITHM):
+        var token = self.current_token
+        eat(RenToken.ARITHM)
+        var res = factor()
+        if res is RenERR:
+            return res
+        return RenOK.new(RenUnOp.new(token, res.value))
     elif self.current_token.token_type == RenToken.LPAREN:
         eat(RenToken.LPAREN)
         var result = arithm()
@@ -272,6 +279,7 @@ func menu() -> RenResult:
     if res is RenERR:
         return res
     return RenOK.new(menu)
+
 
 func statement() -> RenResult:
     skip_lines()
