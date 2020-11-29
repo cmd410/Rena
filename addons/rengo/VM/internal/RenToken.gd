@@ -20,6 +20,20 @@ const MOD      = '%'
 const FLOORDIV = '//'
 const EQUAL    = '='
 const POW      = '**'
+const LSHIFT   = '<<'
+const RSHIFT   = '>>'
+const XOR      = '^'
+const BOR      = '|'
+const BAND     = '&'
+const EXEQ     = '=='
+const NOEQ     = '!='
+const LESS     = '<'
+const GREATER  = '>'
+const LEQ      = '<='
+const GEQ      = '>='
+const CMP      = [LESS, GREATER, LEQ, GEQ]
+const EXACT    = [EXEQ, NOEQ]
+const SHIFTS   = [LSHIFT, RSHIFT]
 const ARITHM   = [PLUS, MINUS]
 const TERM     = [MUL, DIV, MOD, FLOORDIV, POW]
 const OPERATOR = [PLUS, MINUS, MUL, DIV, MOD,
@@ -64,13 +78,19 @@ const KEYWORDS = {
     'and': AND,
     'or': OR,
     'define': DEFINE,
-    'default': DEFAULT
+    'default': DEFAULT,
+    '==': EXEQ,
+    '!=': NOEQ,
+    '<=': LEQ,
+    '>=': GEQ
 }
 
 
 const DOUBLEOPS = {
     '**': POW,
-    '//': FLOORDIV
+    '//': FLOORDIV,
+    '<<': LSHIFT,
+    '>>': RSHIFT
 }
 
 

@@ -74,7 +74,7 @@ func factor() -> RenResult:
         return RenOK.new(RenUnOp.new(token, res.value))
     elif self.current_token.token_type == RenToken.LPAREN:
         eat(RenToken.LPAREN)
-        var result = arithm()
+        var result = expr()
         if result is RenERR:
             return result
         var node = result.value
@@ -129,6 +129,128 @@ func arithm() -> RenResult:
     return RenOK.new(node)
 
 
+func shifts() -> RenResult:
+    var result = arithm()
+    if result is RenERR:
+        return result
+    
+    var node = result.value
+    while self.current_token.is_type(RenToken.SHIFTS):
+        var token = self.current_token
+        result = eat(RenToken.SHIFTS)
+        if result is RenERR:
+            return result
+        result = arithm()
+        if result is RenERR:
+            return result
+        
+        node = RenBinOp.new(node, token, result.value)
+    
+    return RenOK.new(node)
+
+
+
+func cmp() -> RenResult:
+    var result = shifts()
+    if result is RenERR:
+        return result
+    
+    var node = result.value
+    while self.current_token.is_type(RenToken.CMP):
+        var token = self.current_token
+        result = eat(RenToken.CMP)
+        if result is RenERR:
+            return result
+        result = shifts()
+        if result is RenERR:
+            return result
+        
+        node = RenBinOp.new(node, token, result.value)
+    
+    return RenOK.new(node)
+
+
+
+func exact() -> RenResult:
+    var result = cmp()
+    if result is RenERR:
+        return result
+    
+    var node = result.value
+    while self.current_token.is_type(RenToken.EXACT):
+        var token = self.current_token
+        result = eat(RenToken.EXACT)
+        if result is RenERR:
+            return result
+        result = cmp()
+        if result is RenERR:
+            return result
+        
+        node = RenBinOp.new(node, token, result.value)
+    
+    return RenOK.new(node)
+
+
+func band() -> RenResult:
+    var result = exact()
+    if result is RenERR:
+        return result
+    
+    var node = result.value
+    while self.current_token.is_type(RenToken.BAND):
+        var token = self.current_token
+        result = eat(RenToken.BAND)
+        if result is RenERR:
+            return result
+        result = exact()
+        if result is RenERR:
+            return result
+        
+        node = RenBinOp.new(node, token, result.value)
+    
+    return RenOK.new(node)
+
+
+func xor() -> RenResult:
+    var result = band()
+    if result is RenERR:
+        return result
+    
+    var node = result.value
+    while self.current_token.is_type(RenToken.XOR):
+        var token = self.current_token
+        result = eat(RenToken.XOR)
+        if result is RenERR:
+            return result
+        result = band()
+        if result is RenERR:
+            return result
+        
+        node = RenBinOp.new(node, token, result.value)
+    
+    return RenOK.new(node)
+
+
+func expr() -> RenResult:
+    var result = xor()
+    if result is RenERR:
+        return result
+    
+    var node = result.value
+    while self.current_token.is_type(RenToken.BOR):
+        var token = self.current_token
+        result = eat(RenToken.BOR)
+        if result is RenERR:
+            return result
+        result = xor()
+        if result is RenERR:
+            return result
+        
+        node = RenBinOp.new(node, token, result.value)
+    
+    return RenOK.new(node)
+
+
 func variable() -> RenResult:
     var token = self.current_token
     var res = eat(RenToken.ID)
@@ -149,7 +271,7 @@ func assignment() -> RenResult:
     if res is RenERR:
         return res
 
-    res = arithm()
+    res = expr()
     if res is RenERR:
         return res
     else:
