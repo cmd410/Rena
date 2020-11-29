@@ -38,6 +38,14 @@ func eat(token_type) -> RenResult:
         )
 
 
+func eat_chain(chain: Array) -> RenResult:
+    for t in chain:
+        var res = eat(t)
+        if res is RenERR:
+            return res
+    return RenOK.new(0)
+
+
 func skip_lines():
     while self.current_token.token_type == RenToken.EOL:
         eat(RenToken.EOL)
@@ -231,7 +239,7 @@ func xor() -> RenResult:
     return RenOK.new(node)
 
 
-func expr() -> RenResult:
+func bor() -> RenResult:
     var result = xor()
     if result is RenERR:
         return result
@@ -243,6 +251,46 @@ func expr() -> RenResult:
         if result is RenERR:
             return result
         result = xor()
+        if result is RenERR:
+            return result
+        
+        node = RenBinOp.new(node, token, result.value)
+    
+    return RenOK.new(node)
+
+
+func land() -> RenResult:
+    var result = bor()
+    if result is RenERR:
+        return result
+    
+    var node = result.value
+    while self.current_token.is_type(RenToken.AND):
+        var token = self.current_token
+        result = eat(RenToken.AND)
+        if result is RenERR:
+            return result
+        result = bor()
+        if result is RenERR:
+            return result
+        
+        node = RenBinOp.new(node, token, result.value)
+    
+    return RenOK.new(node)
+
+
+func expr() -> RenResult:
+    var result = land()
+    if result is RenERR:
+        return result
+    
+    var node = result.value
+    while self.current_token.is_type(RenToken.OR):
+        var token = self.current_token
+        result = eat(RenToken.OR)
+        if result is RenERR:
+            return result
+        result = land()
         if result is RenERR:
             return result
         
@@ -403,6 +451,72 @@ func menu() -> RenResult:
     return RenOK.new(menu)
 
 
+func ifcase() -> RenResult:
+    eat(RenToken.IF)
+    var ic = RenIfCase.new()
+
+    var res = expr()
+    if res is RenERR:
+        return res
+    
+    var condition = res.value
+    eat_chain([RenToken.COLON, RenToken.EOL])
+    
+    res = compound()
+    if res is RenERR:
+        return res
+    
+    var outcome = res.value
+    
+    ic.add_child(RenCondition.new(condition, outcome))
+    skip_lines()
+
+    while self.current_token.is_type(RenToken.ELIF):
+        res = eat(RenToken.ELIF)
+        if res is RenERR:
+            return res
+        res = expr()
+        if res is RenERR:
+            return res
+        condition = res.value
+
+        res = eat_chain([RenToken.COLON, RenToken.EOL])
+        if res is RenERR:
+            return res
+        
+        res = compound()
+        if res is RenERR:
+            return res
+        
+        outcome = res.value
+
+        ic.add_child(RenCondition.new(condition, outcome))
+        skip_lines()
+    
+    if self.current_token.is_type(RenToken.ELSE):
+        res = eat(RenToken.ELSE)
+        if res is RenERR:
+            return res
+    
+        condition = RenBool.new(RenToken.new(RenToken.BOOL, true))
+
+        res = eat_chain([RenToken.COLON, RenToken.EOL])
+        if res is RenERR:
+            return res
+        
+        res = compound()
+        if res is RenERR:
+            return res
+        
+        outcome = res.value
+
+        ic.add_child(RenCondition.new(condition, outcome))
+        skip_lines()
+    
+    return RenOK.new(ic)
+
+
+
 func statement() -> RenResult:
     skip_lines()
     var node = null
@@ -430,6 +544,11 @@ func statement() -> RenResult:
             node = res.value
         RenToken.MENU:
             var res = menu()
+            if res is RenERR:
+                return res
+            node = res.value
+        RenToken.IF:
+            var res = ifcase()
             if res is RenERR:
                 return res
             node = res.value
