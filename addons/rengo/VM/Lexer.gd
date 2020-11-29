@@ -96,7 +96,6 @@ func get_indent() -> int:
     return indent
         
 
-    
 func hop(n: int) -> RenResult:
     for i in range(n):
         var res = advance()

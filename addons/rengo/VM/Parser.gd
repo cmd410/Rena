@@ -157,7 +157,6 @@ func shifts() -> RenResult:
     return RenOK.new(node)
 
 
-
 func cmp() -> RenResult:
     var result = shifts()
     if result is RenERR:
@@ -176,7 +175,6 @@ func cmp() -> RenResult:
         node = RenBinOp.new(node, token, result.value)
     
     return RenOK.new(node)
-
 
 
 func exact() -> RenResult:
@@ -514,7 +512,6 @@ func ifcase() -> RenResult:
         skip_lines()
     
     return RenOK.new(ic)
-
 
 
 func statement() -> RenResult:

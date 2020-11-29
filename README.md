@@ -7,13 +7,5 @@ RenGo is a [RenPy](https://www.renpy.org) inspired plugin for [Godot Engine](htt
 ## Current progress
 
 - [x] Lexer
-  - [x] parsing ints, floats
-  - [x] parsing booleans
-  - [x] parsing identifiers and keywords
-  - [x] parsing strings
-- [ ] Parser(WIP)
-  - [x] Math
-  - [x] define
-  - [ ] label
-  - [ ] menu
+- [x] Parser
 - [ ] Interpreter(ToDo)
