@@ -10,6 +10,7 @@ const KEYWORDS = {
     'menu': COLORS[0],
     'define': COLORS[2],
     'default': COLORS[2],
+    '$': COLORS[2],
     'if': COLORS[2],
     'elif': COLORS[2],
     'else': COLORS[2],

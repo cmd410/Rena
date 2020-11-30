@@ -518,9 +518,9 @@ func statement() -> RenResult:
     skip_lines()
     var node = null
     match self.current_token.token_type:
-        RenToken.DEFINE, RenToken.DEFAULT:
+        RenToken.DEFINE, RenToken.DEFAULT, RenToken.REASSIGN:
             var token = self.current_token
-            var res = eat([RenToken.DEFINE, RenToken.DEFAULT])
+            var res = eat([RenToken.DEFINE, RenToken.DEFAULT, RenToken.REASSIGN])
             if res is RenERR:
                 return res
             

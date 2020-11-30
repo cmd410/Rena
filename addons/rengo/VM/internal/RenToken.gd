@@ -66,6 +66,7 @@ const AND =    'AND'
 const OR =     'OR'
 const DEFINE = 'DEFINE'
 const DEFAULT = 'DEFAULT'
+const REASSIGN = '$'
 
 const KEYWORDS = {
     'True': BOOL,

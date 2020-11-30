@@ -7,4 +7,4 @@ func _init(token: RenToken):
 
 
 func _to_string():
-    return '%s' % [self.token.value]
+    return '%s' % [self.token.token_type]
