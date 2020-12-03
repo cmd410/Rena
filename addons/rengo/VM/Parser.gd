@@ -570,7 +570,7 @@ func compound() -> RenResult:
     if result is RenERR:
         return result
 
-    var node = RenAST.new()
+    var node = RenCompound.new()
     while self.current_token.token_type != RenToken.BLOCK_END:
         result = statement()
         skip_lines()
