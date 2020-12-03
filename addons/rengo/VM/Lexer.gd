@@ -153,7 +153,14 @@ func id() -> RenResult:
         advance()
     
     if RenToken.KEYWORDS.has(result):
-        return RenOK.new(RenToken.new(RenToken.KEYWORDS[result], result))
+        var value = result
+        if result in ['True', 'False']:
+            match result:
+                'True':
+                    value = true
+                'False':
+                    value = false
+        return RenOK.new(RenToken.new(RenToken.KEYWORDS[result], value))
     else:
         return RenOK.new(RenToken.new(RenToken.ID, result))
 

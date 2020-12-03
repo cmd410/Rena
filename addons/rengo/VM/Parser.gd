@@ -3,6 +3,7 @@ class_name RenParser
 
 
 signal exception(err)
+signal ast_built(ast)
 
 
 var lexer: RenLexer = null
@@ -595,5 +596,6 @@ func script():
 
     if result is RenERR:
         return result
-
+    
+    emit_signal('ast_built', node)
     return RenOK.new(node)

@@ -80,67 +80,54 @@ margin_bottom = 548.0
 rect_min_size = Vector2( 16, 0 )
 custom_styles/separator = SubResource( 1 )
 
-[node name="HBox" type="VBoxContainer" parent="VBox/HBox2"]
+[node name="HBox" type="VSplitContainer" parent="VBox/HBox2"]
 margin_left = 20.0
 margin_right = 1004.0
 margin_bottom = 548.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="HBox" type="HBoxContainer" parent="VBox/HBox2/HBox"]
+[node name="HBox" type="HSplitContainer" parent="VBox/HBox2/HBox"]
 margin_right = 984.0
-margin_bottom = 319.0
+margin_bottom = 320.0
 size_flags_vertical = 3
 
 [node name="VBox" type="VBoxContainer" parent="VBox/HBox2/HBox/HBox"]
-margin_right = 324.0
-margin_bottom = 319.0
+margin_right = 322.0
+margin_bottom = 320.0
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.5
 
 [node name="Label" type="Label" parent="VBox/HBox2/HBox/HBox/VBox"]
-margin_right = 324.0
+margin_right = 322.0
 margin_bottom = 14.0
 text = "AST View"
 
 [node name="Tree" type="Tree" parent="VBox/HBox2/HBox/HBox/VBox"]
 margin_top = 18.0
-margin_right = 324.0
-margin_bottom = 319.0
+margin_right = 322.0
+margin_bottom = 320.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.5
 theme = ExtResource( 3 )
 
-[node name="VSeparator" type="VSeparator" parent="VBox/HBox2/HBox/HBox"]
-margin_left = 328.0
-margin_right = 332.0
-margin_bottom = 319.0
-theme = ExtResource( 3 )
-
 [node name="TextEdit" type="TextEdit" parent="VBox/HBox2/HBox/HBox"]
-margin_left = 336.0
+margin_left = 334.0
 margin_right = 984.0
-margin_bottom = 319.0
+margin_bottom = 320.0
 size_flags_horizontal = 3
 theme = ExtResource( 3 )
 custom_fonts/font = SubResource( 3 )
 text = "define a = \"Alice\"
-define E = mc**2
-define me = \"Me\"
+define anb = a + 'and Bob'
 
-label start:
-    a \"Hi there!\"
-    me \"Oh, hi alice. How's it goin?\"
+define m = 2
+define c = 4
+define E = m * c ** 2
 
-    menu:
-        \"What do i do?\"
-
-        \"Run away\":
-            \"You run away as fast as yo can.\"
-
-        \"Stay\":
-            \"You stay.\""
+default flag = False
+"
 highlight_current_line = true
 syntax_highlighting = true
 show_line_numbers = true
@@ -150,22 +137,16 @@ highlight_all_occurrences = true
 caret_blink = true
 script = ExtResource( 2 )
 
-[node name="HSeparator" type="HSeparator" parent="VBox/HBox2/HBox"]
-margin_top = 323.0
-margin_right = 984.0
-margin_bottom = 327.0
-theme = ExtResource( 3 )
-
 [node name="HBox2" type="HBoxContainer" parent="VBox/HBox2/HBox"]
-margin_top = 331.0
+margin_top = 332.0
 margin_right = 984.0
 margin_bottom = 548.0
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.68
 
 [node name="VBox" type="VBoxContainer" parent="VBox/HBox2/HBox/HBox2"]
-margin_right = 89.0
-margin_bottom = 217.0
+margin_right = 74.0
+margin_bottom = 216.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.1
@@ -173,32 +154,40 @@ theme = SubResource( 4 )
 alignment = 1
 
 [node name="BuildAST" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
-margin_left = 7.0
-margin_top = 82.0
-margin_right = 81.0
-margin_bottom = 106.0
+margin_top = 68.0
+margin_right = 74.0
+margin_bottom = 92.0
 size_flags_horizontal = 4
 size_flags_vertical = 0
 theme = ExtResource( 3 )
 text = "Build AST"
 
 [node name="Tokenize" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
-margin_left = 9.0
-margin_top = 110.0
-margin_right = 80.0
-margin_bottom = 134.0
+margin_left = 1.0
+margin_top = 96.0
+margin_right = 72.0
+margin_bottom = 120.0
 size_flags_horizontal = 4
 theme = ExtResource( 3 )
 text = "Tokenize"
 
+[node name="Execute" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
+margin_left = 5.0
+margin_top = 124.0
+margin_right = 69.0
+margin_bottom = 148.0
+size_flags_horizontal = 4
+theme = ExtResource( 3 )
+text = "Execute"
+
 [node name="VBox2" type="VBoxContainer" parent="VBox/HBox2/HBox/HBox2"]
-margin_left = 93.0
-margin_right = 984.0
-margin_bottom = 217.0
+margin_left = 78.0
+margin_right = 679.0
+margin_bottom = 216.0
 size_flags_horizontal = 3
 
 [node name="HBox" type="HBoxContainer" parent="VBox/HBox2/HBox/HBox2/VBox2"]
-margin_right = 891.0
+margin_right = 601.0
 margin_bottom = 24.0
 size_flags_stretch_ratio = 0.0
 alignment = 2
@@ -211,35 +200,35 @@ text = "Output"
 
 [node name="VSeparator" type="VSeparator" parent="VBox/HBox2/HBox/HBox2/VBox2/HBox"]
 margin_left = 49.0
-margin_right = 559.0
+margin_right = 269.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 custom_styles/separator = SubResource( 5 )
 
 [node name="CChar" type="CheckBox" parent="VBox/HBox2/HBox/HBox2/VBox2/HBox"]
-margin_left = 563.0
-margin_right = 701.0
+margin_left = 273.0
+margin_right = 411.0
 margin_bottom = 24.0
 text = "Current character"
 
 [node name="CToken" type="CheckBox" parent="VBox/HBox2/HBox/HBox2/VBox2/HBox"]
-margin_left = 705.0
-margin_right = 822.0
+margin_left = 415.0
+margin_right = 532.0
 margin_bottom = 24.0
 pressed = true
 text = "Current Token"
 
 [node name="Errors" type="CheckBox" parent="VBox/HBox2/HBox/HBox2/VBox2/HBox"]
-margin_left = 826.0
-margin_right = 891.0
+margin_left = 536.0
+margin_right = 601.0
 margin_bottom = 24.0
 pressed = true
 text = "Errors"
 
 [node name="LOG" type="TextEdit" parent="VBox/HBox2/HBox/HBox2/VBox2"]
 margin_top = 28.0
-margin_right = 891.0
-margin_bottom = 217.0
+margin_right = 601.0
+margin_bottom = 216.0
 size_flags_vertical = 3
 theme = ExtResource( 3 )
 readonly = true
@@ -247,6 +236,34 @@ syntax_highlighting = true
 show_line_numbers = true
 draw_tabs = true
 draw_spaces = true
+
+[node name="VBox3" type="VBoxContainer" parent="VBox/HBox2/HBox/HBox2"]
+margin_left = 683.0
+margin_right = 984.0
+margin_bottom = 216.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBox/HBox2/HBox/HBox2/VBox3"]
+margin_right = 301.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 0, 25 )
+alignment = 1
+
+[node name="IState" type="Label" parent="VBox/HBox2/HBox/HBox2/VBox3/HBoxContainer"]
+margin_left = 97.0
+margin_top = 5.0
+margin_right = 203.0
+margin_bottom = 19.0
+text = "Interpreter State"
+valign = 1
+
+[node name="StateTree" type="Tree" parent="VBox/HBox2/HBox/HBox2/VBox3"]
+margin_top = 29.0
+margin_right = 301.0
+margin_bottom = 216.0
+size_flags_vertical = 3
+theme = ExtResource( 3 )
 
 [node name="VSeparator" type="VSeparator" parent="VBox/HBox2"]
 margin_left = 1008.0
@@ -264,3 +281,4 @@ theme = ExtResource( 3 )
 custom_styles/separator = SubResource( 6 )
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/BuildAST" to="." method="_on_BuildAST_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Tokenize" to="." method="_on_Tokenize_pressed"]
+[connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Execute" to="." method="_on_Execute_pressed"]
