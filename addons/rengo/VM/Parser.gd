@@ -59,21 +59,32 @@ func factor() -> RenResult:
         var result = eat(RenToken.DATA_UNIT)
         if result is RenERR:
             return result
-        
+        var node = null
         match token.token_type:
             RenToken.INT, RenToken.FLOAT:
-                return RenOK.new(RenNum.new(token))
+                node = RenNum.new(token)
             RenToken.BOOL:
-                return RenOK.new(RenBool.new(token))
+                node = RenBool.new(token)
             RenToken.STR:
-                return RenOK.new(RenString.new(token))
+                node = RenString.new(token)
             RenToken.ID:
-                return RenOK.new(RenVar.new(token))
+                node = RenVar.new(token)
             _:
                 return error(
                     RenERR.CODING_ERROR,
                     'Unmathced data unit type %s in factor function.' % [token]
                 )
+        if self.current_token.token_type == RenToken.POW:
+            token = self.current_token
+            result = eat(RenToken.POW)
+            if result is RenERR:
+                return result
+            result = factor()
+            if result is RenERR:
+                return result
+            return RenOK.new(RenBinOp.new(node, token, result.value))
+        else:
+            return RenOK.new(node)
     elif self.current_token.is_type(RenToken.ARITHM):
         var token = self.current_token
         eat(RenToken.ARITHM)
