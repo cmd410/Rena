@@ -19,6 +19,7 @@ var pos: int = 0
 var indent_stack: Array = []
 var queued_exits: Array = []
 var current_char: String = ''
+var no_block = 0
 
 var started: bool = false
 var depleted: bool = false
@@ -263,7 +264,7 @@ func get_next_token() -> RenResult:
             return RenOK.new(RenToken.new(token_type))
         match c:
             ' ':
-                if peek(-1) == '\n':
+                if peek(-1) == '\n' and self.no_block <= 0:
                     var indent = get_indent()
                     hop(indent)
                     
@@ -285,12 +286,18 @@ func get_next_token() -> RenResult:
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0':
                 return number()
             '+', '-', '*', '/', '%', '=', '(', ')', '[', ']', '{', '}', ':', '^', '|', '&', '<', '>', '$', ',':
+                match c:
+                    '[', '(', '{':
+                        self.no_block += 1
+                    ']', ')', '}':
+                        self.no_block -= 1
                 advance()
                 return RenOK.new(RenToken.new(c))
             '\n':
                 advance()
                 return RenOK.new(RenToken.new(RenToken.EOL))
-
+            '\t':
+                return error(RenERR.TOKEN_UNEXPECTED, 'Tabs are not allowed!')
             '\"', "\'":
                 return string()
             _:

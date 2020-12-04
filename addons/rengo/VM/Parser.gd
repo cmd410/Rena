@@ -58,18 +58,20 @@ func list() -> RenResult:
     if res is RenERR:
         return res
     while self.current_token.token_type != RenToken.RBRACK:
-        res = expr()
-        if res is RenERR:
-            return res
-        var value = res.value
-        node.add_child(value)
+        skip_lines()
         match self.current_token.token_type:
             RenToken.COMMA:
                 res = eat(RenToken.COMMA)
                 if res is RenERR:
                     return res
+                skip_lines()
             RenToken.RBRACK:
                 break
+        res = expr()
+        if res is RenERR:
+            return res
+        var value = res.value
+        node.add_child(value)
     res = eat(RenToken.RBRACK)
     if res is RenERR:
         return res
