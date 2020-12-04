@@ -119,15 +119,7 @@ margin_bottom = 320.0
 size_flags_horizontal = 3
 theme = ExtResource( 3 )
 custom_fonts/font = SubResource( 3 )
-text = "define a = \"Alice\"
-define anb = a + 'and Bob'
-
-define m = 2
-define c = 4
-define E = m * c ** 2
-
-default flag = False
-"
+text = "define a = [1,2, [3+3, 4+4, [\"5\", \"6\"]]]"
 highlight_current_line = true
 syntax_highlighting = true
 show_line_numbers = true

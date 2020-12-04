@@ -48,6 +48,7 @@ const LCURL  = '{'
 const RCURL  = '}'
 const DQUOTE = '\"'
 const SQUOTE = "\'"
+const COMMA  = ','
 const QUOTE  = [DQUOTE, SQUOTE]
 const DELIM  = [
     LPAREN, RPAREN, LBRACK, RBRACK, LCURL,

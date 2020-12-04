@@ -64,6 +64,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/RenGo/VM/Lexer.gd"
 }, {
+"base": "RenValue",
+"class": "RenList",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/RenList.gd"
+}, {
 "base": "RenAST",
 "class": "RenMenu",
 "language": "GDScript",
@@ -141,6 +146,7 @@ _global_script_class_icons={
 "RenInterp": "",
 "RenLabel": "",
 "RenLexer": "",
+"RenList": "",
 "RenMenu": "",
 "RenNum": "",
 "RenOK": "",

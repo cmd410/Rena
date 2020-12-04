@@ -52,6 +52,30 @@ func skip_lines():
         eat(RenToken.EOL)
 
 
+func list() -> RenResult:
+    var node = RenList.new(self.current_token)
+    var res = eat(RenToken.LBRACK)
+    if res is RenERR:
+        return res
+    while self.current_token.token_type != RenToken.RBRACK:
+        res = expr()
+        if res is RenERR:
+            return res
+        var value = res.value
+        node.add_child(value)
+        match self.current_token.token_type:
+            RenToken.COMMA:
+                res = eat(RenToken.COMMA)
+                if res is RenERR:
+                    return res
+            RenToken.RBRACK:
+                break
+    res = eat(RenToken.RBRACK)
+    if res is RenERR:
+        return res
+    
+    return RenOK.new(node)
+
 func factor() -> RenResult:
     if self.current_token.is_type(RenToken.DATA_UNIT):
         var token = current_token
@@ -102,6 +126,8 @@ func factor() -> RenResult:
         if result is RenERR:
             return result
         return RenOK.new(node)
+    elif self.current_token.token_type == RenToken.LBRACK:
+        return list()
     else:
         return error(
             RenERR.TOKEN_UNEXPECTED,
