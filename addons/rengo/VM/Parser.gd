@@ -78,6 +78,45 @@ func list() -> RenResult:
     
     return RenOK.new(node)
 
+func dict() -> RenResult:
+    var node = RenDict.new(self.current_token)
+    var res = eat(RenToken.LCURL)
+    if res is RenERR:
+        return res
+    while self.current_token.token_type != RenToken.RCURL:
+        skip_lines()
+        match self.current_token.token_type:
+            RenToken.COMMA:
+                res = eat(RenToken.COMMA)
+                if res is RenERR:
+                    return res
+                skip_lines()
+            RenToken.RCURL:
+                break
+        
+        res = expr()
+        if res is RenERR:
+            return res
+        var key = res.value
+        
+        res = eat(RenToken.COLON)
+        if res is RenERR:
+            return res
+        
+        res = expr()
+        if res is RenERR:
+            return res
+        var value = res.value
+
+        node.add_child(RenDictItem.new(key, value))
+        
+    res = eat(RenToken.RCURL)
+    if res is RenERR:
+        return res
+    
+    return RenOK.new(node)
+
+
 func factor() -> RenResult:
     if self.current_token.is_type(RenToken.DATA_UNIT):
         var token = current_token
@@ -130,6 +169,8 @@ func factor() -> RenResult:
         return RenOK.new(node)
     elif self.current_token.token_type == RenToken.LBRACK:
         return list()
+    elif self.current_token.token_type == RenToken.LCURL:
+        return dict()
     else:
         return error(
             RenERR.TOKEN_UNEXPECTED,

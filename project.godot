@@ -39,6 +39,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/RenGo/VM/ast/RenDef.gd"
 }, {
+"base": "RenValue",
+"class": "RenDict",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/RenDict.gd"
+}, {
+"base": "RenAST",
+"class": "RenDictItem",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/RenDictItem.gd"
+}, {
 "base": "RenResult",
 "class": "RenERR",
 "language": "GDScript",
@@ -141,6 +151,8 @@ _global_script_class_icons={
 "RenCompound": "",
 "RenCondition": "",
 "RenDef": "",
+"RenDict": "",
+"RenDictItem": "",
 "RenERR": "",
 "RenIfCase": "",
 "RenInterp": "",
