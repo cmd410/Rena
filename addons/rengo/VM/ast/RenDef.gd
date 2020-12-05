@@ -17,7 +17,18 @@ func visit(interp):
     
     match self.token.token_type:
         RenToken.DEFAULT:
+            if interp.defines.has(name):
+                assert(false, 'Name \"%s\" is already hard defined.' % [name])
             if not interp.defaults.has(name):
                 interp.defaults[name] = value
         RenToken.DEFINE:
+            if interp.defaults.has(name):
+                assert(false, 'Name \"%s\" is already defined as default.' % [name])
             interp.defines[name] = value
+        RenToken.REASSIGN:
+            if interp.defines.has(name):
+                interp.defines[name] = value
+            elif interp.defaults.has(name):
+                interp.defaults[name] = value
+            else:
+                assert(false, 'Name \"%s\" is not defined.' % [name])
