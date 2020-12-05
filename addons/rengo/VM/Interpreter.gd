@@ -20,3 +20,16 @@ func execute():
     var ast = res.value
     
     print(ast.visit(self))
+
+
+func is_name_defined(name: String) -> bool:
+    return defaults.has(name) or defines.has(name)
+
+
+func get_name(name: String):
+    if defaults.has(name):
+        return defaults[name]
+    elif defines.has(name):
+        return defines[name]
+    else:
+        return null

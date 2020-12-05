@@ -16,9 +16,7 @@ func var_name() -> String:
 
 func visit(interp):
     var name = var_name()
-    if interp.defines.has(name):
-        return interp.defines[name]
-    elif interp.defaults.has(name):
-        return interp.defaults[name]
+    if interp.is_name_defined(name):
+        return interp.get_name(name)
     else:
         assert(false, 'Name \"%s\" is not defined.' % [name])
