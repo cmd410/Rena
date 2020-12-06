@@ -78,6 +78,7 @@ func list() -> RenResult:
     
     return RenOK.new(node)
 
+
 func dict() -> RenResult:
     var node = RenDict.new(self.current_token)
     var res = eat(RenToken.LCURL)
@@ -148,6 +149,18 @@ func factor() -> RenResult:
             if result is RenERR:
                 return result
             return RenOK.new(RenBinOp.new(node, token, result.value))
+        elif self.current_token.token_type == RenToken.PERIOD:
+            while self.current_token.token_type == RenToken.PERIOD:
+                result = eat(RenToken.PERIOD)
+                if result is RenERR:
+                    return result
+                result = variable()
+                if result is RenERR:
+                    return result
+                var new_node = result.value
+                new_node.add_child(node)
+                node = new_node
+            return RenOK.new(node)
         else:
             return RenOK.new(node)
     elif self.current_token.is_type(RenToken.ARITHM):
