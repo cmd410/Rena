@@ -17,5 +17,4 @@ func visit(interp):
         var key = item[0]
         var value = item[1]
         d[key] = value
-    print(d)
     return d

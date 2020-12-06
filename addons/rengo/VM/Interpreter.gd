@@ -19,7 +19,7 @@ func execute():
         return res
     var ast = res.value
     
-    print(ast.visit(self))
+    ast.visit(self)
 
 
 func is_name_defined(name: String) -> bool:
