@@ -118,28 +118,52 @@ func dict() -> RenResult:
     return RenOK.new(node)
 
 
+func args() -> RenResult:
+    var res = eat(RenToken.LPAREN)
+    if res is RenERR:
+        return res
+    
+    while self.current_token.token_type != RenToken.RPAREN:
+        res = expr()
+        if res is RenERR:
+            return res
+        
+    
+    return RenOK.new()
+
+
 func factor() -> RenResult:
     if self.current_token.is_type(RenToken.DATA_UNIT):
         var token = current_token
-        
-        var result = eat(RenToken.DATA_UNIT)
-        if result is RenERR:
-            return result
+        var result = null
         var node = null
         match token.token_type:
             RenToken.INT, RenToken.FLOAT:
                 node = RenNum.new(token)
+                result = eat(RenToken.DATA_UNIT)
+                if result is RenERR:
+                    return result
             RenToken.BOOL:
                 node = RenBool.new(token)
+                result = eat(RenToken.DATA_UNIT)
+                if result is RenERR:
+                    return result
             RenToken.STR:
                 node = RenString.new(token)
+                result = eat(RenToken.DATA_UNIT)
+                if result is RenERR:
+                    return result
             RenToken.ID:
-                node = RenVar.new(token)
+                result = variable()
+                if result is RenERR:
+                    return result
+                node = result.value
             _:
                 return error(
                     RenERR.CODING_ERROR,
                     'Unmathced data unit type %s in factor function.' % [token]
                 )
+        # Power operation should be first to apply
         if self.current_token.token_type == RenToken.POW:
             token = self.current_token
             result = eat(RenToken.POW)
@@ -149,6 +173,8 @@ func factor() -> RenResult:
             if result is RenERR:
                 return result
             return RenOK.new(RenBinOp.new(node, token, result.value))
+        
+        # Parse nested namespaces
         elif self.current_token.token_type == RenToken.PERIOD:
             while self.current_token.token_type == RenToken.PERIOD:
                 result = eat(RenToken.PERIOD)
@@ -158,11 +184,14 @@ func factor() -> RenResult:
                 if result is RenERR:
                     return result
                 var new_node = result.value
-                new_node.add_child(node)
+                if new_node is RenVar:
+                    new_node.add_child(node)
+                elif new_node is RenInvoke:
+                    new_node.get_child(0).add_child(node)
                 node = new_node
-            return RenOK.new(node)
-        else:
-            return RenOK.new(node)
+
+        return RenOK.new(node)
+    
     elif self.current_token.is_type(RenToken.ARITHM):
         var token = self.current_token
         eat(RenToken.ARITHM)
@@ -207,7 +236,6 @@ func term() -> RenResult:
             return result
         
         node = RenBinOp.new(node, token, result.value)
-
     return RenOK.new(node)
 
 
@@ -396,7 +424,40 @@ func variable() -> RenResult:
     var res = eat(RenToken.ID)
     if res is RenERR:
         return res
-    return RenOK.new(RenVar.new(token))
+    var var_obj = RenVar.new(token)
+    
+    if self.current_token.is_type(RenToken.LPAREN):
+        res = eat(RenToken.LPAREN)
+        if res is RenERR:
+            return res
+        
+        var invoke_object = RenInvoke.new()
+        invoke_object.add_child(var_obj)
+        
+        while self.current_token.token_type != RenToken.RPAREN:
+            skip_lines()
+            res = expr()
+            if res is RenERR:
+                return res
+            print(res.value)
+            invoke_object.add_child(res.value)
+            
+            if self.current_token.is_type(RenToken.COMMA):
+                res = self.eat(RenToken.COMMA)
+                if res is RenERR:
+                    return res
+            elif self.current_token.is_type(RenToken.RPAREN):
+                break
+            else:
+                return error(RenERR.TOKEN_UNEXPECTED, 'Unexpected token while parsing arguments: \"%s\"' % [self.current_token.token_type])  
+    
+        res = eat(RenToken.RPAREN)
+        if res is RenERR:
+            return res
+        
+        return RenOK.new(invoke_object)
+
+    return RenOK.new(var_obj)
 
 
 func assignment() -> RenResult:
@@ -654,7 +715,7 @@ func statement() -> RenResult:
         RenToken.BLOCK_END:
             pass
         _:
-           return error(RenERR.TOKEN_UNEXPECTED, 'Unexpeced end of line.')
+           return error(RenERR.TOKEN_UNEXPECTED, 'Unexpeced token: \"%s\".' % [self.current_token.token_type])
     return RenOK.new(node)
 
 

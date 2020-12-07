@@ -65,6 +65,11 @@ _global_script_classes=[ {
 "path": "res://addons/RenGo/VM/Interpreter.gd"
 }, {
 "base": "RenAST",
+"class": "RenInvoke",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/Invoke.gd"
+}, {
+"base": "RenAST",
 "class": "RenLabel",
 "language": "GDScript",
 "path": "res://addons/RenGo/VM/ast/Label.gd"
@@ -156,6 +161,7 @@ _global_script_class_icons={
 "RenERR": "",
 "RenIfCase": "",
 "RenInterp": "",
+"RenInvoke": "",
 "RenLabel": "",
 "RenLexer": "",
 "RenList": "",
@@ -177,6 +183,7 @@ _global_script_class_icons={
 [application]
 
 config/name="RenGo"
+run/main_scene="res://debug_tools/Lab.tscn"
 config/icon="res://icon.png"
 
 [debug]
