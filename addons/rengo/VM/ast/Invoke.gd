@@ -16,7 +16,5 @@ func visit(interp):
 
     for i in range(1, len(children)):
         args.append(children[i].visit(interp))
-    
-    print(args)
 
     return function_reference.call_funcv(args)
