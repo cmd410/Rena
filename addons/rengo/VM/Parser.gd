@@ -118,18 +118,20 @@ func dict() -> RenResult:
     return RenOK.new(node)
 
 
-func args() -> RenResult:
-    var res = eat(RenToken.LPAREN)
-    if res is RenERR:
-        return res
-    
-    while self.current_token.token_type != RenToken.RPAREN:
-        res = expr()
+func comma_separated_exprs(stop_token) -> RenResult:
+    var values = []
+    while not self.current_token.is_type(stop_token):
+        var res = expr()
         if res is RenERR:
             return res
-        
-    
-    return RenOK.new()
+        values.append(res.value)
+        if self.current_token.is_type(stop_token):
+            break
+        else:
+            res = eat(RenToken.COMMA)
+            if res is RenERR:
+                return res
+    return RenOK.new(values)
 
 
 func factor() -> RenResult:
@@ -186,7 +188,7 @@ func factor() -> RenResult:
                 var new_node = result.value
                 if new_node is RenVar:
                     new_node.add_child(node)
-                elif new_node is RenInvoke:
+                elif new_node is RenInvoke or new_node is RenKeyAccess:
                     new_node.get_child(0).add_child(node)
                 node = new_node
 
@@ -426,36 +428,45 @@ func variable() -> RenResult:
         return res
     var var_obj = RenVar.new(token)
     
-    if self.current_token.is_type(RenToken.LPAREN):
-        res = eat(RenToken.LPAREN)
+    while self.current_token.is_type([RenToken.LBRACK, RenToken.LPAREN]):
+        token = self.current_token
+        
+        var current_namespace = var_obj
+        
+        res = eat([RenToken.LBRACK, RenToken.LPAREN])
         if res is RenERR:
             return res
         
-        var invoke_object = RenInvoke.new()
-        invoke_object.add_child(var_obj)
-        
-        while self.current_token.token_type != RenToken.RPAREN:
-            skip_lines()
-            res = expr()
-            if res is RenERR:
-                return res
-            print(res.value)
-            invoke_object.add_child(res.value)
+        match token.token_type:
             
-            if self.current_token.is_type(RenToken.COMMA):
-                res = self.eat(RenToken.COMMA)
+            # Function call
+            RenToken.LPAREN:
+                var invoke_obj = RenInvoke.new()
+                invoke_obj.add_child(current_namespace)
+                
+                res = comma_separated_exprs(RenToken.RPAREN)
                 if res is RenERR:
                     return res
-            elif self.current_token.is_type(RenToken.RPAREN):
-                break
-            else:
-                return error(RenERR.TOKEN_UNEXPECTED, 'Unexpected token while parsing arguments: \"%s\"' % [self.current_token.token_type])  
-    
-        res = eat(RenToken.RPAREN)
-        if res is RenERR:
-            return res
-        
-        return RenOK.new(invoke_object)
+                
+                for i in res.value:
+                    invoke_obj.add_child(i)
+                
+                res = eat(RenToken.RPAREN)
+                if res is RenERR:
+                    return res
+
+                var_obj = invoke_obj
+            
+            # Key access
+            RenToken.LBRACK:
+                res = expr()
+                if res is RenERR:
+                    return res
+
+                var_obj = RenKeyAccess.new(current_namespace, res.value)
+                res = eat(RenToken.RBRACK)
+                if res is RenERR:
+                    return res
 
     return RenOK.new(var_obj)
 
