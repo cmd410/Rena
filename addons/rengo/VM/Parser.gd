@@ -26,6 +26,8 @@ func error(err_type: String, message: String) -> RenERR:
 
 
 func eat(token_type) -> RenResult:
+    # Consumes Token of given token_type and gets new token
+    # Returns RenOK on success and RenERR if token_type does not match
     if self.current_token.is_type(token_type):
         var result = self.lexer.get_next_token()
         if result is RenERR:
@@ -40,6 +42,7 @@ func eat(token_type) -> RenResult:
 
 
 func eat_chain(chain: Array) -> RenResult:
+    # Same as eat but eats token chains
     for t in chain:
         var res = eat(t)
         if res is RenERR:
@@ -57,21 +60,32 @@ func list() -> RenResult:
     var res = eat(RenToken.LBRACK)
     if res is RenERR:
         return res
+
+    skip_lines()
+    
     while self.current_token.token_type != RenToken.RBRACK:
-        skip_lines()
-        match self.current_token.token_type:
-            RenToken.COMMA:
-                res = eat(RenToken.COMMA)
-                if res is RenERR:
-                    return res
-                skip_lines()
-            RenToken.RBRACK:
-                break
+        
         res = expr()
         if res is RenERR:
             return res
+        
         var value = res.value
         node.add_child(value)
+        
+        skip_lines()
+        
+        if self.current_token.is_type(RenToken.COMMA):
+            res = eat(RenToken.COMMA)
+            if res is RenERR:
+                return res
+            skip_lines()
+        
+        elif self.current_token.is_type(RenToken.RBRACK):
+            break
+        
+        else:
+            return error(RenERR.TOKEN_UNEXPECTED, 'Unexpected token while parsing list: %s' % [self.current_token.token_type])
+    
     res = eat(RenToken.RBRACK)
     if res is RenERR:
         return res
@@ -80,37 +94,50 @@ func list() -> RenResult:
 
 
 func dict() -> RenResult:
+    # Create new dict AST item
     var node = RenDict.new(self.current_token)
+    
     var res = eat(RenToken.LCURL)
     if res is RenERR:
         return res
+    
+    skip_lines()
     while self.current_token.token_type != RenToken.RCURL:
-        skip_lines()
-        match self.current_token.token_type:
-            RenToken.COMMA:
-                res = eat(RenToken.COMMA)
-                if res is RenERR:
-                    return res
-                skip_lines()
-            RenToken.RCURL:
-                break
         
+        # Parse dict key
         res = expr()
         if res is RenERR:
             return res
         var key = res.value
         
+        # key: value separator
         res = eat(RenToken.COLON)
         if res is RenERR:
             return res
         
+        # Parse dict value
         res = expr()
         if res is RenERR:
             return res
         var value = res.value
-
+        
+        # Add DictItem
         node.add_child(RenDictItem.new(key, value))
         
+        skip_lines()
+
+        # After each item we expect either a comma or closing curly bracket
+        if self.current_token.is_type(RenToken.COMMA):
+            res = eat(RenToken.COMMA)
+            if res is RenERR:
+                return res
+            skip_lines()
+        elif self.current_token.is_type(RenToken.RCURL):
+            break
+        else:
+            return error(RenERR.TOKEN_UNEXPECTED, 'Unexpected token while parsing dictionary: %s' % [self.current_token.token_type])
+    
+    # Eat closing curly bracket
     res = eat(RenToken.RCURL)
     if res is RenERR:
         return res
@@ -119,7 +146,13 @@ func dict() -> RenResult:
 
 
 func comma_separated_exprs(stop_token) -> RenResult:
+    # Returns expression separated by commas as an Array
+    # Until stop_token is met, does not eat stop_token tho
+    # example:
+    # 1, "string", 1+2, varibale 
+    
     var values = []
+    
     while not self.current_token.is_type(stop_token):
         var res = expr()
         if res is RenERR:
@@ -131,30 +164,43 @@ func comma_separated_exprs(stop_token) -> RenResult:
             res = eat(RenToken.COMMA)
             if res is RenERR:
                 return res
+    
     return RenOK.new(values)
 
 
+# Following functions used for parsing expressions
+# They are different operations in order of precedence
 func factor() -> RenResult:
+    # This is pretty much responsible for parsing various data units
+    # like numbers, varibales, lists, dicts, calls to functions
+    # also instantly parses power operator as it should be applied first
+    
+    # Parse data units
     if self.current_token.is_type(RenToken.DATA_UNIT):
         var token = current_token
         var result = null
         var node = null
+        
         match token.token_type:
+            
             RenToken.INT, RenToken.FLOAT:
                 node = RenNum.new(token)
                 result = eat(RenToken.DATA_UNIT)
                 if result is RenERR:
                     return result
+            
             RenToken.BOOL:
                 node = RenBool.new(token)
                 result = eat(RenToken.DATA_UNIT)
                 if result is RenERR:
                     return result
+            
             RenToken.STR:
                 node = RenString.new(token)
                 result = eat(RenToken.DATA_UNIT)
                 if result is RenERR:
                     return result
+            
             RenToken.ID:
                 result = variable()
                 if result is RenERR:
@@ -165,6 +211,7 @@ func factor() -> RenResult:
                     RenERR.CODING_ERROR,
                     'Unmathced data unit type %s in factor function.' % [token]
                 )
+        
         # Power operation should be first to apply
         if self.current_token.token_type == RenToken.POW:
             token = self.current_token
@@ -194,6 +241,7 @@ func factor() -> RenResult:
 
         return RenOK.new(node)
     
+    # Parse Unary Operators
     elif self.current_token.is_type(RenToken.ARITHM):
         var token = self.current_token
         eat(RenToken.ARITHM)
@@ -201,20 +249,28 @@ func factor() -> RenResult:
         if res is RenERR:
             return res
         return RenOK.new(RenUnOp.new(token, res.value))
+    
+    # Parse expressions in parenthesis
     elif self.current_token.token_type == RenToken.LPAREN:
         eat(RenToken.LPAREN)
+        
         var result = expr()
         if result is RenERR:
             return result
         var node = result.value
+        
         result = eat(RenToken.RPAREN)
         if result is RenERR:
             return result
+        
         return RenOK.new(node)
+    
     elif self.current_token.token_type == RenToken.LBRACK:
         return list()
+    
     elif self.current_token.token_type == RenToken.LCURL:
         return dict()
+    
     else:
         return error(
             RenERR.TOKEN_UNEXPECTED,
@@ -489,6 +545,7 @@ func assignment() -> RenResult:
     else:
         return RenOK.new(RenBinOp.new(id, op, res.value))
 
+# End of Expression parsing frunctions
 
 func label() -> RenResult:
     
