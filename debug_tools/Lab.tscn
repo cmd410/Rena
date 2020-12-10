@@ -145,23 +145,23 @@ size_flags_stretch_ratio = 0.1
 theme = SubResource( 4 )
 alignment = 1
 
-[node name="BuildAST" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
+[node name="Tokenize" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
+margin_left = 1.0
 margin_top = 68.0
-margin_right = 74.0
+margin_right = 72.0
 margin_bottom = 92.0
+size_flags_horizontal = 4
+theme = ExtResource( 3 )
+text = "Tokenize"
+
+[node name="BuildAST" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
+margin_top = 96.0
+margin_right = 74.0
+margin_bottom = 120.0
 size_flags_horizontal = 4
 size_flags_vertical = 0
 theme = ExtResource( 3 )
 text = "Build AST"
-
-[node name="Tokenize" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
-margin_left = 1.0
-margin_top = 96.0
-margin_right = 72.0
-margin_bottom = 120.0
-size_flags_horizontal = 4
-theme = ExtResource( 3 )
-text = "Tokenize"
 
 [node name="Execute" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
 margin_left = 5.0
@@ -272,6 +272,6 @@ rect_min_size = Vector2( 0, 16 )
 theme = ExtResource( 3 )
 custom_styles/separator = SubResource( 6 )
 [connection signal="text_changed" from="VBox/HBox2/HBox/HBox/TextEdit" to="VBox/HBox2/HBox/HBox/TextEdit" method="_on_TextEdit_text_changed"]
-[connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/BuildAST" to="." method="_on_BuildAST_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Tokenize" to="." method="_on_Tokenize_pressed"]
+[connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/BuildAST" to="." method="_on_BuildAST_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Execute" to="." method="_on_Execute_pressed"]
