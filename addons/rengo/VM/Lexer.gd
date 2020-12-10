@@ -19,6 +19,7 @@ var pos: int = 0
 var indent_stack: Array = []
 var queued_exits: Array = []
 var current_char: String = ''
+var indent_char: String = ''
 var no_block = 0
 
 var started: bool = false
@@ -34,9 +35,46 @@ var exit_token = RenToken.new(RenToken.BLOCK_END)
 
 
 func _init(text: String):
-    self.text = text
+    var res = cleanup(text)
+    if res is RenERR:
+        assert(false, str(res))
+    else:
+        self.text = res.value
     if not self.text.empty():
         self.current_char = self.text[0]
+
+
+func cleanup(text: String) -> RenResult:
+    # Removes comments from code
+    # Determines indent character
+    # Does not allow to mix tabs and spaces as indents
+    var line_regex = RegEx.new()
+    line_regex.compile('^(?P<indent>[ \\t]*)(?P<logic>[^#\\n\\t]*)[ \\t]*#?.*$')
+
+    var lines = text.split('\n')
+    var new_text: String = ''
+
+    for line in lines:
+        var mat = line_regex.search(line)
+        if mat == null:
+            continue
+        var new_line = ''
+        
+        var logic_line = mat.get_string('logic')
+        if logic_line:
+            new_line = logic_line
+           
+            var indent = mat.get_string('indent')
+            if indent:
+                new_line = indent + new_line
+                
+                if not indent_char:
+                    indent_char = indent[0]
+                elif indent_char != indent[0]:
+                    return error(RenERR.PARSING_ERROR, "Mixing tabs and spaces in indentation is not allowed")
+        
+        new_text += new_line + '\n'
+    return RenOK.new(new_text)
 
 
 func get_lexer_state() -> Dictionary:
@@ -80,15 +118,16 @@ func peek(offset: int = 1) -> String:
 
 
 func skip_spaces():
-    while self.current_char == ' ':
+    while self.current_char in [' ', '\t']:
         advance()
 
 
 func get_indent() -> int:
     var indent = self.indent_stack[-1]
     var i = 0
-    if self.current_char == ' ' and peek(-1) == '\n':
-        while peek(i) == ' ':
+    var ignore = '\t' if indent_char == ' ' else ' '
+    if self.current_char == indent_char and peek(-1) == '\n':
+        while peek(i) == indent_char:
             i += 1
         if peek(i) != '\n':
             indent = i
@@ -99,6 +138,7 @@ func get_indent() -> int:
 
 func hop(n: int) -> RenResult:
     for i in range(n):
+        print(self.current_char)
         var res = advance()
         if res is RenERR:
             return res
@@ -229,7 +269,10 @@ func string() -> RenResult:
                     last_char = l
                     advance()
             '':
-                return error(RenERR.PARSING_ERROR, 'Unexpected EOF while parsing string')
+                return error(RenERR.PARSING_ERROR, 'Unexpected EOF while parsing string.')
+            '\n':
+                # TODO implement multiline strings at some point, for now they have to go
+                return error(RenERR.PARSING_ERROR, 'Unexpected end of line while parsing string.')
             _:
                 result += self.current_char
                 last_char = self.current_char
@@ -251,7 +294,7 @@ func get_next_token() -> RenResult:
     
     while not self.current_char.empty():
         var c = self.current_char
-        if not c in [' ', '\n']:
+        if not c in [indent_char, '\n']:
             if peek(-1) == '\n':
                 while len(self.indent_stack) > 1:
                     self.indent_stack.pop_back()
@@ -262,11 +305,12 @@ func get_next_token() -> RenResult:
             var token_type = RenToken.DOUBLEOPS[doubleop]
             hop(2)
             return RenOK.new(RenToken.new(token_type))
+        
         match c:
-            ' ':
+            ' ', '\t':
                 if peek(-1) == '\n' and self.no_block <= 0:
                     var indent = get_indent()
-                    hop(indent)
+                    skip_spaces()
                     
                     if indent > indent_stack[-1]:
                         indent_stack.push_back(indent)
@@ -296,8 +340,6 @@ func get_next_token() -> RenResult:
             '\n':
                 advance()
                 return RenOK.new(RenToken.new(RenToken.EOL))
-            '\t':
-                return error(RenERR.TOKEN_UNEXPECTED, 'Tabs are not allowed!')
             '\"', "\'":
                 return string()
             _:
