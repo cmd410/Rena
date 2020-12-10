@@ -305,7 +305,7 @@ func get_next_token() -> RenResult:
                     return id()
                 else:
                     return error(RenERR.TOKEN_UNEXPECTED, 'Lexer got unexpected character: "%s"' % [c])
-        #advance()
+    
     while not self.indent_stack.empty():
         self.indent_stack.pop_back()
         return RenOK.new(exit_token)
