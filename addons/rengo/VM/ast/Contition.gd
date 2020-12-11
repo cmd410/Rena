@@ -9,3 +9,10 @@ func _init(condition: RenAST, compound: RenAST):
 
 func _to_string():
     return 'Condition'
+
+
+func visit(interp):
+    if not get_child(0).visit(interp):
+        return false
+    get_child(1).visit(interp)
+    return true

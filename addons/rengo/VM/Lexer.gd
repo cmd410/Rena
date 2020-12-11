@@ -138,7 +138,6 @@ func get_indent() -> int:
 
 func hop(n: int) -> RenResult:
     for i in range(n):
-        print(self.current_char)
         var res = advance()
         if res is RenERR:
             return res
@@ -255,7 +254,7 @@ func string() -> RenResult:
                                 b = peek(3) + peek(4)
                                 ml = 6
                             var hex = '0x' + a + b
-                            print(hex, ' ' ,ml, ' ', len(hex))
+
                             hop(ml-2)
                             if not (hex.is_valid_hex_number(true) and len(hex) == ml):
                                 return error(

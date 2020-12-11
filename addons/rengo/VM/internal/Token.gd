@@ -93,7 +93,11 @@ const DOUBLEOPS = {
     '**': POW,
     '//': FLOORDIV,
     '<<': LSHIFT,
-    '>>': RSHIFT
+    '>>': RSHIFT,
+    '==': EXEQ,
+    '!=': NOEQ,
+    '<=': LEQ,
+    '>=': GEQ
 }
 
 
