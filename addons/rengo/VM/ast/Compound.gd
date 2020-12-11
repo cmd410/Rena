@@ -8,4 +8,6 @@ func _to_string():
 
 func visit(interp):
     for child in self.get_children():
-        child.visit(interp)
+        var result = child.visit(interp)
+        if result is GDScriptFunctionState:
+            yield(result, 'completed')

@@ -32,3 +32,4 @@ func visit(interp):
                 interp.defaults[name] = value
             else:
                 assert(false, 'Name \"%s\" is not defined.' % [name])
+    interp.state_change()
