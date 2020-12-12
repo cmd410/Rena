@@ -17,5 +17,7 @@ func visit(interp):
             return +get_child(0).visit(interp)
         RenToken.MINUS:
             return -get_child(0).visit(interp)
+        RenToken.NOT:
+            return not get_child(0).visit(interp)
         _:
             assert(false, 'Invalid token for Unary operation')
