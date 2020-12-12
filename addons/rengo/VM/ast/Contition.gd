@@ -11,8 +11,11 @@ func _to_string():
     return 'Condition'
 
 
+func check(interp) -> bool:
+    return bool(get_child(0).visit(interp))
+
+
 func visit(interp):
-    if not get_child(0).visit(interp):
-        return false
-    get_child(1).visit(interp)
-    return true
+    var result = get_child(1).visit(interp)
+    if result is GDScriptFunctionState and result.is_valid():
+        yield(result, 'completed')

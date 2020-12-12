@@ -10,6 +10,8 @@ onready var cchar: CheckBox = get_node("VBox/HBox2/HBox/HBox2/VBox2/HBox/CChar")
 onready var ctoken: CheckBox = get_node("VBox/HBox2/HBox/HBox2/VBox2/HBox/CToken")
 onready var errors: CheckBox = get_node("VBox/HBox2/HBox/HBox2/VBox2/HBox/Errors")
 
+var interp = null
+
 
 func _ready():
     tree.hide_root = false
@@ -46,6 +48,10 @@ func _on_token_parsed(token):
 
 func _on_error(err):
     printf(err)
+
+
+func _on_say_statement(who, what):
+    printf('%s: %s' % [who, what])
 
 
 func populate_tree(tree_item: TreeItem, node: Node):
@@ -85,7 +91,10 @@ func build_ast(node: RenAST):
 func _on_Execute_pressed():
     var lexer = RenLexer.new(text_edit.text)
     var parser = RenParser.new(lexer)
-    var interp = RenInterp.new(parser)
+    interp = RenInterp.new(parser)
+
+    interp.connect('say', self, '_on_say_statement')
+    interp.connect('state_changed', self, 'state_update')
     
     parser.connect("ast_built", self, 'build_ast')
     
@@ -97,6 +106,9 @@ func _on_Execute_pressed():
         lexer.connect("advanced", self, "_on_token_parsed")
     
     interp.execute()
+    
+
+func state_update(interp):
     state_tree.clear()
     var root = state_tree.create_item(null)
     root.set_text(0, 'Interpreter')
@@ -116,3 +128,8 @@ func _on_Execute_pressed():
         k.set_text(0, key)
         var value = state_tree.create_item(k)
         value.set_text(0, str(interp.defaults[key]))
+
+
+func _on_Proceed_pressed():
+    if interp != null:
+        interp.emit_signal('proceed')

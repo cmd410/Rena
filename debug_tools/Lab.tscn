@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://debug_tools/Lab.gd" type="Script" id=1]
 [ext_resource path="res://debug_tools/RenScriptEdit.gd" type="Script" id=2]
@@ -13,6 +13,8 @@ font_path = "res://debug_tools/OpenSans-Regular.ttf"
 font_data = SubResource( 2 )
 
 [sub_resource type="Theme" id=4]
+
+[sub_resource type="StyleBoxEmpty" id=7]
 
 [sub_resource type="StyleBoxEmpty" id=5]
 
@@ -147,17 +149,17 @@ alignment = 1
 
 [node name="Tokenize" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
 margin_left = 1.0
-margin_top = 68.0
+margin_top = 20.0
 margin_right = 72.0
-margin_bottom = 92.0
+margin_bottom = 44.0
 size_flags_horizontal = 4
 theme = ExtResource( 3 )
 text = "Tokenize"
 
 [node name="BuildAST" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
-margin_top = 96.0
+margin_top = 48.0
 margin_right = 74.0
-margin_bottom = 120.0
+margin_bottom = 72.0
 size_flags_horizontal = 4
 size_flags_vertical = 0
 theme = ExtResource( 3 )
@@ -165,12 +167,28 @@ text = "Build AST"
 
 [node name="Execute" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
 margin_left = 5.0
-margin_top = 124.0
+margin_top = 76.0
 margin_right = 69.0
-margin_bottom = 148.0
+margin_bottom = 100.0
 size_flags_horizontal = 4
 theme = ExtResource( 3 )
 text = "Execute"
+
+[node name="HSeparator" type="HSeparator" parent="VBox/HBox2/HBox/HBox2/VBox"]
+margin_top = 104.0
+margin_right = 74.0
+margin_bottom = 168.0
+rect_min_size = Vector2( 0, 64 )
+custom_styles/separator = SubResource( 7 )
+
+[node name="Proceed" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
+margin_left = 4.0
+margin_top = 172.0
+margin_right = 70.0
+margin_bottom = 196.0
+size_flags_horizontal = 4
+theme = ExtResource( 3 )
+text = "Proceed"
 
 [node name="VBox2" type="VBoxContainer" parent="VBox/HBox2/HBox/HBox2"]
 margin_left = 78.0
@@ -275,3 +293,4 @@ custom_styles/separator = SubResource( 6 )
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Tokenize" to="." method="_on_Tokenize_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/BuildAST" to="." method="_on_BuildAST_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Execute" to="." method="_on_Execute_pressed"]
+[connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Proceed" to="." method="_on_Proceed_pressed"]

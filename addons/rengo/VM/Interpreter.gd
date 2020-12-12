@@ -2,6 +2,11 @@ extends RenRef
 class_name RenInterp
 
 
+signal state_changed(interp)
+signal say(who, what)
+signal proceed()
+
+
 var parser: RenParser = null
 
 var defaults: Dictionary = {}
@@ -34,3 +39,9 @@ func get_name(name: String):
     else:
         return null
 
+func state_change():
+    emit_signal('state_changed', self)
+
+func say_statement(who, what):
+    emit_signal('say', who, what)
+    state_change()
