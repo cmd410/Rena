@@ -66,6 +66,7 @@ const ELIF =   'ELIF'
 const ELSE =   'ELSE'
 const AND =    'AND'
 const OR =     'OR'
+const NOT =    'NOT'
 const DEFINE = 'DEFINE'
 const DEFAULT = 'DEFAULT'
 const REASSIGN = '$'
@@ -82,10 +83,7 @@ const KEYWORDS = {
     'or': OR,
     'define': DEFINE,
     'default': DEFAULT,
-    '==': EXEQ,
-    '!=': NOEQ,
-    '<=': LEQ,
-    '>=': GEQ
+    'not': NOT
 }
 
 

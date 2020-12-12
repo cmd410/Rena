@@ -242,9 +242,9 @@ func factor() -> RenResult:
         return RenOK.new(node)
     
     # Parse Unary Operators
-    elif self.current_token.is_type(RenToken.ARITHM):
+    elif self.current_token.is_type([RenToken.PLUS, RenToken.MINUS, RenToken.NOT]):
         var token = self.current_token
-        eat(RenToken.ARITHM)
+        eat([RenToken.PLUS, RenToken.MINUS, RenToken.NOT])
         var res = factor()
         if res is RenERR:
             return res
@@ -772,10 +772,6 @@ func statement() -> RenResult:
             if res is RenERR:
                 return res
             node = res.value
-        _:
-            return error(RenERR.TOKEN_UNEXPECTED, 'Got unexpected token: %s' % [self.current_token])
-    
-    match self.current_token.token_type:
         RenToken.EOL:
             var res = eat(RenToken.EOL)
             if res is RenERR:
