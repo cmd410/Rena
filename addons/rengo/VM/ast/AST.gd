@@ -6,6 +6,10 @@ var id = null
 var token: RenToken = null
 
 
+func is_constant() -> bool:
+    return false
+
+
 func _to_string():
     return 'ASTNode<%s>' % [get_child_count()]
 

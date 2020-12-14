@@ -134,7 +134,7 @@ func get_indent() -> int:
 
 func hop(n: int) -> void:
     for i in range(n):
-        advance().value
+        advance()
 
 
 func advance() -> void:

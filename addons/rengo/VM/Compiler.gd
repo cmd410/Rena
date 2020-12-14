@@ -49,3 +49,38 @@ func compile(tree: RenAST, filename: String) -> PoolByteArray:
 
 func add_byte(byte: int):
     self.file.store_8(byte)
+
+
+func store_constant(value):
+    add_byte(BCode.LOAD_CONST)
+    
+    match typeof(value):
+        
+        TYPE_INT:
+            var type = DataTypes.INT64
+            if value >= 0:
+                if value <= pow(2, 8) - 1:
+                    type = DataTypes.UINT8
+                elif value <= pow(2, 16) - 1:
+                    type = DataTypes.UINT16
+                elif value <= pow(2, 32) - 1:
+                    type = DataTypes.UINT32
+                
+            add_byte(type)
+                
+            match type:
+                DataTypes.UINT8:
+                    file.store_8(value)
+                DataTypes.UINT16:
+                    file.store_16(value)
+                DataTypes.UINT32:
+                    file.store_32(value)
+                DataTypes.INT64:
+                    file.store_64(value)
+        
+        TYPE_REAL:
+            add_byte(DataTypes.FLOAT)
+            file.store_float(value)
+    
+        _:
+            assert(false, 'Value of unknown type: %s' % [self.value])
