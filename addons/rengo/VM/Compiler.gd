@@ -16,16 +16,15 @@ enum BCode {
     
     POP_TOP
 
-    OP
+    # BinOps
+    ADD, SUB, MUL, DIV, FLOORDIV, POW
+    MOD, POW, LSHIFT, RSHIFT, XOR, BOR, BAND,
+    EXEQ, NOEQ, LESS, GREATER, LEQ, GEQ, AND, OR
+
+    # UnaryOps
+    POSITIVE, NEGATIVE, NOT
 }
 
-
-enum OPs {
-    ADD, SUB
-    MUL, DIV, FLOORDIV
-    POSITIVE, NEGATIVE
-    POW
-}
 
 enum DataTypes {
     UINT8
