@@ -35,11 +35,7 @@ var exit_token = RenToken.new(RenToken.BLOCK_END)
 
 
 func _init(text: String):
-    var res = cleanup(text)
-    if res is RenERR:
-        assert(false, str(res))
-    else:
-        self.text = res.value
+    self.text = cleanup(text).value
     if not self.text.empty():
         self.current_char = self.text[0]
 
@@ -117,7 +113,7 @@ func peek(offset: int = 1) -> String:
         return self.text[peek_index]
 
 
-func skip_spaces():
+func skip_spaces() -> void:
     while self.current_char in [' ', '\t']:
         advance()
 
@@ -136,15 +132,12 @@ func get_indent() -> int:
     return indent
         
 
-func hop(n: int) -> RenResult:
+func hop(n: int) -> void:
     for i in range(n):
-        var res = advance()
-        if res is RenERR:
-            return res
-    return RenOK.new(0)
+        advance().value
 
 
-func advance() -> RenResult:
+func advance() -> void:
     self.pos += 1
     self.linepos +=1
     if self.current_char == '\n':
@@ -153,12 +146,12 @@ func advance() -> RenResult:
     
     if self.pos >= len(self.text):
         self.current_char = ''
-        return RenOK.new(0)
+        return 
     
     self.current_char = self.text[self.pos]
 
     emit_signal('advanced', self.current_char)
-    return RenOK.new(0)
+    return 
 
 
 func number() -> RenResult:
