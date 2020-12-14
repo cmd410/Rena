@@ -115,7 +115,6 @@ func comma_separated_exprs(stop_token) -> RenResult:
 
 # Following functions used for parsing expressions
 # They are different operations in order of precedence
-
 func factor() -> RenResult:
     # This is pretty much responsible for parsing various data units
     # like numbers, varibales, lists, dicts, calls to functions
@@ -319,11 +318,7 @@ func label() -> RenResult:
     
     var token = self.current_token
 
-    eat(RenToken.ID).value
-
-    eat(RenToken.COLON).value
-
-    eat(RenToken.EOL).value
+    eat_chain([RenToken.ID, RenToken.COLON, RenToken.EOL]).value
 
     var node = RenLabel.new(token)
     node.add_child(compound().value)
@@ -352,9 +347,7 @@ func say() -> RenResult:
 
 
 func menu() -> RenResult:
-    eat(RenToken.MENU).value
-    eat(RenToken.COLON).value
-    eat(RenToken.EOL).value
+    eat_chain([RenToken.MENU, RenToken.COLON, RenToken.EOL]).value
     
     skip_lines()
     eat(RenToken.BLOCK_START).value
@@ -379,17 +372,18 @@ func menu() -> RenResult:
         _:
             return error(RenERR.TOKEN_UNKNOWN, 'Unexpected token while p: %s')
     skip_lines()
+    
     while self.current_token.token_type == RenToken.STR:
         token = self.current_token
-        eat(RenToken.STR).value
-        eat(RenToken.COLON).value
-        eat(RenToken.EOL).value
+        eat_chain([RenToken.STR, RenToken.COLON, RenToken.EOL]).value
+        
         skip_lines()
         
         var option = RenOption.new(token)
         option.add_child(compound().value)
         menu.add_child(option)
         skip_lines()
+    
     eat(RenToken.BLOCK_END).value
     return RenOK.new(menu)
 
