@@ -14,11 +14,11 @@ font_data = SubResource( 2 )
 
 [sub_resource type="Theme" id=4]
 
-[sub_resource type="StyleBoxEmpty" id=7]
-
 [sub_resource type="StyleBoxEmpty" id=5]
 
 [sub_resource type="StyleBoxEmpty" id=6]
+
+[sub_resource type="StyleBoxEmpty" id=7]
 
 [node name="Control" type="Control"]
 anchor_right = 1.0
@@ -179,7 +179,7 @@ margin_top = 104.0
 margin_right = 74.0
 margin_bottom = 168.0
 rect_min_size = Vector2( 0, 64 )
-custom_styles/separator = SubResource( 7 )
+custom_styles/separator = SubResource( 5 )
 
 [node name="Proceed" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
 margin_left = 4.0
@@ -213,7 +213,7 @@ margin_left = 49.0
 margin_right = 269.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
-custom_styles/separator = SubResource( 5 )
+custom_styles/separator = SubResource( 6 )
 
 [node name="CChar" type="CheckBox" parent="VBox/HBox2/HBox/HBox2/VBox2/HBox"]
 margin_left = 273.0
@@ -288,7 +288,7 @@ margin_right = 1024.0
 margin_bottom = 600.0
 rect_min_size = Vector2( 0, 16 )
 theme = ExtResource( 3 )
-custom_styles/separator = SubResource( 6 )
+custom_styles/separator = SubResource( 7 )
 [connection signal="text_changed" from="VBox/HBox2/HBox/HBox/TextEdit" to="VBox/HBox2/HBox/HBox/TextEdit" method="_on_TextEdit_text_changed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Tokenize" to="." method="_on_Tokenize_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/BuildAST" to="." method="_on_BuildAST_pressed"]
