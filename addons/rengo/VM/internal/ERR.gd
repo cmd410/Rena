@@ -11,6 +11,7 @@ const CODING_ERROR = 'DeveloperIsStupidError'
 
 
 var err_data: Dictionary
+var raised: bool = false
 
 
 func _init(err_data: Dictionary):
@@ -27,3 +28,11 @@ func _to_string():
     {line}
     {message}
     """.format(self.err_data)
+
+
+func get_value():
+    if not raised:
+        raised = true
+        assert(false, str(self))
+    else:
+        return null
