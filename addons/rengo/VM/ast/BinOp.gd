@@ -59,3 +59,50 @@ func visit(interp):
         _:
             assert(false, 'Unknown token for Binary Operation: \"%s\"' % [self.token.token_type])
         
+
+func compiled(compiler):
+    var op = null
+    match self.token.token_type:
+        RenToken.PLUS:
+            op = compiler.BCode.ADD
+        RenToken.MINUS:
+            op = compiler.BCode.SUB
+        RenToken.MUL:
+            op = compiler.BCode.MUL
+        RenToken.DIV:
+            op = compiler.BCode.DIV
+        RenToken.FLOORDIV:
+            op = compiler.BCode.FLOORDIV
+        # TODO implement other ops
+        #RenToken.MOD:
+        #    op = compiler.BCode.
+        #RenToken.POW:
+        #    op = compiler.BCode.
+        #RenToken.LSHIFT:
+        #    op = compiler.BCode.
+        #RenToken.RSHIFT:
+        #    op = compiler.BCode.
+        #RenToken.XOR:
+        #    op = compiler.BCode.
+        #RenToken.BOR:
+        #    op = compiler.BCode.
+        #RenToken.BAND:
+        #    op = compiler.BCode.
+        #RenToken.EXEQ:
+        #    op = compiler.BCode.
+        #RenToken.NOEQ:
+        #    op = compiler.BCode.
+        #RenToken.LESS:
+        #    op = compiler.BCode.
+        #RenToken.GREATER:
+        #    op = compiler.BCode.
+        #RenToken.LEQ:
+        #    op = compiler.BCode.
+        #RenToken.GEQ:
+        #    op = compiler.BCode.
+        #RenToken.AND:
+        #    op = compiler.BCode.
+        #RenToken.OR:
+        #    op = compiler.BCode.
+
+    compiler.file.store_8(op)

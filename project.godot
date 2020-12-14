@@ -24,6 +24,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/RenGo/VM/ast/Bool.gd"
 }, {
+"base": "RenRef",
+"class": "RenCompiler",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/Compiler.gd"
+}, {
 "base": "RenAST",
 "class": "RenCompound",
 "language": "GDScript",
@@ -68,6 +73,11 @@ _global_script_classes=[ {
 "class": "RenInvoke",
 "language": "GDScript",
 "path": "res://addons/RenGo/VM/ast/Invoke.gd"
+}, {
+"base": "RenAST",
+"class": "RenJump",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/Jump.gd"
 }, {
 "base": "RenAST",
 "class": "RenKeyAccess",
@@ -158,6 +168,7 @@ _global_script_class_icons={
 "RenAST": "",
 "RenBinOp": "",
 "RenBool": "",
+"RenCompiler": "",
 "RenCompound": "",
 "RenCondition": "",
 "RenDef": "",
@@ -167,6 +178,7 @@ _global_script_class_icons={
 "RenIfCase": "",
 "RenInterp": "",
 "RenInvoke": "",
+"RenJump": "",
 "RenKeyAccess": "",
 "RenLabel": "",
 "RenLexer": "",

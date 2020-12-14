@@ -12,3 +12,8 @@ func _to_string():
 
 func visit(interp):
     assert(false, 'Visit func is not defined for this node type.')
+
+
+func compiled(compiler) -> PoolByteArray:
+    assert(false, 'Compile not implemented for this node')
+    return PoolByteArray()

@@ -121,7 +121,11 @@ margin_bottom = 320.0
 size_flags_horizontal = 3
 theme = ExtResource( 3 )
 custom_fonts/font = SubResource( 3 )
-text = "define a = {'key': 'value', 1: [2,3,4,5]}"
+text = "define me = 'Mario'
+
+label start:
+	me \"Hello there!\"
+	me \"Its me, Mario!\""
 highlight_current_line = true
 syntax_highlighting = true
 show_line_numbers = true
@@ -149,17 +153,17 @@ alignment = 1
 
 [node name="Tokenize" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
 margin_left = 1.0
-margin_top = 20.0
+margin_top = 6.0
 margin_right = 72.0
-margin_bottom = 44.0
+margin_bottom = 30.0
 size_flags_horizontal = 4
 theme = ExtResource( 3 )
 text = "Tokenize"
 
 [node name="BuildAST" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
-margin_top = 48.0
+margin_top = 34.0
 margin_right = 74.0
-margin_bottom = 72.0
+margin_bottom = 58.0
 size_flags_horizontal = 4
 size_flags_vertical = 0
 theme = ExtResource( 3 )
@@ -167,25 +171,34 @@ text = "Build AST"
 
 [node name="Execute" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
 margin_left = 5.0
-margin_top = 76.0
+margin_top = 62.0
 margin_right = 69.0
-margin_bottom = 100.0
+margin_bottom = 86.0
 size_flags_horizontal = 4
 theme = ExtResource( 3 )
 text = "Execute"
 
+[node name="Compile" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
+margin_left = 3.0
+margin_top = 90.0
+margin_right = 70.0
+margin_bottom = 114.0
+size_flags_horizontal = 4
+theme = ExtResource( 3 )
+text = "Compile"
+
 [node name="HSeparator" type="HSeparator" parent="VBox/HBox2/HBox/HBox2/VBox"]
-margin_top = 104.0
+margin_top = 118.0
 margin_right = 74.0
-margin_bottom = 168.0
+margin_bottom = 182.0
 rect_min_size = Vector2( 0, 64 )
 custom_styles/separator = SubResource( 5 )
 
 [node name="Proceed" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
 margin_left = 4.0
-margin_top = 172.0
+margin_top = 186.0
 margin_right = 70.0
-margin_bottom = 196.0
+margin_bottom = 210.0
 size_flags_horizontal = 4
 theme = ExtResource( 3 )
 text = "Proceed"
@@ -293,4 +306,5 @@ custom_styles/separator = SubResource( 7 )
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Tokenize" to="." method="_on_Tokenize_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/BuildAST" to="." method="_on_BuildAST_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Execute" to="." method="_on_Execute_pressed"]
+[connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Compile" to="." method="_on_Compile_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Proceed" to="." method="_on_Proceed_pressed"]

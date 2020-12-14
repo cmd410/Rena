@@ -30,3 +30,8 @@ func visit(interp):
             return interp.get_name(name)
         else:
             assert(false, 'Name \"%s\" is not defined.' % [name])
+
+
+func compiled(compiler):
+    compiler.file.store_32(len(self.value))
+    compiler.file.store_string(self.value)
