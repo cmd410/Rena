@@ -26,6 +26,9 @@ enum BCode {
 
     # Complex types
     BUILD_LIST
+
+    # Statements
+    SAY
 }
 
 
