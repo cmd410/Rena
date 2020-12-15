@@ -82,6 +82,7 @@ func put_constant(value):
         
         TYPE_INT:
             var type = DataTypes.UINT64
+            
             if value >= 0:
                 if value <= pow(2, 8) - 1:
                     type = DataTypes.UINT8
@@ -89,6 +90,7 @@ func put_constant(value):
                     type = DataTypes.UINT16
                 elif value <= pow(2, 32) - 1:
                     type = DataTypes.UINT32
+            
             elif value < 0:
                 if value >= -pow(2, 7):
                     type = DataTypes.INT8
