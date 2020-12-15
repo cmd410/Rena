@@ -56,11 +56,11 @@ enum DataTypes {
 
 Scheme:
 
-| Field name     | length                   | type                                        | Possible values                                              |
-| -------------- | ------------------------ | ------------------------------------------- | ------------------------------------------------------------ |
-| Operation code | 1                        | Byte                                        | BCode.__LOAD_CONST__                                         |
-| Data type      | 1                        | Byte                                        | Variant of DataType                                          |
-| Value          | depends on __Data type__ | UINT8, UINT16, UINT32, INT64, FLOAT, STRING | Integers in range `[-2^63, 2^63 - 1]` or Float32 or utf-8 string |
+| Field name     | length                   | type                                              | Possible values                                              |
+| -------------- | ------------------------ | ------------------------------------------------- | ------------------------------------------------------------ |
+| Operation code | 1                        | Byte                                              | BCode.__LOAD_CONST__                                         |
+| Data type      | 1                        | Byte                                              | Variant of DataType                                          |
+| Value          | depends on __Data type__ | UINT8, UINT16, UINT32, INT64, FLOAT, STRING, BOOL | Integers in range `[-2^63, 2^63 - 1]` or Float32 or utf-8 string or Boolean |
 
 Size of value depends on `DataTypes` variant.
 

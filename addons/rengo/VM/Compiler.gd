@@ -97,5 +97,9 @@ func store_constant(value):
             var bytes = value.to_utf8()
             file.store_32(len(bytes))
             file.store_buffer(bytes)
+        
+        TYPE_BOOL:
+            add_byte(DataTypes.BOOL)
+            add_byte(int(value))
         _:
             assert(false, 'Value of unknown type: %s' % [self.value])
