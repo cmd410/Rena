@@ -15,3 +15,9 @@ func visit(interp):
     for i in get_children():
         list.append(i.visit(interp))
     return list
+
+
+func compiled(compiler):
+    for i in get_children():
+        i.compiled(compiler)
+    compiler.add_byte(compiler.BCode.BUILD_LIST)

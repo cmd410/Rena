@@ -133,3 +133,11 @@ func state_update(interp):
 func _on_Proceed_pressed():
     if interp != null:
         interp.emit_signal('proceed')
+
+
+func _on_Compile_pressed():
+    var lexer = RenLexer.new(self.text_edit.text)
+    var parser = RenParser.new(lexer)
+    
+    var compiler = RenCompiler.new()
+    compiler.compile(parser.script().value, 'res://testcompile.rgc')

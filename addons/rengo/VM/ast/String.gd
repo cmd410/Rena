@@ -8,3 +8,7 @@ func _init(t).(t):
 
 func _to_string():
     return 'String<%s>' % [self.value]
+
+
+func compiled(compiler):
+    compiler.store_constant(self.value)

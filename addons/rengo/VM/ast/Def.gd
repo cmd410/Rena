@@ -33,3 +33,18 @@ func visit(interp):
             else:
                 assert(false, 'Name \"%s\" is not defined.' % [name])
     interp.state_change()
+
+
+func compiled(compiler):
+    var assign = get_child(0)
+    assign.get_child(1).compiled(compiler)
+    
+    match self.token.token_type:
+        RenToken.DEFINE:
+            compiler.add_byte(compiler.BCode.ASSIGN_NAME)
+        RenToken.REASSIGN:
+            compiler.add_byte(compiler.BCode.ASSIGN_IF_EXISTS)
+        RenToken.DEFAULT:
+            compiler.add_byte(compiler.BCode.ASSIGN_IF_NONE)
+
+    assign.get_child(0).compile_name(compiler)
