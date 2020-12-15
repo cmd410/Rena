@@ -23,10 +23,14 @@ enum BCode {
 
     # UnaryOps
     POSITIVE, NEGATIVE, NOT
+
+    # Complex types
+    BUILD_LIST
 }
 
 
 enum DataTypes {
+    BOOL
     UINT8
     UINT16
     UINT32
@@ -34,6 +38,8 @@ enum DataTypes {
     INT64
     
     FLOAT
+
+    STRING
 }
 
 
@@ -46,6 +52,7 @@ func compile(tree: RenAST, filename: String) -> PoolByteArray:
     self.file.close()
 
     return bytes
+
 
 func add_byte(byte: int):
     self.file.store_8(byte)
@@ -81,6 +88,11 @@ func store_constant(value):
         TYPE_REAL:
             add_byte(DataTypes.FLOAT)
             file.store_float(value)
-    
+        
+        TYPE_STRING:
+            add_byte(DataTypes.STRING)
+            var bytes = value.to_utf8()
+            file.store_32(len(bytes))
+            file.store_buffer(bytes)
         _:
             assert(false, 'Value of unknown type: %s' % [self.value])

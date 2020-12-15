@@ -18,18 +18,21 @@ enum BCode {
     
     POP_TOP
 
-    OP
+    # BinOps
+    ADD, SUB, MUL, DIV, FLOORDIV, POW
+    MOD, POW, LSHIFT, RSHIFT, XOR, BOR, BAND,
+    EXEQ, NOEQ, LESS, GREATER, LEQ, GEQ, AND, OR
+
+    # UnaryOps
+    POSITIVE, NEGATIVE, NOT
+
+    # Complex types
+    BUILD_LIST
 }
 
-
-enum OPs {
-    ADD, SUB
-    MUL, DIV, FLOORDIV
-    POSITIVE, NEGATIVE
-    POW
-}
 
 enum DataTypes {
+    BOOL
     UINT8
     UINT16
     UINT32
@@ -37,8 +40,9 @@ enum DataTypes {
     INT64
     
     FLOAT
-}
 
+    STRING
+}
 ```
 
 ## Basic Operations
@@ -49,13 +53,15 @@ enum DataTypes {
 
 Scheme:
 
-| Field name     | length                   | type                                | Possible values                                  |
-| -------------- | ------------------------ | ----------------------------------- | ------------------------------------------------ |
-| Operation code | 1                        | Byte                                | BCode.__LOAD_CONST__                             |
-| Data type      | 1                        | Byte                                | Variant of DataType                              |
-| Value          | depends on __Data type__ | UINT8, UINT16, UINT32, INT64, FLOAT | Integers in range `[-2^63, 2^63 - 1]` or Float32 |
+| Field name     | length                   | type                                        | Possible values                                              |
+| -------------- | ------------------------ | ------------------------------------------- | ------------------------------------------------------------ |
+| Operation code | 1                        | Byte                                        | BCode.__LOAD_CONST__                                         |
+| Data type      | 1                        | Byte                                        | Variant of DataType                                          |
+| Value          | depends on __Data type__ | UINT8, UINT16, UINT32, INT64, FLOAT, STRING | Integers in range `[-2^63, 2^63 - 1]` or Float32 or utf-8 string |
 
 Size of value depends on `DataTypes` variant.
+
+If Data type is DataType.__STRING__ first 4 bytes of value is string length in bytes. Strings are encoded in utf-8.
 
 ### Assignments
 
@@ -74,4 +80,25 @@ Operation code changes interpretation:
 - __ASSIGN_NAME__ - assign name unconditionally, result of `define` keyword
 - __ASSIGN_IF_NONE__ - assign name only if it holds no value, result of `default` keyword
 - __ASSIGN_IF_EXISTS__ - assign name if this name exists, otherwise raise error, result of `$` operator
+
+## Compound types
+
+### Lists(Arrays)
+
+Can contain data of different types.
+
+`BCode.BUILD_LIST` - Creates new list from current stack.
+
+Example bytecode:
+
+```
+LOAD_CONST 1
+LOAD_CONST 2.2
+LOAD_CONST "string"
+BUILD_LIST
+LOAD_CONST 32
+BUILD_LIST
+```
+
+Will result in list `[[1, 2.2, "string"], 42]`
 

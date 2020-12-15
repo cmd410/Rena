@@ -31,7 +31,10 @@ func visit(interp):
         else:
             assert(false, 'Name \"%s\" is not defined.' % [name])
 
-
-func compiled(compiler):
+func compile_name(compiler):
     compiler.file.store_32(len(self.value))
     compiler.file.store_string(self.value)
+
+func compiled(compiler):
+    compiler.add_byte(compiler.BCode.LOAD_NAME)
+    compile_name(compiler)    

@@ -47,4 +47,4 @@ func compiled(compiler):
         RenToken.DEFAULT:
             compiler.add_byte(compiler.BCode.ASSIGN_IF_NONE)
 
-    assign.get_child(0).compiled(compiler)
+    assign.get_child(0).compile_name(compiler)
