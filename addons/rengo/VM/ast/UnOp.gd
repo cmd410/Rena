@@ -2,6 +2,13 @@ extends RenAST
 class_name RenUnOp
 
 
+var token_map = {
+    RenToken.PLUS: RenCompiler.BCode.POSITIVE,
+    RenToken.MINUS: RenCompiler.BCode.NEGATIVE,
+    RenToken.NOT: RenCompiler.BCode.NOT
+}
+
+
 func _init(token: RenToken, right: RenAST):
     self.token = token
     add_child(right)
@@ -21,3 +28,16 @@ func visit(interp):
             return not get_child(0).visit(interp)
         _:
             assert(false, 'Invalid token for Unary operation')
+
+
+func is_constant() -> bool:
+    return get_child(0).is_constant()
+
+
+func compiled(compiler):
+    if is_constant():
+        var value = visit(null)
+        compiler.put_constant(value)
+    else:
+        get_child(0).compiled(compiler)
+        compiler.add_byte(token_map[self.token.token_type])

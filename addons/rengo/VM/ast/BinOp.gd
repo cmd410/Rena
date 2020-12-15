@@ -90,9 +90,9 @@ func visit(interp):
 func compiled(compiler):
     if is_constant():
         var value = visit(null)
-        compiler.store_constant(value)
+        compiler.put_constant(value)
     else:
         get_child(0).compiled(compiler)
         get_child(1).compiled(compiler)
         var op = token_map[self.token.token_type]
-        compiler.file.store_8(op)
+        compiler.file.put_8(op)

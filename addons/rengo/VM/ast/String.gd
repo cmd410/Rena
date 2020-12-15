@@ -11,4 +11,4 @@ func _to_string():
 
 
 func compiled(compiler):
-    compiler.store_constant(self.value)
+    compiler.put_constant(self.value)

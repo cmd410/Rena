@@ -18,3 +18,11 @@ func visit(interp):
         var value = item[1]
         d[key] = value
     return d
+
+
+func compiled(compiler):
+    for dict_item in get_children():
+        dict_item.get_child(0).compiled(compiler)
+        dict_item.get_child(1).compiled(compiler)
+    compiler.add_byte(compiler.BCode.BUILD_DICT)
+    compiler.file.put_u32(get_child_count())

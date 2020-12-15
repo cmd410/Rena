@@ -2,3 +2,6 @@
 .import/
 export.cfg
 export_presets.cfg
+
+# RenGo ignores
+*.rgc
