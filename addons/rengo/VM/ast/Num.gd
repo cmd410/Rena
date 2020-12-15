@@ -15,4 +15,4 @@ func is_constant() -> bool:
 
 
 func compiled(compiler):
-    compiler.store_constant(self.value)
+    compiler.put_constant(self.value)

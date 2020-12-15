@@ -32,8 +32,7 @@ func visit(interp):
             assert(false, 'Name \"%s\" is not defined.' % [name])
 
 func compile_name(compiler):
-    compiler.file.store_32(len(self.value))
-    compiler.file.store_string(self.value)
+    compiler.put_utf8(self.value)
 
 func compiled(compiler):
     compiler.add_byte(compiler.BCode.LOAD_NAME)

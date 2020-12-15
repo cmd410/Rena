@@ -30,3 +30,4 @@ func compiled(compiler):
     for i in get_children():
         i.compiled(compiler)
     compiler.add_byte(compiler.BCode.SAY)
+    compiler.file.put_u32(get_child_count())

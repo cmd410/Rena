@@ -28,6 +28,7 @@ enum BCode {
 
     # Complex types
     BUILD_LIST
+    BUILD_DICT
 
     # Statements
     SAY
@@ -100,7 +101,7 @@ Operation code changes interpretation:
 
 > Can contain data of different types.
 
-`BCode.BUILD_LIST` - Creates new list from current stack.
+`BCode.BUILD_LIST u32` - Creates new list from current stack with N elements.
 
 Example bytecode:
 
@@ -108,12 +109,28 @@ Example bytecode:
 LOAD_CONST 1
 LOAD_CONST 2.2
 LOAD_CONST "string"
-BUILD_LIST
+BUILD_LIST 3
 LOAD_CONST 42
-BUILD_LIST
+BUILD_LIST 2
 ```
 
 Will result in list `[[1, 2.2, "string"], 42]`
+
+### Dicts
+
+`BCode.BUILD_DICT u32` - Creates new dict from N * 2 elements of stack.
+
+Example bytecode:
+
+```
+LOAD_CONST 1
+LOAD_CONST 2
+LOAD_CONST 3
+LOAD_CONST 4
+BUILD_DICT 2
+```
+
+Will result in dict `{1: 2, 3: 4}`
 
 ## Statements
 
@@ -128,7 +145,7 @@ Example bytecode:
 ```
 LOAD_CONST "Mario"
 LOAD_CONST "It's me, Mario!"
-SAY
+SAY 2
 ```
 
 Will result in say statement: `Mario: It's me, Mario!`

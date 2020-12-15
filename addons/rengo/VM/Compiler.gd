@@ -1,7 +1,7 @@
 extends RenRef
 class_name RenCompiler
 
-var file: File = null
+var file: StreamPeerBuffer = null
 
 enum BCode {
     LOAD_NAME
@@ -26,6 +26,7 @@ enum BCode {
 
     # Complex types
     BUILD_LIST
+    BUILD_DICT
 
     # Statements
     SAY
@@ -35,39 +36,52 @@ enum BCode {
 enum DataTypes {
     BOOL
     UINT8
+    INT8
     UINT16
+    INT16
     UINT32
+    INT32
     
     INT64
+    UINT64
     
     FLOAT
 
     STRING
+
+    ARRAY
 }
 
 
-func compile(tree: RenAST, filename: String) -> PoolByteArray:
-    self.file = File.new()
-    self.file.open(filename, File.WRITE)
+func compile(tree: RenAST, filename: String):
+    self.file = StreamPeerBuffer.new()
 
-    var bytes = tree.compiled(self)
-    
-    self.file.close()
+    tree.compiled(self)
 
-    return bytes
+    var out = File.new()
+
+    out.open('res://testcompile.rgc', File.WRITE)
+
+    out.store_buffer(file.data_array)
+    out.close()
+
 
 
 func add_byte(byte: int):
-    self.file.store_8(byte)
+    self.file.put_8(byte)
 
 
-func store_constant(value):
+func put_utf8(s: String):
+    file.put_utf8_string(s)
+
+
+func put_constant(value):
     add_byte(BCode.LOAD_CONST)
     
     match typeof(value):
         
         TYPE_INT:
-            var type = DataTypes.INT64
+            var type = DataTypes.UINT64
             if value >= 0:
                 if value <= pow(2, 8) - 1:
                     type = DataTypes.UINT8
@@ -75,31 +89,49 @@ func store_constant(value):
                     type = DataTypes.UINT16
                 elif value <= pow(2, 32) - 1:
                     type = DataTypes.UINT32
-                
+            elif value < 0:
+                if value >= -pow(2, 7):
+                    type = DataTypes.INT8
+                elif value >= -pow(2, 15):
+                    type = DataTypes.INT16
+                elif value >= -pow(2, 31):
+                    type = DataTypes.INT32
+                elif value >= -pow(2, 63):
+                    type = DataTypes.INT63
+
             add_byte(type)
                 
             match type:
                 DataTypes.UINT8:
-                    file.store_8(value)
+                    file.put_u8(value)
                 DataTypes.UINT16:
-                    file.store_16(value)
+                    file.put_u16(value)
                 DataTypes.UINT32:
-                    file.store_32(value)
+                    file.put_u32(value)
+                DataTypes.UINT64:
+                    file.put_u64(value)
+                DataTypes.INT8:
+                    file.put_8(value)
+                DataTypes.INT16:
+                    file.put_16(value)
+                DataTypes.INT32:
+                    file.put_32(value)
                 DataTypes.INT64:
-                    file.store_64(value)
+                    file.put_64(value)
         
         TYPE_REAL:
             add_byte(DataTypes.FLOAT)
-            file.store_float(value)
+            file.put_double(value)
         
         TYPE_STRING:
             add_byte(DataTypes.STRING)
-            var bytes = value.to_utf8()
-            file.store_32(len(bytes))
-            file.store_buffer(bytes)
-        
+            put_utf8(value)
+
         TYPE_BOOL:
             add_byte(DataTypes.BOOL)
             add_byte(int(value))
+        TYPE_ARRAY:
+            add_byte(DataTypes.ARRAY)
+            file.put_var(value)
         _:
             assert(false, 'Value of unknown type: %s' % [self.value])
