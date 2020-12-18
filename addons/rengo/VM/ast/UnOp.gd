@@ -35,7 +35,7 @@ func is_constant() -> bool:
 
 
 func compiled(compiler, offset: int) -> PoolByteArray:
-    # TODO calculate offset 
+
     var bytes_io = StreamPeerBuffer.new()
     if is_constant():
         var value = visit(null)
