@@ -18,10 +18,22 @@ func visit(interp):
 
 
 func compiled(compiler, offset: int) -> PoolByteArray:
-    # TODO check compilation to be correct
-    # TODO calculate offset 
-    # TODO actual compilation
+    var start_offset = offset
     var bytes_io = StreamPeerBuffer.new()
-    for child in get_children():
-        bytes_io.put_data(child.compiled(compiler, offset))
+
+    var pending_jumps: PoolIntArray = []
+
+    for i in range(get_child_count()):
+        var child = get_child(i)
+        var compiled_branch = child.compiled(compiler, offset)
+        offset += len(compiled_branch)
+        bytes_io.put_data(compiled_branch)
+        pending_jumps.append(offset - 4 - start_offset)
+
+    print(pending_jumps)
+    # insert jumps to if end for all intermediate branches
+    for idx in pending_jumps:
+        bytes_io.seek(idx)
+        bytes_io.put_u32(offset)
+
     return bytes_io.data_array

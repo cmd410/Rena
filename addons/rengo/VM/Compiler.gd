@@ -4,6 +4,10 @@ class_name RenCompiler
 # Mapping labels to index in bytecode
 var jump_table: Dictionary = {}
 
+# Store offsets that require jump indexes to labels
+# that were not defined before jump statement
+var pending_jumps: Dictionary = {}
+
 
 enum BCode {
     LOAD_NAME
@@ -60,6 +64,8 @@ enum DataTypes {
 func compile(tree: RenAST, filename: String):
     
     var bytes = tree.compiled(self, 0)
+    
+    bytes = post_process(bytes)
 
     var out = File.new()
 
@@ -67,6 +73,26 @@ func compile(tree: RenAST, filename: String):
 
     out.store_buffer(bytes)
     out.close()
+
+
+func post_process(bytecode: PoolByteArray):
+    if not pending_jumps:
+        return bytecode
+
+    var bytes_io = StreamPeerBuffer.new()
+    bytes_io.data_array = bytecode
+
+    for idx in pending_jumps:
+        var dest = pending_jumps[idx]
+
+        var target_index = jump_table.get(dest)
+        assert(target_index != null, "Could not find label: %s" % [dest])
+
+        bytes_io.seek(idx)
+
+        bytes_io.put_u32(target_index)
+    
+    return bytes_io.data_array
 
 
 func put_constant(value, bytes_io: StreamPeerBuffer):

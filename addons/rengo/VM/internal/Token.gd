@@ -70,6 +70,7 @@ const NOT =    'NOT'
 const DEFINE = 'DEFINE'
 const DEFAULT = 'DEFAULT'
 const REASSIGN = '$'
+const JUMP     = 'JUMP'
 
 const KEYWORDS = {
     'True': BOOL,
@@ -83,7 +84,8 @@ const KEYWORDS = {
     'or': OR,
     'define': DEFINE,
     'default': DEFAULT,
-    'not': NOT
+    'not': NOT,
+    'jump': JUMP
 }
 
 
