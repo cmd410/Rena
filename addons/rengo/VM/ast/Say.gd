@@ -26,8 +26,17 @@ func visit(interp):
             yield(interp, 'proceed')
 
 
-func compiled(compiler):
-    for i in get_children():
-        i.compiled(compiler)
-    compiler.add_byte(compiler.BCode.SAY)
-    compiler.file.put_u32(get_child_count())
+func compiled(compiler, offset: int) -> PoolByteArray:
+    var bytes_io = StreamPeerBuffer.new()
+    
+    # Put say data
+    for child in get_children():
+        var compiled_item = child.compiled(compiler, offset)
+        offset += len(compiled_item)
+        bytes_io.put_data(compiled_item)
+    
+    # Put say statement
+    bytes_io.put_8(compiler.BCode.SAY)
+    bytes_io.put_u32(get_child_count())
+    
+    return bytes_io.data_array

@@ -17,8 +17,17 @@ func visit(interp):
     return list
 
 
-func compiled(compiler):
-    for i in get_children():
-        i.compiled(compiler)
-    compiler.add_byte(compiler.BCode.BUILD_LIST)
-    compiler.file.put_32(get_child_count())
+func compiled(compiler, offset: int) -> PoolByteArray:
+    var bytes_io = StreamPeerBuffer.new()
+    
+    # Put array data
+    for child in get_children():
+        var list_item = child.compiled(compiler, offset)
+        offset += len(list_item)
+        bytes_io.put_data(list_item)
+    
+    # Put build list command
+    bytes_io.put_8(compiler.BCode.BUILD_LIST)
+    bytes_io.put_32(get_child_count())
+    
+    return bytes_io.data_array

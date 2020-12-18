@@ -31,9 +31,28 @@ func visit(interp):
         else:
             assert(false, 'Name \"%s\" is not defined.' % [name])
 
-func compile_name(compiler):
-    compiler.put_utf8(self.value)
 
-func compiled(compiler):
-    compiler.add_byte(compiler.BCode.LOAD_NAME)
-    compile_name(compiler)    
+func compile_name() -> PoolByteArray:
+    var bytes_io = StreamPeerBuffer.new()
+    bytes_io.put_utf8_string(self.value)
+    return bytes_io.data_array
+
+
+func compiled(compiler, offset: int) -> PoolByteArray:
+    var bytes_io = StreamPeerBuffer.new()
+    
+    if get_child_count() == 0:
+        bytes_io.put_8(compiler.BCode.LOAD_NAME)
+    
+    else:
+        # Compile namespaces first
+        for child in get_children():
+            var compiled_item = child.compiled(compiler, offset)
+            offset += len(compiled_item)
+            bytes_io.put_data(compiled_item)
+        
+        # Compile Load attribute command
+        bytes_io.put_8(compiler.BCode.LOAD_ATTR)
+    
+    bytes_io.put_data(compile_name())
+    return bytes_io.data_array

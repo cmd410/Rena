@@ -1,11 +1,15 @@
 extends RenRef
 class_name RenCompiler
 
-var file: StreamPeerBuffer = null
+# Mapping labels to index in bytecode
+var jump_table: Dictionary = {}
+
 
 enum BCode {
     LOAD_NAME
     LOAD_CONST
+    LOAD_ATTR
+    LOAD_KEY
     
     ASSIGN_NAME
     ASSIGN_IF_NONE
@@ -54,29 +58,19 @@ enum DataTypes {
 
 
 func compile(tree: RenAST, filename: String):
-    self.file = StreamPeerBuffer.new()
-
-    tree.compiled(self)
+    
+    var bytes = tree.compiled(self, 0)
 
     var out = File.new()
 
     out.open('res://testcompile.rgc', File.WRITE)
 
-    out.store_buffer(file.data_array)
+    out.store_buffer(bytes)
     out.close()
 
 
-
-func add_byte(byte: int):
-    self.file.put_8(byte)
-
-
-func put_utf8(s: String):
-    file.put_utf8_string(s)
-
-
-func put_constant(value):
-    add_byte(BCode.LOAD_CONST)
+func put_constant(value, bytes_io: StreamPeerBuffer):
+    bytes_io.put_8(BCode.LOAD_CONST)
     
     match typeof(value):
         
@@ -101,39 +95,40 @@ func put_constant(value):
                 elif value >= -pow(2, 63):
                     type = DataTypes.INT63
 
-            add_byte(type)
+            bytes_io.put_8(type)
                 
             match type:
                 DataTypes.UINT8:
-                    file.put_u8(value)
+                    bytes_io.put_u8(value)
                 DataTypes.UINT16:
-                    file.put_u16(value)
+                    bytes_io.put_u16(value)
                 DataTypes.UINT32:
-                    file.put_u32(value)
+                    bytes_io.put_u32(value)
                 DataTypes.UINT64:
-                    file.put_u64(value)
+                    bytes_io.put_u64(value)
                 DataTypes.INT8:
-                    file.put_8(value)
+                    bytes_io.put_8(value)
                 DataTypes.INT16:
-                    file.put_16(value)
+                    bytes_io.put_16(value)
                 DataTypes.INT32:
-                    file.put_32(value)
+                    bytes_io.put_32(value)
                 DataTypes.INT64:
-                    file.put_64(value)
+                    bytes_io.put_64(value)
         
         TYPE_REAL:
-            add_byte(DataTypes.FLOAT)
-            file.put_double(value)
+            bytes_io.put_8(DataTypes.FLOAT)
+            bytes_io.put_double(value)
         
         TYPE_STRING:
-            add_byte(DataTypes.STRING)
-            put_utf8(value)
+            bytes_io.put_8(DataTypes.STRING)
+            bytes_io.put_utf8_string(value)
 
         TYPE_BOOL:
-            add_byte(DataTypes.BOOL)
-            add_byte(int(value))
+            bytes_io.put_8(DataTypes.BOOL)
+            bytes_io.put_8(int(value))
+        
         TYPE_ARRAY:
-            add_byte(DataTypes.ARRAY)
-            file.put_var(value)
+            bytes_io.put_8(DataTypes.ARRAY)
+            bytes_io.put_var(value)
         _:
             assert(false, 'Value of unknown type: %s' % [self.value])

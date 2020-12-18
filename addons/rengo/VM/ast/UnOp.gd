@@ -34,10 +34,13 @@ func is_constant() -> bool:
     return get_child(0).is_constant()
 
 
-func compiled(compiler):
+func compiled(compiler, offset: int) -> PoolByteArray:
+
+    var bytes_io = StreamPeerBuffer.new()
     if is_constant():
         var value = visit(null)
-        compiler.put_constant(value)
+        compiler.put_constant(value, bytes_io)
     else:
-        get_child(0).compiled(compiler)
-        compiler.add_byte(token_map[self.token.token_type])
+        bytes_io.put_data(get_child(0).compiled(compiler, offset))
+        bytes_io.put_8(token_map[self.token.token_type])
+    return bytes_io.data_array
