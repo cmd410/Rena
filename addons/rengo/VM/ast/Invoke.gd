@@ -18,3 +18,22 @@ func visit(interp):
         args.append(children[i].visit(interp))
 
     return function_reference.call_funcv(args)
+
+
+func compiled(compiler, offset: int) -> PoolByteArray:
+    var bytes_io = StreamPeerBuffer.new()
+
+    for i in range(1, get_child_count()):
+        var compiled_arg = get_child(i).compiled(compiler, offset)
+        offset += len(compiled_arg)
+        bytes_io.put_data(compiled_arg)
+    
+    var compiled_callable = get_child(0).compiled(compiler, offset)
+    offset += len(compiled_callable)
+    
+    bytes_io.put_data(compiled_callable)
+    
+    bytes_io.put_8(compiler.BCode.CALL_FUNC)
+    bytes_io.put_u32(get_child_count() - 1)
+
+    return bytes_io.data_array
