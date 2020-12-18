@@ -422,11 +422,10 @@ func statement() -> RenResult:
     match self.current_token.token_type:
         RenToken.DEFINE, RenToken.DEFAULT, RenToken.REASSIGN:
             var token = self.current_token
-            var res = eat([RenToken.DEFINE, RenToken.DEFAULT, RenToken.REASSIGN])
+            eat([RenToken.DEFINE, RenToken.DEFAULT, RenToken.REASSIGN]).value
             
             node = RenDef.new(token)
-            res = assignment()
-            node.add_child(res.value)
+            node.add_child(assignment().value)
         RenToken.LABEL:
             node = label().value
         RenToken.ID, RenToken.STR:
@@ -435,6 +434,11 @@ func statement() -> RenResult:
             node = menu().value
         RenToken.IF:
             node = ifcase().value
+        RenToken.JUMP:
+            eat(RenToken.JUMP)
+            var token = self.current_token
+            eat(RenToken.ID)
+            node = RenJump.new(token)
         RenToken.EOL:
             eat(RenToken.EOL).value
         RenToken.BLOCK_END:

@@ -18,3 +18,8 @@ func visit(interp):
     
     if result is GDScriptFunctionState and result.is_valid():
         yield(result, 'completed')
+
+
+func compiled(compiler, offset: int) -> PoolByteArray:
+    compiler.jump_table[self.id] = offset
+    return get_child(0).compiled(compiler, offset)
