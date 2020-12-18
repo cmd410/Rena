@@ -26,14 +26,14 @@ func visit(interp):
             yield(interp, 'proceed')
 
 
-func compiled(compiler, offset: int, jump_table: Dictionary = {}) -> PoolByteArray:
-    # TODO check compilation to be correct
-    # TODO calculate offset 
+func compiled(compiler, offset: int) -> PoolByteArray:
     var bytes_io = StreamPeerBuffer.new()
     
     # Put say data
-    for i in get_children():
-        i.compiled(compiler, offset, jump_table)
+    for child in get_children():
+        var compiled_item = child.compiled(compiler, offset)
+        offset += len(compiled_item)
+        bytes_io.put_data(compiled_item)
     
     # Put say statement
     bytes_io.put_8(compiler.BCode.SAY)

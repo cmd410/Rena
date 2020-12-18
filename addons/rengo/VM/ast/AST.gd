@@ -18,6 +18,6 @@ func visit(interp):
     assert(false, 'Visit func is not defined for this node type.')
 
 
-func compiled(compiler, offset: int, jump_table: Dictionary = {}) -> PoolByteArray:
+func compiled(compiler, offset: int) -> PoolByteArray:
     assert(false, 'Compile not implemented for this node')
     return PoolByteArray()

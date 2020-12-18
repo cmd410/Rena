@@ -17,14 +17,14 @@ func visit(interp):
     return list
 
 
-func compiled(compiler, offset: int, jump_table: Dictionary = {}) -> PoolByteArray:
-    # TODO check compilation to be correct
-    # TODO calculate offset 
+func compiled(compiler, offset: int) -> PoolByteArray:
     var bytes_io = StreamPeerBuffer.new()
     
     # Put array data
     for child in get_children():
-        bytes_io.put_data(child.compiled(compiler, offset, jump_table))
+        var list_item = child.compiled(compiler, offset)
+        offset += len(list_item)
+        bytes_io.put_data(list_item)
     
     # Put build list command
     bytes_io.put_8(compiler.BCode.BUILD_LIST)

@@ -17,11 +17,11 @@ func visit(interp):
             break
 
 
-func compiled(compiler, offset: int, jump_table: Dictionary = {}) -> PoolByteArray:
+func compiled(compiler, offset: int) -> PoolByteArray:
     # TODO check compilation to be correct
     # TODO calculate offset 
     # TODO actual compilation
     var bytes_io = StreamPeerBuffer.new()
     for child in get_children():
-        bytes_io.put_data(child.compiled(compiler, offset, jump_table))
+        bytes_io.put_data(child.compiled(compiler, offset))
     return bytes_io.data_array

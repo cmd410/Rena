@@ -35,14 +35,12 @@ func visit(interp):
     interp.state_change()
 
 
-func compiled(compiler, offset: int, jump_table: Dictionary = {}) -> PoolByteArray:
-    # TODO check compilation to be correct
-    # TODO calculate offset 
+func compiled(compiler, offset: int) -> PoolByteArray:
     var bytes_io = StreamPeerBuffer.new()
     var assign = get_child(0)
     
     # Put value bytecode
-    var value_data_array = assign.get_child(1).compiled(compiler, offset, jump_table)
+    var value_data_array = assign.get_child(1).compiled(compiler, offset)
     bytes_io.put_data(value_data_array)
     
     # Put assign statement

@@ -21,7 +21,7 @@ func visit(interp):
         yield(result, 'completed')
 
 
-func compiled(compiler, offset: int, jump_table: Dictionary = {}) -> PoolByteArray:
+func compiled(compiler, offset: int) -> PoolByteArray:
     # TODO check compilation to be correct
     # TODO calculate offset 
     # TODO actual compilation

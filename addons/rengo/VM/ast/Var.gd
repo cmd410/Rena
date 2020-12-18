@@ -33,17 +33,26 @@ func visit(interp):
 
 
 func compile_name() -> PoolByteArray:
-    # TODO check compilation to be correct
-    # TODO calculate offset 
     var bytes_io = StreamPeerBuffer.new()
     bytes_io.put_utf8_string(self.value)
     return bytes_io.data_array
 
 
-func compiled(compiler, offset: int, jump_table: Dictionary = {}) -> PoolByteArray:
-    # TODO check compilation to be correct
-    # TODO calculate offset 
+func compiled(compiler, offset: int) -> PoolByteArray:
     var bytes_io = StreamPeerBuffer.new()
-    bytes_io.put_8(compiler.BCode.LOAD_NAME)
+    
+    if get_child_count() == 0:
+        bytes_io.put_8(compiler.BCode.LOAD_NAME)
+    
+    else:
+        # Compile namespaces first
+        for child in get_children():
+            var compiled_item = child.compiled(compiler, offset)
+            offset += len(compiled_item)
+            bytes_io.put_data(compiled_item)
+        
+        # Compile Load attribute command
+        bytes_io.put_8(compiler.BCode.LOAD_ATTR)
+    
     bytes_io.put_data(compile_name())
     return bytes_io.data_array

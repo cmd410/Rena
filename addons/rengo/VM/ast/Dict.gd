@@ -20,15 +20,20 @@ func visit(interp):
     return d
 
 
-func compiled(compiler, offset: int, jump_table: Dictionary = {}) -> PoolByteArray:
-    # TODO check compilation to be correct
-    # TODO calculate offset 
+func compiled(compiler, offset: int) -> PoolByteArray:
+    
     var bytes_io = StreamPeerBuffer.new()
     
     for dict_item in get_children():
         
-        bytes_io.put_data(dict_item.get_child(0).compiled(compiler, offset, jump_table))
-        bytes_io.put_data(dict_item.get_child(1).compiled(compiler, offset, jump_table))
+        var key = dict_item.get_child(0).compiled(compiler, offset)
+        offset += len(key)
+        
+        var value = bytes_io.put_data(dict_item.get_child(1).compiled(compiler, offset))
+        offset += len(value)
+
+        bytes_io.put_data(key)
+        bytes_io.put_data(value)
     
     bytes_io.put_8(compiler.BCode.BUILD_DICT)
     bytes_io.put_u32(get_child_count())

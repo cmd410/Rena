@@ -1,13 +1,15 @@
 extends RenRef
 class_name RenCompiler
 
-
+# Mapping labels to index in bytecode
 var jump_table: Dictionary = {}
 
 
 enum BCode {
     LOAD_NAME
     LOAD_CONST
+    LOAD_ATTR
+    LOAD_KEY
     
     ASSIGN_NAME
     ASSIGN_IF_NONE
@@ -57,7 +59,7 @@ enum DataTypes {
 
 func compile(tree: RenAST, filename: String):
     
-    var bytes = tree.compiled(self, 0, self.jump_table)
+    var bytes = tree.compiled(self, 0)
 
     var out = File.new()
 

@@ -121,11 +121,12 @@ margin_bottom = 320.0
 size_flags_horizontal = 3
 theme = ExtResource( 3 )
 custom_fonts/font = SubResource( 3 )
-text = "define me = 'Mario'
-
-label start:
-	me \"Hello there!\"
-	me \"Its me, Mario!\""
+text = "define ft = 42
+define real = 42.0
+define poop = 'poop'
+define sum = ft + real
+define const_sum = 42 + 42
+define d = [ft, real, 42]"
 highlight_current_line = true
 syntax_highlighting = true
 show_line_numbers = true
