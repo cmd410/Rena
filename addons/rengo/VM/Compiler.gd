@@ -38,6 +38,7 @@ enum BCode {
 
     # Statements
     SAY
+    CALL_FUNC
 }
 
 
