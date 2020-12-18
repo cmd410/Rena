@@ -35,16 +35,25 @@ func visit(interp):
     interp.state_change()
 
 
-func compiled(compiler):
+func compiled(compiler, offset: int, jump_table: Dictionary = {}) -> PoolByteArray:
+    # TODO check compilation to be correct
+    # TODO calculate offset 
+    var bytes_io = StreamPeerBuffer.new()
     var assign = get_child(0)
-    assign.get_child(1).compiled(compiler)
     
+    # Put value bytecode
+    var value_data_array = assign.get_child(1).compiled(compiler, offset, jump_table)
+    bytes_io.put_data(value_data_array)
+    
+    # Put assign statement
     match self.token.token_type:
         RenToken.DEFINE:
-            compiler.add_byte(compiler.BCode.ASSIGN_NAME)
+            bytes_io.put_8(compiler.BCode.ASSIGN_NAME)
         RenToken.REASSIGN:
-            compiler.add_byte(compiler.BCode.ASSIGN_IF_EXISTS)
+            bytes_io.put_8(compiler.BCode.ASSIGN_IF_EXISTS)
         RenToken.DEFAULT:
-            compiler.add_byte(compiler.BCode.ASSIGN_IF_NONE)
-
-    assign.get_child(0).compile_name(compiler)
+            bytes_io.put_8(compiler.BCode.ASSIGN_IF_NONE)
+    
+    bytes_io.put_data(assign.get_child(0).compile_name())
+    
+    return bytes_io.data_array

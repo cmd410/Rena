@@ -34,6 +34,10 @@ func visit(interp):
     interp.label_stack.pop_back()
 
 
-func compiled(compiler):
+func compiled(compiler, offset: int, jump_table: Dictionary = {}) -> PoolByteArray:
+    # TODO check compilation to be correct
+    # TODO calculate offset 
+    var bytes_io = StreamPeerBuffer.new()
     for i in get_children():
-        i.compiled(compiler)
+        bytes_io.put_data(i.compiled(compiler, offset, jump_table))
+    return bytes_io.data_array

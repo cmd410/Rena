@@ -87,12 +87,19 @@ func visit(interp):
             assert(false, 'Unknown token for Binary Operation: \"%s\"' % [self.token.token_type])
         
 
-func compiled(compiler):
+func compiled(compiler, offset: int, jump_table: Dictionary = {}) -> PoolByteArray:
+    # TODO check compilation to be correct
+    # TODO calculate offset 
+    var bytes_io = StreamPeerBuffer.new()
+
     if is_constant():
         var value = visit(null)
-        compiler.put_constant(value)
+        compiler.put_constant(value, bytes_io)
+    
     else:
-        get_child(0).compiled(compiler)
-        get_child(1).compiled(compiler)
+        bytes_io.put_data(get_child(0).compiled(compiler, offset, jump_table))
+        bytes_io.put_data(get_child(1).compiled(compiler, offset, jump_table))
         var op = token_map[self.token.token_type]
-        compiler.file.put_8(op)
+        bytes_io.put_8(op)
+    
+    return bytes_io.data_array

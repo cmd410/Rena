@@ -31,9 +31,19 @@ func visit(interp):
         else:
             assert(false, 'Name \"%s\" is not defined.' % [name])
 
-func compile_name(compiler):
-    compiler.put_utf8(self.value)
 
-func compiled(compiler):
-    compiler.add_byte(compiler.BCode.LOAD_NAME)
-    compile_name(compiler)    
+func compile_name() -> PoolByteArray:
+    # TODO check compilation to be correct
+    # TODO calculate offset 
+    var bytes_io = StreamPeerBuffer.new()
+    bytes_io.put_utf8_string(self.value)
+    return bytes_io.data_array
+
+
+func compiled(compiler, offset: int, jump_table: Dictionary = {}) -> PoolByteArray:
+    # TODO check compilation to be correct
+    # TODO calculate offset 
+    var bytes_io = StreamPeerBuffer.new()
+    bytes_io.put_8(compiler.BCode.LOAD_NAME)
+    bytes_io.put_data(compile_name())
+    return bytes_io.data_array

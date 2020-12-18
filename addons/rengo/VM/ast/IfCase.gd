@@ -15,3 +15,13 @@ func visit(interp):
             if result is GDScriptFunctionState and result.is_valid():
                 yield(result, 'completed')
             break
+
+
+func compiled(compiler, offset: int, jump_table: Dictionary = {}) -> PoolByteArray:
+    # TODO check compilation to be correct
+    # TODO calculate offset 
+    # TODO actual compilation
+    var bytes_io = StreamPeerBuffer.new()
+    for child in get_children():
+        bytes_io.put_data(child.compiled(compiler, offset, jump_table))
+    return bytes_io.data_array
