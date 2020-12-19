@@ -218,7 +218,7 @@ func cmp() -> RenResult:
     var node = shifts().value
     while self.current_token.is_type(RenToken.CMP):
         var token = self.current_token
-        eat(RenToken.CMP).values
+        eat(RenToken.CMP).value
         node = RenBinOp.new(node, token, shifts().value)
     return RenOK.new(node)
 
