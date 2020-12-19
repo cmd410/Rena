@@ -27,12 +27,11 @@ func compiled(compiler, offset: int) -> PoolByteArray:
     for dict_item in get_children():
         
         var key = dict_item.get_child(0).compiled(compiler, offset)
+        bytes_io.put_data(key)
         offset += len(key)
         
-        var value = bytes_io.put_data(dict_item.get_child(1).compiled(compiler, offset))
+        var value = dict_item.get_child(1).compiled(compiler, offset)
         offset += len(value)
-
-        bytes_io.put_data(key)
         bytes_io.put_data(value)
     
     bytes_io.put_8(compiler.BCode.BUILD_DICT)

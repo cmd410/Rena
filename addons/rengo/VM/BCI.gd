@@ -58,11 +58,27 @@ func assign_name(overwrite: bool = true, must_exist: bool = false):
         self.globals[name] = value
 
 
-func pop_n(n: int):
+func build_dict():
+    var n_elem = bytes_io.get_u32()
+    var data = pop_n(n_elem * 2, false)
+    var current_length = 0
+
+    var d: Dictionary = {}
+    while current_length < n_elem:
+        var key = data.pop_back()
+        var value = data.pop_back()
+        d[key] = value
+        current_length += 1
+    
+    data_stack.push_back(d)
+
+
+func pop_n(n: int, reverse: bool = true):
     var arr = Array()
     for i in range(n):
         arr.push_back(data_stack.pop_back())
-    arr.invert()
+    if reverse:
+        arr.invert()
     return arr
 
 
@@ -149,8 +165,10 @@ func intepret(bytecode: PoolByteArray) -> void:
             bc.BUILD_LIST:
                 var count = bytes_io.get_u32()
                 var list = pop_n(count)
-                print(list)
                 data_stack.push_back(list)
+            
+            bc.BUILD_DICT:
+                build_dict()
 
             bc.ADD:
                 bin_op('+')
