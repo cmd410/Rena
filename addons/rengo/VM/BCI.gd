@@ -47,10 +47,72 @@ func load_constant():
     data_stack.push_back(value)
 
 
-func assign_name():
+func assign_name(overwrite: bool = true, must_exist: bool = false):
     var name = bytes_io.get_utf8_string()
     var value = data_stack.pop_back()
-    self.globals[name] = value
+    
+    var name_exists = self.globals.has(name)
+    assert(not must_exist or name_exists, 'Name %s does not exist' % [name])
+    
+    if overwrite or not name_exists:
+        self.globals[name] = value
+
+
+func pop_n(n: int):
+    var arr = Array()
+    for i in range(n):
+        arr.push_back(data_stack.pop_back())
+    return arr.invert()
+
+
+func bin_op(op: String):
+    var right = data_stack.pop_back()
+    var left = data_stack.pop_back()
+    var result = null
+    match op:
+        '+':
+            result = left + right
+        '-':
+            result = left - right
+        '*':
+            result = left * right
+        '/':
+            result = left / right
+        '//':
+            result = floor(left / right)
+        '**':
+            result = pow(left, right)
+        '%':
+            result = left % right
+        '<<':
+            result = left << right
+        '>>':
+            result = left >> right
+        '^':
+            result = left ^ right
+        '|':
+            result = left | right
+        '&':
+            result = left & right
+        '==':
+            result = left == right
+        '!=':
+            result = left != right
+        '<':
+            result = left < right
+        '>':
+            result = left > right
+        '<=':
+            result = left <= right
+        '>=':
+            result = left >= right
+        'and':
+            result = left and right
+        'or':
+            result = left or right
+    assert(result != null, 'Result of binary operation is null!')
+    data_stack.push_back(result)
+        
 
 
 func intepret(bytecode: PoolByteArray) -> void:
@@ -66,3 +128,64 @@ func intepret(bytecode: PoolByteArray) -> void:
                 load_constant()
             bc.ASSIGN_NAME:
                 assign_name()
+            bc.ASSIGN_IF_NONE:
+                assign_name(false)
+            bc.ASSIGN_IF_EXISTS:
+                assign_name(true, true)
+            bc.LOAD_NAME:
+                var name = bytes_io.get_utf8_string()
+                assert(globals.has(name), 'Name "%s" is not defined' % [name])
+                data_stack.push_back(globals[name])
+            
+            bc.JUMP:
+                var dest = bytes_io.get_u32()
+                bytes_io.seek(dest)
+            
+            bc.JUMP_IF_FALSE:
+                var dest = bytes_io.get_u32()
+                var value = data_stack.pop_back()
+                if not value:
+                    bytes_io.seek(dest)
+
+            bc.ADD:
+                bin_op('+')
+            bc.SUB:
+                bin_op('-')
+            bc.MUL:
+                bin_op('*')
+            bc.DIV:
+                bin_op('/')
+            bc.FLOORDIV:
+                bin_op('//')
+            bc.POW:
+                bin_op('**')
+            bc.MOD:
+                bin_op('%')
+            bc.LSHIFT:
+                bin_op('<<')
+            bc.RSHIFT:
+                bin_op('>>')
+            bc.XOR:
+                bin_op('^')
+            bc.BOR:
+                bin_op('|')
+            bc.BAND:
+                bin_op('&')
+            bc.EXEQ:
+                bin_op('==')
+            bc.NOEQ:
+                bin_op('!=')
+            bc.LESS:
+                bin_op('<')
+            bc.GREATER:
+                bin_op('>')
+            bc.LEQ:
+                bin_op('<=')
+            bc.GEQ:
+                bin_op('>=')
+            bc.AND:
+                bin_op('and')
+            bc.OR:
+                bin_op('or')
+            _:
+                assert(false, 'Unrecognized instruction byte: %s' % [op_code])

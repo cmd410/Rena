@@ -30,7 +30,6 @@ func compiled(compiler, offset: int) -> PoolByteArray:
         bytes_io.put_data(compiled_branch)
         pending_jumps.append(offset - 4 - start_offset)
 
-    print(pending_jumps)
     # insert jumps to if end for all intermediate branches
     for idx in pending_jumps:
         bytes_io.seek(idx)

@@ -26,7 +26,7 @@ enum BCode {
 
     # BinOps
     ADD, SUB, MUL, DIV, FLOORDIV, POW
-    MOD, POW, LSHIFT, RSHIFT, XOR, BOR, BAND,
+    MOD, LSHIFT, RSHIFT, XOR, BOR, BAND,
     EXEQ, NOEQ, LESS, GREATER, LEQ, GEQ, AND, OR
 
     # UnaryOps
