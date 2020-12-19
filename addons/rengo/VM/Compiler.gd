@@ -26,7 +26,7 @@ enum BCode {
 
     # BinOps
     ADD, SUB, MUL, DIV, FLOORDIV, POW
-    MOD, POW, LSHIFT, RSHIFT, XOR, BOR, BAND,
+    MOD, LSHIFT, RSHIFT, XOR, BOR, BAND,
     EXEQ, NOEQ, LESS, GREATER, LEQ, GEQ, AND, OR
 
     # UnaryOps
@@ -62,21 +62,23 @@ enum DataTypes {
 }
 
 
-func compile(tree: RenAST, filename: String):
-    
+func compile(tree: RenAST) -> PoolByteArray:
     var bytes = tree.compiled(self, 0)
+    return post_process(bytes)
+
+
+func compile_into_file(tree: RenAST, filename: String) -> PoolByteArray:
+    var bytes = compile(tree)
     
-    bytes = post_process(bytes)
-
     var out = File.new()
-
     out.open('res://testcompile.rgc', File.WRITE)
-
     out.store_buffer(bytes)
     out.close()
 
+    return bytes
 
-func post_process(bytecode: PoolByteArray):
+
+func post_process(bytecode: PoolByteArray) -> PoolByteArray:
     if not pending_jumps:
         return bytecode
 
@@ -96,7 +98,7 @@ func post_process(bytecode: PoolByteArray):
     return bytes_io.data_array
 
 
-func put_constant(value, bytes_io: StreamPeerBuffer):
+func put_constant(value, bytes_io: StreamPeerBuffer) -> void:
     bytes_io.put_8(BCode.LOAD_CONST)
     
     match typeof(value):
