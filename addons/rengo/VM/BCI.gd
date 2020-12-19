@@ -62,7 +62,8 @@ func pop_n(n: int):
     var arr = Array()
     for i in range(n):
         arr.push_back(data_stack.pop_back())
-    return arr.invert()
+    arr.invert()
+    return arr
 
 
 func bin_op(op: String):
@@ -114,14 +115,13 @@ func bin_op(op: String):
     data_stack.push_back(result)
         
 
-
 func intepret(bytecode: PoolByteArray) -> void:
     bytes_io = StreamPeerBuffer.new()
     bytes_io.data_array = bytecode
     bytes_io.seek(0)
     
     while bytes_io.get_position() < bytes_io.get_size():
-        var op_code = bytes_io.get_8()
+        var op_code = bytes_io.get_u8()
 
         match op_code:
             bc.LOAD_CONST:
@@ -140,12 +140,17 @@ func intepret(bytecode: PoolByteArray) -> void:
             bc.JUMP:
                 var dest = bytes_io.get_u32()
                 bytes_io.seek(dest)
-            
             bc.JUMP_IF_FALSE:
                 var dest = bytes_io.get_u32()
                 var value = data_stack.pop_back()
                 if not value:
                     bytes_io.seek(dest)
+            
+            bc.BUILD_LIST:
+                var count = bytes_io.get_u32()
+                var list = pop_n(count)
+                print(list)
+                data_stack.push_back(list)
 
             bc.ADD:
                 bin_op('+')
