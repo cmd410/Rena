@@ -138,7 +138,7 @@ func _on_Proceed_pressed():
 func _on_Compile_pressed():
     var lexer = RenLexer.new(self.text_edit.text)
     var parser = RenParser.new(lexer)
-    
+    parser.connect("ast_built", self, 'build_ast')
     var compiler = RenCompiler.new()
     compiler.compile_into_file(parser.script().value, 'res://testcompile.rgc')
 
@@ -146,7 +146,7 @@ func _on_Compile_pressed():
 func _on_Run_Bytecode_pressed():
     var lexer = RenLexer.new(text_edit.text)
     var parser = RenParser.new(lexer)
-    
+    parser.connect("ast_built", self, 'build_ast')
     var ast = parser.script().value
     var compiler = RenCompiler.new()
     var bytecode = compiler.compile(ast)
