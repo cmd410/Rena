@@ -140,7 +140,7 @@ func _on_Compile_pressed():
     var parser = RenParser.new(lexer)
     
     var compiler = RenCompiler.new()
-    compiler.compile(parser.script().value, 'res://testcompile.rgc')
+    compiler.compile_into_file(parser.script().value, 'res://testcompile.rgc')
 
 
 func _on_Run_Bytecode_pressed():
