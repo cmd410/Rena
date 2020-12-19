@@ -141,3 +141,29 @@ func _on_Compile_pressed():
     
     var compiler = RenCompiler.new()
     compiler.compile(parser.script().value, 'res://testcompile.rgc')
+
+
+func _on_Run_Bytecode_pressed():
+    var lexer = RenLexer.new(text_edit.text)
+    var parser = RenParser.new(lexer)
+    
+    var ast = parser.script().value
+    var compiler = RenCompiler.new()
+    var bytecode = compiler.compile(ast)
+    
+    var bci = RenBCI.new()
+    bci.intepret(bytecode)
+
+
+    state_tree.clear()
+    var root = state_tree.create_item(null)
+    root.set_text(0, 'Interpreter')
+    
+    var globals = state_tree.create_item(root)
+    globals.set_text(0, 'Globals')
+    
+    for key in bci.globals:
+        var k = state_tree.create_item(globals)
+        k.set_text(0, key)
+        var value = state_tree.create_item(k)
+        value.set_text(0, str(bci.globals[key]))

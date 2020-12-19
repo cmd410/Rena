@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://debug_tools/Lab.gd" type="Script" id=1]
 [ext_resource path="res://debug_tools/RenScriptEdit.gd" type="Script" id=2]
@@ -19,6 +19,8 @@ font_data = SubResource( 2 )
 [sub_resource type="StyleBoxEmpty" id=6]
 
 [sub_resource type="StyleBoxEmpty" id=7]
+
+[sub_resource type="StyleBoxEmpty" id=8]
 
 [node name="Control" type="Control"]
 anchor_right = 1.0
@@ -144,7 +146,7 @@ size_flags_vertical = 3
 size_flags_stretch_ratio = 0.68
 
 [node name="VBox" type="VBoxContainer" parent="VBox/HBox2/HBox/HBox2"]
-margin_right = 74.0
+margin_right = 101.0
 margin_bottom = 216.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -153,18 +155,18 @@ theme = SubResource( 4 )
 alignment = 1
 
 [node name="Tokenize" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
-margin_left = 1.0
-margin_top = 6.0
-margin_right = 72.0
-margin_bottom = 30.0
+margin_left = 15.0
+margin_right = 86.0
+margin_bottom = 24.0
 size_flags_horizontal = 4
 theme = ExtResource( 3 )
 text = "Tokenize"
 
 [node name="BuildAST" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
-margin_top = 34.0
-margin_right = 74.0
-margin_bottom = 58.0
+margin_left = 13.0
+margin_top = 28.0
+margin_right = 87.0
+margin_bottom = 52.0
 size_flags_horizontal = 4
 size_flags_vertical = 0
 theme = ExtResource( 3 )
@@ -172,46 +174,61 @@ text = "Build AST"
 
 [node name="Execute" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
 margin_left = 5.0
-margin_top = 62.0
-margin_right = 69.0
-margin_bottom = 86.0
+margin_top = 56.0
+margin_right = 96.0
+margin_bottom = 80.0
 size_flags_horizontal = 4
 theme = ExtResource( 3 )
-text = "Execute"
+text = "Execute AST"
+
+[node name="VSeparator" type="HSeparator" parent="VBox/HBox2/HBox/HBox2/VBox"]
+margin_top = 84.0
+margin_right = 101.0
+margin_bottom = 106.0
+size_flags_vertical = 3
+custom_styles/separator = SubResource( 5 )
 
 [node name="Compile" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
-margin_left = 3.0
-margin_top = 90.0
-margin_right = 70.0
-margin_bottom = 114.0
+margin_left = 17.0
+margin_top = 110.0
+margin_right = 84.0
+margin_bottom = 134.0
 size_flags_horizontal = 4
 theme = ExtResource( 3 )
 text = "Compile"
 
+[node name="Run Bytecode" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
+margin_top = 138.0
+margin_right = 101.0
+margin_bottom = 162.0
+size_flags_horizontal = 4
+theme = ExtResource( 3 )
+text = "Run bytecode"
+
 [node name="HSeparator" type="HSeparator" parent="VBox/HBox2/HBox/HBox2/VBox"]
-margin_top = 118.0
-margin_right = 74.0
-margin_bottom = 182.0
-rect_min_size = Vector2( 0, 64 )
-custom_styles/separator = SubResource( 5 )
+margin_top = 166.0
+margin_right = 101.0
+margin_bottom = 188.0
+size_flags_vertical = 3
+custom_styles/separator = SubResource( 6 )
 
 [node name="Proceed" type="Button" parent="VBox/HBox2/HBox/HBox2/VBox"]
-margin_left = 4.0
-margin_top = 186.0
-margin_right = 70.0
-margin_bottom = 210.0
+margin_left = 17.0
+margin_top = 192.0
+margin_right = 83.0
+margin_bottom = 216.0
 size_flags_horizontal = 4
 theme = ExtResource( 3 )
 text = "Proceed"
 
 [node name="VBox2" type="VBoxContainer" parent="VBox/HBox2/HBox/HBox2"]
-margin_left = 78.0
-margin_right = 679.0
+margin_left = 105.0
+margin_right = 688.0
 margin_bottom = 216.0
 size_flags_horizontal = 3
 
 [node name="HBox" type="HBoxContainer" parent="VBox/HBox2/HBox/HBox2/VBox2"]
-margin_right = 601.0
+margin_right = 583.0
 margin_bottom = 24.0
 size_flags_stretch_ratio = 0.0
 alignment = 2
@@ -224,34 +241,34 @@ text = "Output"
 
 [node name="VSeparator" type="VSeparator" parent="VBox/HBox2/HBox/HBox2/VBox2/HBox"]
 margin_left = 49.0
-margin_right = 269.0
+margin_right = 251.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
-custom_styles/separator = SubResource( 6 )
+custom_styles/separator = SubResource( 7 )
 
 [node name="CChar" type="CheckBox" parent="VBox/HBox2/HBox/HBox2/VBox2/HBox"]
-margin_left = 273.0
-margin_right = 411.0
+margin_left = 255.0
+margin_right = 393.0
 margin_bottom = 24.0
 text = "Current character"
 
 [node name="CToken" type="CheckBox" parent="VBox/HBox2/HBox/HBox2/VBox2/HBox"]
-margin_left = 415.0
-margin_right = 532.0
+margin_left = 397.0
+margin_right = 514.0
 margin_bottom = 24.0
 pressed = true
 text = "Current Token"
 
 [node name="Errors" type="CheckBox" parent="VBox/HBox2/HBox/HBox2/VBox2/HBox"]
-margin_left = 536.0
-margin_right = 601.0
+margin_left = 518.0
+margin_right = 583.0
 margin_bottom = 24.0
 pressed = true
 text = "Errors"
 
 [node name="LOG" type="TextEdit" parent="VBox/HBox2/HBox/HBox2/VBox2"]
 margin_top = 28.0
-margin_right = 601.0
+margin_right = 583.0
 margin_bottom = 216.0
 size_flags_vertical = 3
 theme = ExtResource( 3 )
@@ -262,29 +279,29 @@ draw_tabs = true
 draw_spaces = true
 
 [node name="VBox3" type="VBoxContainer" parent="VBox/HBox2/HBox/HBox2"]
-margin_left = 683.0
+margin_left = 692.0
 margin_right = 984.0
 margin_bottom = 216.0
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.5
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBox/HBox2/HBox/HBox2/VBox3"]
-margin_right = 301.0
+margin_right = 292.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 0, 25 )
 alignment = 1
 
 [node name="IState" type="Label" parent="VBox/HBox2/HBox/HBox2/VBox3/HBoxContainer"]
-margin_left = 97.0
+margin_left = 93.0
 margin_top = 5.0
-margin_right = 203.0
+margin_right = 199.0
 margin_bottom = 19.0
 text = "Interpreter State"
 valign = 1
 
 [node name="StateTree" type="Tree" parent="VBox/HBox2/HBox/HBox2/VBox3"]
 margin_top = 29.0
-margin_right = 301.0
+margin_right = 292.0
 margin_bottom = 216.0
 size_flags_vertical = 3
 theme = ExtResource( 3 )
@@ -302,10 +319,11 @@ margin_right = 1024.0
 margin_bottom = 600.0
 rect_min_size = Vector2( 0, 16 )
 theme = ExtResource( 3 )
-custom_styles/separator = SubResource( 7 )
+custom_styles/separator = SubResource( 8 )
 [connection signal="text_changed" from="VBox/HBox2/HBox/HBox/TextEdit" to="VBox/HBox2/HBox/HBox/TextEdit" method="_on_TextEdit_text_changed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Tokenize" to="." method="_on_Tokenize_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/BuildAST" to="." method="_on_BuildAST_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Execute" to="." method="_on_Execute_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Compile" to="." method="_on_Compile_pressed"]
+[connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Run Bytecode" to="." method="_on_Run_Bytecode_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Proceed" to="." method="_on_Proceed_pressed"]
