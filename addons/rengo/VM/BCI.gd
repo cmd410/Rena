@@ -169,6 +169,13 @@ func intepret(bytecode: PoolByteArray) -> void:
             
             bc.BUILD_DICT:
                 build_dict()
+            
+            bc.POSITIVE:
+                data_stack.push_back(+data_stack.pop_back())
+            bc.NEGATIVE:
+                data_stack.push_back(-data_stack.pop_back())
+            bc.NOT:
+                data_stack.push_back(not data_stack.pop_back())
 
             bc.ADD:
                 bin_op('+')
