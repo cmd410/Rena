@@ -29,6 +29,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/RenGo/VM/ast/Bool.gd"
 }, {
+"base": "RenAST",
+"class": "RenCall",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/Call.gd"
+}, {
 "base": "RenRef",
 "class": "RenCompiler",
 "language": "GDScript",
@@ -179,6 +184,7 @@ _global_script_class_icons={
 "RenBCI": "",
 "RenBinOp": "",
 "RenBool": "",
+"RenCall": "",
 "RenCompiler": "",
 "RenCompound": "",
 "RenCondition": "",

@@ -439,6 +439,11 @@ func statement() -> RenResult:
             var token = self.current_token
             eat(RenToken.ID).value
             node = RenJump.new(token)
+        RenToken.CALL:
+            eat(RenToken.CALL).value
+            var token = self.current_token
+            eat(RenToken.ID).value
+            node = RenCall.new(token)
         RenToken.RETURN:
             eat(RenToken.RETURN).value
             node = RenReturn.new()

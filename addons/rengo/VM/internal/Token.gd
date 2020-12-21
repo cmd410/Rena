@@ -59,19 +59,20 @@ const DELIM  = [
 const BLOCK_START = 'START'
 const BLOCK_END   = 'END'
 
-const LABEL =  'LABEL'
-const MENU  =  'MENU'
-const IF =     'IF'
-const ELIF =   'ELIF'
-const ELSE =   'ELSE'
-const AND =    'AND'
-const OR =     'OR'
-const NOT =    'NOT'
-const DEFINE = 'DEFINE'
-const DEFAULT = 'DEFAULT'
+const LABEL    = 'LABEL'
+const MENU     = 'MENU'
+const IF       = 'IF'
+const ELIF     = 'ELIF'
+const ELSE     = 'ELSE'
+const AND      = 'AND'
+const OR       = 'OR'
+const NOT      = 'NOT'
+const DEFINE   = 'DEFINE'
+const DEFAULT  = 'DEFAULT'
 const REASSIGN = '$'
 const JUMP     = 'JUMP'
 const RETURN   = 'RETURN'
+const CALL     = 'CALL'
 
 const KEYWORDS = {
     'True': BOOL,
@@ -87,7 +88,8 @@ const KEYWORDS = {
     'default': DEFAULT,
     'not': NOT,
     'jump': JUMP,
-    'return': RETURN
+    'return': RETURN,
+    'call': CALL
 }
 
 
