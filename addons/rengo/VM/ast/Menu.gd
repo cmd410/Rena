@@ -44,7 +44,7 @@ func compiled(compiler, offset: int) -> PoolByteArray:
         # Put option offset into jump table
         bytes_io.seek(pending_jump_options[op_id])
         bytes_io.put_u32(option_offset)
-        bytes_io.seek(option_offset)
+        bytes_io.seek(option_offset - offset)
 
         # Compile option body
         bytes_io.put_data(compound.compiled(compiler, option_offset))
