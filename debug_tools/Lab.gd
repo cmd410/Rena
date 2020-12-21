@@ -13,6 +13,8 @@ onready var option_box: HBoxContainer = get_node("VBox/HBox2/HBox/HBox2/VBox2/Op
 
 var interp = null
 
+# TODO cleanup this script
+
 
 func _ready():
     tree.hide_root = false
@@ -28,12 +30,17 @@ func cls():
 
 func _on_Tokenize_pressed():
     var lexer: RenLexer = RenLexer.new(text_edit.text)
+
+    var err = 0
     if ctoken.pressed:
-        lexer.connect("new_token", self, '_on_token_parsed')
+        err |= lexer.connect("new_token", self, '_on_token_parsed')
     if errors.pressed:
-        lexer.connect("exception", self, '_on_error')
+        err |= lexer.connect("exception", self, '_on_error')
     if cchar.pressed:
-        lexer.connect("advanced", self, "_on_token_parsed")
+        err |= lexer.connect("advanced", self, "_on_token_parsed")
+    
+    assert(not err, 'Could not connect all signals of lexer')
+
     cls()
     while not lexer.depleted:
         var result = lexer.get_next_token()
@@ -109,26 +116,26 @@ func _on_Execute_pressed():
     interp.execute()
     
 
-func state_update(interp):
+func state_update(ast_interpeter):
     state_tree.clear()
     var root = state_tree.create_item(null)
     root.set_text(0, 'Interpreter')
     
     var defines = state_tree.create_item(root)
     defines.set_text(0, 'defines')
-    for key in interp.defines:
+    for key in ast_interpeter.defines:
         var k = state_tree.create_item(defines)
         k.set_text(0, key)
         var value = state_tree.create_item(k)
-        value.set_text(0, str(interp.defines[key]))
+        value.set_text(0, str(ast_interpeter.defines[key]))
     
     var defaults = state_tree.create_item(root)
     defaults.set_text(0, 'defaults')
-    for key in interp.defaults:
+    for key in ast_interpeter.defaults:
         var k = state_tree.create_item(defaults)
         k.set_text(0, key)
         var value = state_tree.create_item(k)
-        value.set_text(0, str(interp.defaults[key]))
+        value.set_text(0, str(ast_interpeter.defaults[key]))
 
 
 func _on_Proceed_pressed():
