@@ -2,6 +2,10 @@ extends RenRef
 class_name RenBCI
 # ByteCode Interpreter
 
+signal say(who, what)
+signal menu(options)
+signal choosen_option(option)
+
 var data_stack: Array = []
 var globals: Dictionary = {}
 
@@ -9,9 +13,18 @@ var bytes_io: StreamPeerBuffer
 var bc = RenCompiler.BCode
 var dt = RenCompiler.DataTypes
 
+var current_menu: Dictionary = {}
+
 
 func _init(globals: Dictionary = {}):
     self.globals = globals
+
+
+func choose(option: String):
+    if option in current_menu:
+        emit_signal("choosen_option", option)
+    else:
+        push_error('Option \"%s\" is not in current menu!' % [option])
 
 
 func load_constant():
@@ -73,7 +86,17 @@ func build_dict():
     data_stack.push_back(d)
 
 
-func pop_n(n: int, reverse: bool = true):
+func make_menu():
+    var count = bytes_io.get_u32()
+    var data = pop_n(count * 2, false)
+    for i in range(count):
+        var option = data.pop_back()
+        var idx = data.pop_back()
+
+        self.current_menu[option] = idx
+
+
+func pop_n(n: int, reverse: bool = true) -> Array:
     var arr = Array()
     for i in range(n):
         arr.push_back(data_stack.pop_back())
@@ -170,6 +193,12 @@ func intepret(bytecode: PoolByteArray) -> void:
             bc.BUILD_DICT:
                 build_dict()
             
+            bc.MENU:
+                make_menu()
+                emit_signal("menu", current_menu.keys())
+                var op = yield(self, "choosen_option")
+                print(op)
+
             bc.POSITIVE:
                 data_stack.push_back(+data_stack.pop_back())
             bc.NEGATIVE:

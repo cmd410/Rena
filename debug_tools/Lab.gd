@@ -9,6 +9,7 @@ onready var state_tree: Tree = get_node("VBox/HBox2/HBox/HBox2/VBox3/StateTree")
 onready var cchar: CheckBox = get_node("VBox/HBox2/HBox/HBox2/VBox2/HBox/CChar")
 onready var ctoken: CheckBox = get_node("VBox/HBox2/HBox/HBox2/VBox2/HBox/CToken")
 onready var errors: CheckBox = get_node("VBox/HBox2/HBox/HBox2/VBox2/HBox/Errors")
+onready var option_box: HBoxContainer = get_node("VBox/HBox2/HBox/HBox2/VBox2/OptionsBox")
 
 var interp = null
 
@@ -143,6 +144,21 @@ func _on_Compile_pressed():
     compiler.compile_into_file(parser.script().value, 'res://testcompile.rgc')
 
 
+func _on_option_chosen(op: String):
+    for i in option_box.get_children():
+        i.queue_free()
+    interp.choose(op)
+
+
+func _on_menu(ops: Array):
+    printf("Menu: %s" % [ops])
+    for o in ops:
+        var button = load("res://debug_tools/Option_button.gd").new()
+        button.connect("option_chosen", self, "_on_option_chosen")
+        button.text = o
+        option_box.add_child(button)
+
+
 func _on_Run_Bytecode_pressed():
     var lexer = RenLexer.new(text_edit.text)
     var parser = RenParser.new(lexer)
@@ -152,6 +168,8 @@ func _on_Run_Bytecode_pressed():
     var bytecode = compiler.compile(ast)
     
     var bci = RenBCI.new()
+    interp = bci
+    bci.connect("menu", self, "_on_menu")
     bci.intepret(bytecode)
 
 
