@@ -156,7 +156,7 @@ func _on_option_chosen(op: String):
 func _on_menu(prompt: String, ops: Array):
     printf("Menu \"%s\": %s" % [prompt, ops])
     for o in ops:
-        var button = load("res://debug_tools/Option_button.gd").new()
+        var button = (load("res://debug_tools/Option_button.gd") as GDScript).new()
         button.connect("option_chosen", self, "_on_option_chosen")
         button.text = o
         option_box.add_child(button)
@@ -178,7 +178,7 @@ func _on_Run_Bytecode_pressed():
     bci.intepret(bytecode)
 
 
-func _on_bci_say(who, what, flush):
+func _on_bci_say(who, what, _flush):
     printf('%s : \"%s\"' % [who, what])
 
 

@@ -21,6 +21,7 @@ var current_menu_prompt: String = ''
 
 func _init(globals: Dictionary = {}):
     self.globals = globals
+    self.globals['null'] = null
 
 
 func choose(option: String):
@@ -220,6 +221,12 @@ func intepret(bytecode: PoolByteArray) -> void:
                         var flush = data.empty()
                         emit_signal('say', who, what, flush)
                         yield(self, 'next')
+            
+            bc.CALL_FUNC:
+                var function = data_stack.pop_back() as FuncRef
+                assert(function != null, 'Attempt to call non-callable object!')
+                var args_count = bytes_io.get_u32()
+                data_stack.push_back((function.call_funcv(pop_n(args_count))))
             
             bc.POSITIVE:
                 data_stack.push_back(+data_stack.pop_back())
