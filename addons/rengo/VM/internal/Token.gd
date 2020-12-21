@@ -71,6 +71,7 @@ const DEFINE = 'DEFINE'
 const DEFAULT = 'DEFAULT'
 const REASSIGN = '$'
 const JUMP     = 'JUMP'
+const RETURN   = 'RETURN'
 
 const KEYWORDS = {
     'True': BOOL,
@@ -85,7 +86,8 @@ const KEYWORDS = {
     'define': DEFINE,
     'default': DEFAULT,
     'not': NOT,
-    'jump': JUMP
+    'jump': JUMP,
+    'return': RETURN
 }
 
 

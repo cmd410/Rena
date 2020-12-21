@@ -140,6 +140,11 @@ _global_script_classes=[ {
 "path": "res://addons/RenGo/VM/internal/Result.gd"
 }, {
 "base": "RenAST",
+"class": "RenReturn",
+"language": "GDScript",
+"path": "res://addons/RenGo/VM/ast/Return.gd"
+}, {
+"base": "RenAST",
 "class": "RenSay",
 "language": "GDScript",
 "path": "res://addons/RenGo/VM/ast/Say.gd"
@@ -196,6 +201,7 @@ _global_script_class_icons={
 "RenParser": "",
 "RenRef": "",
 "RenResult": "",
+"RenReturn": "",
 "RenSay": "",
 "RenString": "",
 "RenToken": "",

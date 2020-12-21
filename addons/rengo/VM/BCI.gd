@@ -9,6 +9,7 @@ signal state_changed(interp)
 signal next()
 
 var data_stack: Array = []
+var jump_stack: PoolIntArray = PoolIntArray()
 var globals: Dictionary = {}
 
 var bytes_io: StreamPeerBuffer
@@ -234,7 +235,13 @@ func intepret(bytecode: PoolByteArray) -> void:
                 data_stack.push_back(-data_stack.pop_back())
             bc.NOT:
                 data_stack.push_back(not data_stack.pop_back())
-
+            
+            bc.RETURN:
+                if jump_stack.empty():
+                    break
+                else:
+                    assert(false, 'Jump returning is not implemented yet.')
+            
             bc.ADD:
                 bin_op('+')
             bc.SUB:

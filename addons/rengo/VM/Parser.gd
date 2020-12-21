@@ -42,7 +42,7 @@ func eat_chain(chain: Array) -> RenResult:
 
 func skip_lines():
     while self.current_token.token_type == RenToken.EOL:
-        eat(RenToken.EOL)
+        eat(RenToken.EOL).value
 
 
 func list() -> RenResult:
@@ -166,12 +166,12 @@ func factor() -> RenResult:
     # Parse Unary Operators
     elif self.current_token.is_type([RenToken.PLUS, RenToken.MINUS, RenToken.NOT]):
         var token = self.current_token
-        eat([RenToken.PLUS, RenToken.MINUS, RenToken.NOT])
+        eat([RenToken.PLUS, RenToken.MINUS, RenToken.NOT]).value
         var res = factor()
         return RenOK.new(RenUnOp.new(token, res.value))
     # Parse expressions in parenthesis
     elif self.current_token.token_type == RenToken.LPAREN:
-        eat(RenToken.LPAREN)
+        eat(RenToken.LPAREN).value
         var node = expr().value
         eat(RenToken.RPAREN).value
         
@@ -331,7 +331,7 @@ func say() -> RenResult:
         match self.current_token.token_type:
             RenToken.ID, RenToken.STR:
                 tokens.append(self.current_token)
-                eat([RenToken.ID, RenToken.STR])
+                eat([RenToken.ID, RenToken.STR]).value
             _:
                 return error(RenERR.TOKEN_UNEXPECTED, 'Unexpected token in say statement: %s' % [self.current_token])
     if tokens.empty():
@@ -389,7 +389,7 @@ func menu() -> RenResult:
 
 
 func ifcase() -> RenResult:
-    eat(RenToken.IF)
+    eat(RenToken.IF).value
     var ic = RenIfCase.new()
     var condition = expr().value
     eat_chain([RenToken.COLON, RenToken.EOL])
@@ -435,10 +435,13 @@ func statement() -> RenResult:
         RenToken.IF:
             node = ifcase().value
         RenToken.JUMP:
-            eat(RenToken.JUMP)
+            eat(RenToken.JUMP).value
             var token = self.current_token
-            eat(RenToken.ID)
+            eat(RenToken.ID).value
             node = RenJump.new(token)
+        RenToken.RETURN:
+            eat(RenToken.RETURN).value
+            node = RenReturn.new()
         RenToken.EOL:
             eat(RenToken.EOL).value
         RenToken.BLOCK_END:
@@ -456,7 +459,7 @@ func compound() -> RenResult:
     while self.current_token.token_type != RenToken.BLOCK_END:
         node.add_child(statement().value)
         skip_lines()
-    eat(RenToken.BLOCK_END)
+    eat(RenToken.BLOCK_END).value
     return RenOK.new(node)
 
 

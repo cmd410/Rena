@@ -16,6 +16,7 @@ const KEYWORDS = {
     'elif': COLORS[2],
     'else': COLORS[2],
     'jump': COLORS[2],
+    'return': COLORS[2],
     'and': COLORS[3],
     'or': COLORS[3],
     'True': COLORS[3],
