@@ -3,7 +3,7 @@ class_name RenBCI
 # ByteCode Interpreter
 
 signal say(who, what)
-signal menu(options)
+signal menu(prompt, options)
 signal choosen_option(option)
 signal state_changed(interp)
 
@@ -15,6 +15,7 @@ var bc = RenCompiler.BCode
 var dt = RenCompiler.DataTypes
 
 var current_menu: Dictionary = {}
+var current_menu_prompt: String = ''
 
 
 func _init(globals: Dictionary = {}):
@@ -90,6 +91,7 @@ func build_dict():
 
 func make_menu():
     var count = bytes_io.get_u32()
+    current_menu_prompt = bytes_io.get_utf8_string()
     var data = pop_n(count * 2, false)
     for i in range(count):
         var option = data.pop_back()
@@ -197,9 +199,11 @@ func intepret(bytecode: PoolByteArray) -> void:
             
             bc.MENU:
                 make_menu()
-                emit_signal("menu", current_menu.keys())
+                emit_signal("menu", self.current_menu_prompt , self.current_menu.keys())
                 var op = yield(self, "choosen_option")
-                bytes_io.seek(current_menu[op])
+                bytes_io.seek(self.current_menu[op])
+                self.current_menu.clear()
+                self.current_menu_prompt = ''
 
             bc.POSITIVE:
                 data_stack.push_back(+data_stack.pop_back())

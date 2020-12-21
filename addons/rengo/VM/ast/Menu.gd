@@ -33,6 +33,10 @@ func compiled(compiler, offset: int) -> PoolByteArray:
     
     bytes_io.put_8(compiler.BCode.MENU)
     bytes_io.put_u32(len(options))
+    if prompt is String:
+        bytes_io.put_utf8_string(prompt)
+    else:
+        bytes_io.put_utf8_string('')
 
     var terminal_jumps = []
 

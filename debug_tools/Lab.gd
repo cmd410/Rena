@@ -150,8 +150,8 @@ func _on_option_chosen(op: String):
     interp.choose(op)
 
 
-func _on_menu(ops: Array):
-    printf("Menu: %s" % [ops])
+func _on_menu(prompt: String, ops: Array):
+    printf("Menu \"%s\": %s" % [prompt, ops])
     for o in ops:
         var button = load("res://debug_tools/Option_button.gd").new()
         button.connect("option_chosen", self, "_on_option_chosen")
