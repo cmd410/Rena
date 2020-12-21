@@ -5,6 +5,7 @@ class_name RenBCI
 signal say(who, what)
 signal menu(options)
 signal choosen_option(option)
+signal state_changed(interp)
 
 var data_stack: Array = []
 var globals: Dictionary = {}
@@ -69,6 +70,7 @@ func assign_name(overwrite: bool = true, must_exist: bool = false):
     
     if overwrite or not name_exists:
         self.globals[name] = value
+        emit_signal('state_changed', self)
 
 
 func build_dict():
@@ -197,7 +199,7 @@ func intepret(bytecode: PoolByteArray) -> void:
                 make_menu()
                 emit_signal("menu", current_menu.keys())
                 var op = yield(self, "choosen_option")
-                print(op)
+                bytes_io.seek(current_menu[op])
 
             bc.POSITIVE:
                 data_stack.push_back(+data_stack.pop_back())

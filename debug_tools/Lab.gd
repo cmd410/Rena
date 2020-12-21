@@ -170,9 +170,11 @@ func _on_Run_Bytecode_pressed():
     var bci = RenBCI.new()
     interp = bci
     bci.connect("menu", self, "_on_menu")
+    bci.connect('state_changed', self, '_bci_state_update')
     bci.intepret(bytecode)
 
 
+func _bci_state_update(bci):
     state_tree.clear()
     var root = state_tree.create_item(null)
     root.set_text(0, 'Interpreter')
