@@ -9,6 +9,7 @@ onready var state_tree: Tree = get_node("VBox/HBox2/HBox/HBox2/VBox3/StateTree")
 onready var cchar: CheckBox = get_node("VBox/HBox2/HBox/HBox2/VBox2/HBox/CChar")
 onready var ctoken: CheckBox = get_node("VBox/HBox2/HBox/HBox2/VBox2/HBox/CToken")
 onready var errors: CheckBox = get_node("VBox/HBox2/HBox/HBox2/VBox2/HBox/Errors")
+onready var option_box: HBoxContainer = get_node("VBox/HBox2/HBox/HBox2/VBox2/OptionsBox")
 
 var interp = null
 
@@ -132,7 +133,10 @@ func state_update(interp):
 
 func _on_Proceed_pressed():
     if interp != null:
-        interp.emit_signal('proceed')
+        if interp is RenInterp:
+            interp.emit_signal('proceed')
+        elif interp is RenBCI:
+            interp.emit_signal('next')
 
 
 func _on_Compile_pressed():
@@ -141,6 +145,21 @@ func _on_Compile_pressed():
     parser.connect("ast_built", self, 'build_ast')
     var compiler = RenCompiler.new()
     compiler.compile_into_file(parser.script().value, 'res://testcompile.rgc')
+
+
+func _on_option_chosen(op: String):
+    for i in option_box.get_children():
+        i.queue_free()
+    interp.choose(op)
+
+
+func _on_menu(prompt: String, ops: Array):
+    printf("Menu \"%s\": %s" % [prompt, ops])
+    for o in ops:
+        var button = load("res://debug_tools/Option_button.gd").new()
+        button.connect("option_chosen", self, "_on_option_chosen")
+        button.text = o
+        option_box.add_child(button)
 
 
 func _on_Run_Bytecode_pressed():
@@ -152,9 +171,18 @@ func _on_Run_Bytecode_pressed():
     var bytecode = compiler.compile(ast)
     
     var bci = RenBCI.new()
+    interp = bci
+    bci.connect("menu", self, "_on_menu")
+    bci.connect("say", self, "_on_bci_say")
+    bci.connect('state_changed', self, '_bci_state_update')
     bci.intepret(bytecode)
 
 
+func _on_bci_say(who, what, flush):
+    printf('%s : \"%s\"' % [who, what])
+
+
+func _bci_state_update(bci):
     state_tree.clear()
     var root = state_tree.create_item(null)
     root.set_text(0, 'Interpreter')

@@ -123,12 +123,11 @@ margin_bottom = 320.0
 size_flags_horizontal = 3
 theme = ExtResource( 3 )
 custom_fonts/font = SubResource( 3 )
-text = "define ft = 42
-define real = 42.0
-define poop = 'poop'
-define sum = ft + real
-define const_sum = 42 + 42
-define d = [ft, real, 42]"
+text = "menu:
+	\"hi\":
+		\"hello\"
+	\"bye\":
+		\"oh.. ok. bye\""
 highlight_current_line = true
 syntax_highlighting = true
 show_line_numbers = true
@@ -269,7 +268,7 @@ text = "Errors"
 [node name="LOG" type="TextEdit" parent="VBox/HBox2/HBox/HBox2/VBox2"]
 margin_top = 28.0
 margin_right = 583.0
-margin_bottom = 216.0
+margin_bottom = 180.0
 size_flags_vertical = 3
 theme = ExtResource( 3 )
 readonly = true
@@ -277,6 +276,12 @@ syntax_highlighting = true
 show_line_numbers = true
 draw_tabs = true
 draw_spaces = true
+
+[node name="OptionsBox" type="HBoxContainer" parent="VBox/HBox2/HBox/HBox2/VBox2"]
+margin_top = 184.0
+margin_right = 583.0
+margin_bottom = 216.0
+rect_min_size = Vector2( 0, 32 )
 
 [node name="VBox3" type="VBoxContainer" parent="VBox/HBox2/HBox/HBox2"]
 margin_left = 692.0
