@@ -2,10 +2,11 @@ extends RenRef
 class_name RenBCI
 # ByteCode Interpreter
 
-signal say(who, what)
+signal say(who, what, flush)
 signal menu(prompt, options)
 signal choosen_option(option)
 signal state_changed(interp)
+signal next()
 
 var data_stack: Array = []
 var globals: Dictionary = {}
@@ -204,7 +205,22 @@ func intepret(bytecode: PoolByteArray) -> void:
                 bytes_io.seek(self.current_menu[op])
                 self.current_menu.clear()
                 self.current_menu_prompt = ''
-
+            
+            bc.SAY:
+                var count = bytes_io.get_u32()
+                if count == 1:
+                    var what = data_stack.pop_back()
+                    emit_signal('say', '', what, true)
+                    yield(self, 'next')
+                else:
+                    var data = pop_n(count, false)
+                    var who = data.pop_back()
+                    while not data.empty():
+                        var what = data.pop_back()
+                        var flush = data.empty()
+                        emit_signal('say', who, what, flush)
+                        yield(self, 'next')
+            
             bc.POSITIVE:
                 data_stack.push_back(+data_stack.pop_back())
             bc.NEGATIVE:

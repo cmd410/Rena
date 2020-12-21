@@ -133,7 +133,10 @@ func state_update(interp):
 
 func _on_Proceed_pressed():
     if interp != null:
-        interp.emit_signal('proceed')
+        if interp is RenInterp:
+            interp.emit_signal('proceed')
+        elif interp is RenBCI:
+            interp.emit_signal('next')
 
 
 func _on_Compile_pressed():
@@ -170,8 +173,13 @@ func _on_Run_Bytecode_pressed():
     var bci = RenBCI.new()
     interp = bci
     bci.connect("menu", self, "_on_menu")
+    bci.connect("say", self, "_on_bci_say")
     bci.connect('state_changed', self, '_bci_state_update')
     bci.intepret(bytecode)
+
+
+func _on_bci_say(who, what, flush):
+    printf('%s : \"%s\"' % [who, what])
 
 
 func _bci_state_update(bci):
