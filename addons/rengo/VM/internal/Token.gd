@@ -73,6 +73,7 @@ const REASSIGN = '$'
 const JUMP     = 'JUMP'
 const RETURN   = 'RETURN'
 const CALL     = 'CALL'
+const DO       = 'DO'
 
 const KEYWORDS = {
     'True': BOOL,
@@ -89,7 +90,8 @@ const KEYWORDS = {
     'not': NOT,
     'jump': JUMP,
     'return': RETURN,
-    'call': CALL
+    'call': CALL,
+    'do': DO
 }
 
 

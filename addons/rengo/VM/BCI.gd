@@ -168,7 +168,7 @@ func intepret(bytecode: PoolByteArray) -> void:
     
     while bytes_io.get_position() < bytes_io.get_size():
         var op_code = bytes_io.get_u8()
-
+        #print('%s - %s' % [bytes_io.get_position(), op_code])
         match op_code:
             bc.LOAD_CONST:
                 load_constant()
@@ -196,6 +196,18 @@ func intepret(bytecode: PoolByteArray) -> void:
                 jump_stack.push_back(bytes_io.get_position())
                 bytes_io.seek(dest)
             
+            bc.LOAD_ATTR:
+                var namespace = data_stack.pop_back()
+                var name = bytes_io.get_utf8_string()
+                assert(namespace.has(name), '%s has no attribute %s' % [namespace, name])
+                data_stack.push_back(namespace.get(name))
+            
+            bc.LOAD_KEY:
+                var name = data_stack.pop_back()
+                var namespace = data_stack.pop_back()
+                assert(namespace.has(name), '%s has no attribute %s' % [namespace, name])
+                data_stack.push_back(namespace[name])
+
             bc.BUILD_LIST:
                 var count = bytes_io.get_u32()
                 var list = pop_n(count)
@@ -287,5 +299,9 @@ func intepret(bytecode: PoolByteArray) -> void:
                 bin_op('and')
             bc.OR:
                 bin_op('or')
+            
+            bc.POP_TOP:
+                data_stack.pop_back()
+
             _:
                 assert(false, 'Unrecognized instruction byte: %s' % [op_code])

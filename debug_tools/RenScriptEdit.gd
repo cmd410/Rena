@@ -22,7 +22,8 @@ const KEYWORDS = {
     'or': COLORS[3],
     'True': COLORS[3],
     'False': COLORS[3],
-    'not': COLORS[3]
+    'not': COLORS[3],
+    'do': COLORS[3]
    }
 
 
