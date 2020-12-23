@@ -17,6 +17,8 @@ func _to_string():
 
 
 func compiled(compiler, offset: int) -> PoolByteArray:
+
+    var local_offset = 0
     var bytes_io = StreamPeerBuffer.new()
 
     var options = get_children()
@@ -39,22 +41,28 @@ func compiled(compiler, offset: int) -> PoolByteArray:
         bytes_io.put_utf8_string('')
 
     var terminal_jumps = []
+    
+    local_offset += bytes_io.get_size()
 
     for option in options:
         var op_id = option.id
         var compound = option.get_child(0)
-        var option_offset = offset + bytes_io.get_size()
+        var option_offset = offset + local_offset
         
         # Put option offset into jump table
         bytes_io.seek(pending_jump_options[op_id])
         bytes_io.put_u32(option_offset)
-        bytes_io.seek(option_offset - offset)
+        bytes_io.seek(local_offset)
 
         # Compile option body
-        bytes_io.put_data(compound.compiled(compiler, option_offset))
+        var compiled_branch = compound.compiled(compiler, option_offset)
+        bytes_io.put_data(compiled_branch)
+        local_offset += len(compiled_branch)
         bytes_io.put_8(compiler.BCode.JUMP)
-        terminal_jumps.append(bytes_io.get_size())
+        local_offset += 1
+        terminal_jumps.append(local_offset)
         bytes_io.put_u32(0)  # Placeholder u32 jump index to menu end
+        local_offset += 4
     
     # Put jumps to menu end
     for i in terminal_jumps:
