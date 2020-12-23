@@ -68,7 +68,7 @@ enum DataTypes {
 func compile(tree: RenAST, free_tree:bool = true) -> PoolByteArray:
     var bytes = tree.compiled(self, 0)
     if free_tree:
-        tree.free()
+        tree.queue_free()
     return post_process(bytes)
 
 
