@@ -42,7 +42,7 @@ func eat_chain(chain: Array) -> RenResult:
 
 func skip_lines():
     while self.current_token.token_type == RenToken.EOL:
-        eat(RenToken.EOL)
+        eat(RenToken.EOL).value
 
 
 func list() -> RenResult:
@@ -150,28 +150,17 @@ func factor() -> RenResult:
             token = self.current_token
             eat(RenToken.POW).value
             return RenOK.new(RenBinOp.new(node, token, factor().value))
-        
-        # Parse nested namespaces
-        elif self.current_token.token_type == RenToken.PERIOD:
-            while self.current_token.token_type == RenToken.PERIOD:
-                eat(RenToken.PERIOD).value
-                var new_node = variable().value
-                if new_node is RenVar:
-                    new_node.add_child(node)
-                elif new_node is RenInvoke or new_node is RenKeyAccess:
-                    new_node.get_child(0).add_child(node)
-                node = new_node
         return RenOK.new(node)
     
     # Parse Unary Operators
     elif self.current_token.is_type([RenToken.PLUS, RenToken.MINUS, RenToken.NOT]):
         var token = self.current_token
-        eat([RenToken.PLUS, RenToken.MINUS, RenToken.NOT])
+        eat([RenToken.PLUS, RenToken.MINUS, RenToken.NOT]).value
         var res = factor()
         return RenOK.new(RenUnOp.new(token, res.value))
     # Parse expressions in parenthesis
     elif self.current_token.token_type == RenToken.LPAREN:
-        eat(RenToken.LPAREN)
+        eat(RenToken.LPAREN).value
         var node = expr().value
         eat(RenToken.RPAREN).value
         
@@ -278,9 +267,21 @@ func expr() -> RenResult:
 
 
 func variable() -> RenResult:
+    # Read ID token
     var token = self.current_token
     eat(RenToken.ID).value
+    
     var var_obj = RenVar.new(token)
+
+    while self.current_token.token_type == RenToken.PERIOD:
+        eat(RenToken.PERIOD).value
+        var node = variable().value
+        if node is RenVar:
+            node.add_child(var_obj)
+        elif node is RenInvoke or node is RenKeyAccess:
+            node.get_child(0).add_child(var_obj)
+        var_obj = node
+
     while self.current_token.is_type([RenToken.LBRACK, RenToken.LPAREN]):
         token = self.current_token
         var current_namespace = var_obj
@@ -331,7 +332,7 @@ func say() -> RenResult:
         match self.current_token.token_type:
             RenToken.ID, RenToken.STR:
                 tokens.append(self.current_token)
-                eat([RenToken.ID, RenToken.STR])
+                eat([RenToken.ID, RenToken.STR]).value
             _:
                 return error(RenERR.TOKEN_UNEXPECTED, 'Unexpected token in say statement: %s' % [self.current_token])
     if tokens.empty():
@@ -389,7 +390,7 @@ func menu() -> RenResult:
 
 
 func ifcase() -> RenResult:
-    eat(RenToken.IF)
+    eat(RenToken.IF).value
     var ic = RenIfCase.new()
     var condition = expr().value
     eat_chain([RenToken.COLON, RenToken.EOL])
@@ -435,10 +436,21 @@ func statement() -> RenResult:
         RenToken.IF:
             node = ifcase().value
         RenToken.JUMP:
-            eat(RenToken.JUMP)
+            eat(RenToken.JUMP).value
             var token = self.current_token
-            eat(RenToken.ID)
+            eat(RenToken.ID).value
             node = RenJump.new(token)
+        RenToken.CALL:
+            eat(RenToken.CALL).value
+            var token = self.current_token
+            eat(RenToken.ID).value
+            node = RenCall.new(token)
+        RenToken.DO:
+            eat(RenToken.DO).value
+            node = variable().value
+        RenToken.RETURN:
+            eat(RenToken.RETURN).value
+            node = RenReturn.new()
         RenToken.EOL:
             eat(RenToken.EOL).value
         RenToken.BLOCK_END:
@@ -454,9 +466,10 @@ func compound() -> RenResult:
 
     var node = RenCompound.new()
     while self.current_token.token_type != RenToken.BLOCK_END:
-        node.add_child(statement().value)
+        var st = statement().value
+        node.add_child(st)
         skip_lines()
-    eat(RenToken.BLOCK_END)
+    eat(RenToken.BLOCK_END).value
     return RenOK.new(node)
 
 

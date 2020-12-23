@@ -43,5 +43,9 @@ func compiled(compiler, offset: int) -> PoolByteArray:
         offset += len(compiled_statement)
 
         bytes_io.put_data(compiled_statement)
+
+        if i is RenInvoke:
+            bytes_io.put_8(compiler.BCode.POP_TOP)
+            offset += 1
     
     return bytes_io.data_array

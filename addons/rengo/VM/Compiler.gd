@@ -40,6 +40,8 @@ enum BCode {
     SAY
     CALL_FUNC
     MENU
+    RETURN
+    CALL
 }
 
 

@@ -9,6 +9,7 @@ signal state_changed(interp)
 signal next()
 
 var data_stack: Array = []
+var jump_stack: Array = []
 var globals: Dictionary = {}
 
 var bytes_io: StreamPeerBuffer
@@ -21,6 +22,7 @@ var current_menu_prompt: String = ''
 
 func _init(globals: Dictionary = {}):
     self.globals = globals
+    self.globals['null'] = null
 
 
 func choose(option: String):
@@ -166,7 +168,7 @@ func intepret(bytecode: PoolByteArray) -> void:
     
     while bytes_io.get_position() < bytes_io.get_size():
         var op_code = bytes_io.get_u8()
-
+        #print('%s - %s' % [bytes_io.get_position(), op_code])
         match op_code:
             bc.LOAD_CONST:
                 load_constant()
@@ -189,7 +191,23 @@ func intepret(bytecode: PoolByteArray) -> void:
                 var value = data_stack.pop_back()
                 if not value:
                     bytes_io.seek(dest)
+            bc.CALL:
+                var dest = bytes_io.get_u32()
+                jump_stack.push_back(bytes_io.get_position())
+                bytes_io.seek(dest)
             
+            bc.LOAD_ATTR:
+                var namespace = data_stack.pop_back()
+                var name = bytes_io.get_utf8_string()
+                assert(namespace.has(name), '%s has no attribute %s' % [namespace, name])
+                data_stack.push_back(namespace.get(name))
+            
+            bc.LOAD_KEY:
+                var name = data_stack.pop_back()
+                var namespace = data_stack.pop_back()
+                assert(namespace.has(name), '%s has no attribute %s' % [namespace, name])
+                data_stack.push_back(namespace[name])
+
             bc.BUILD_LIST:
                 var count = bytes_io.get_u32()
                 var list = pop_n(count)
@@ -221,13 +239,26 @@ func intepret(bytecode: PoolByteArray) -> void:
                         emit_signal('say', who, what, flush)
                         yield(self, 'next')
             
+            bc.CALL_FUNC:
+                var function = data_stack.pop_back() as FuncRef
+                assert(function != null, 'Attempt to call non-callable object!')
+                var args_count = bytes_io.get_u32()
+                data_stack.push_back((function.call_funcv(pop_n(args_count))))
+            
             bc.POSITIVE:
                 data_stack.push_back(+data_stack.pop_back())
             bc.NEGATIVE:
                 data_stack.push_back(-data_stack.pop_back())
             bc.NOT:
                 data_stack.push_back(not data_stack.pop_back())
-
+            
+            bc.RETURN:
+                if jump_stack.empty():
+                    break
+                else:
+                    var dest = jump_stack.pop_back()
+                    bytes_io.seek(dest)
+            
             bc.ADD:
                 bin_op('+')
             bc.SUB:
@@ -268,5 +299,9 @@ func intepret(bytecode: PoolByteArray) -> void:
                 bin_op('and')
             bc.OR:
                 bin_op('or')
+            
+            bc.POP_TOP:
+                data_stack.pop_back()
+
             _:
                 assert(false, 'Unrecognized instruction byte: %s' % [op_code])

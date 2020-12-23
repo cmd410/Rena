@@ -123,11 +123,14 @@ margin_bottom = 320.0
 size_flags_horizontal = 3
 theme = ExtResource( 3 )
 custom_fonts/font = SubResource( 3 )
-text = "menu:
-	\"hi\":
-		\"hello\"
-	\"bye\":
-		\"oh.. ok. bye\""
+text = "define a = True
+label start:
+	menu:
+		\"hi\":
+			\"hello\"
+		\"bye\":
+			\"oh.. ok. bye\"
+	\"The end\""
 highlight_current_line = true
 syntax_highlighting = true
 show_line_numbers = true
@@ -325,7 +328,6 @@ margin_bottom = 600.0
 rect_min_size = Vector2( 0, 16 )
 theme = ExtResource( 3 )
 custom_styles/separator = SubResource( 8 )
-[connection signal="text_changed" from="VBox/HBox2/HBox/HBox/TextEdit" to="VBox/HBox2/HBox/HBox/TextEdit" method="_on_TextEdit_text_changed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Tokenize" to="." method="_on_Tokenize_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/BuildAST" to="." method="_on_BuildAST_pressed"]
 [connection signal="pressed" from="VBox/HBox2/HBox/HBox2/VBox/Execute" to="." method="_on_Execute_pressed"]
