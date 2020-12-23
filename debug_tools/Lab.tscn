@@ -134,7 +134,6 @@ label start:
 highlight_current_line = true
 syntax_highlighting = true
 show_line_numbers = true
-draw_tabs = true
 draw_spaces = true
 highlight_all_occurrences = true
 caret_blink = true
