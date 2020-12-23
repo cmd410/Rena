@@ -116,55 +116,6 @@ func pop_n(n: int, reverse: bool = true) -> Array:
     if reverse:
         arr.invert()
     return arr
-
-
-func bin_op(op: String):
-    var right = data_stack.pop_back()
-    var left = data_stack.pop_back()
-    var result = null
-    match op:
-        '+':
-            result = left + right
-        '-':
-            result = left - right
-        '*':
-            result = left * right
-        '/':
-            result = left / right
-        '//':
-            result = floor(left / right)
-        '**':
-            result = pow(left, right)
-        '%':
-            result = left % right
-        '<<':
-            result = left << right
-        '>>':
-            result = left >> right
-        '^':
-            result = left ^ right
-        '|':
-            result = left | right
-        '&':
-            result = left & right
-        '==':
-            result = left == right
-        '!=':
-            result = left != right
-        '<':
-            result = left < right
-        '>':
-            result = left > right
-        '<=':
-            result = left <= right
-        '>=':
-            result = left >= right
-        'and':
-            result = left and right
-        'or':
-            result = left or right
-    assert(result != null, 'Result of binary operation is null!')
-    data_stack.push_back(result)
         
 
 func intepret(bytecode: PoolByteArray) -> void:
@@ -267,45 +218,85 @@ func intepret(bytecode: PoolByteArray) -> void:
                     bytes_io.seek(dest)
             
             bc.ADD:
-                bin_op('+')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left + right)
             bc.SUB:
-                bin_op('-')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left - right)
             bc.MUL:
-                bin_op('*')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left * right)
             bc.DIV:
-                bin_op('/')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left / right)
             bc.FLOORDIV:
-                bin_op('//')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(floor(left / right))
             bc.POW:
-                bin_op('**')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(pow(left, right))
             bc.MOD:
-                bin_op('%')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left % right)
             bc.LSHIFT:
-                bin_op('<<')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left << right)
             bc.RSHIFT:
-                bin_op('>>')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left >> right)
             bc.XOR:
-                bin_op('^')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left ^ right)
             bc.BOR:
-                bin_op('|')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left | right)
             bc.BAND:
-                bin_op('&')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left & right)
             bc.EXEQ:
-                bin_op('==')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left == right)
             bc.NOEQ:
-                bin_op('!=')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left != right)
             bc.LESS:
-                bin_op('<')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left < right)
             bc.GREATER:
-                bin_op('>')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left > right)
             bc.LEQ:
-                bin_op('<=')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left <= right)
             bc.GEQ:
-                bin_op('>=')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left >= right)
             bc.AND:
-                bin_op('and')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left and right)
             bc.OR:
-                bin_op('or')
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left or right)
             
             bc.POP_TOP:
                 data_stack.pop_back()
