@@ -7,6 +7,8 @@ signal menu(prompt, options)
 signal choosen_option(option)
 signal state_changed(interp)
 signal next()
+signal start()
+signal end()
 
 var data_stack: Array = []
 var jump_stack: Array = []
@@ -30,6 +32,10 @@ func choose(option: String):
         emit_signal("choosen_option", option)
     else:
         push_error('Option \"%s\" is not in current menu!' % [option])
+
+
+func next():
+    emit_signal('next')
 
 
 func load_constant():
@@ -165,7 +171,8 @@ func intepret(bytecode: PoolByteArray) -> void:
     bytes_io = StreamPeerBuffer.new()
     bytes_io.data_array = bytecode
     bytes_io.seek(0)
-    
+
+    emit_signal('start')
     while bytes_io.get_position() < bytes_io.get_size():
         var op_code = bytes_io.get_u8()
         #print('%s - %s' % [bytes_io.get_position(), op_code])
@@ -305,3 +312,5 @@ func intepret(bytecode: PoolByteArray) -> void:
 
             _:
                 assert(false, 'Unrecognized instruction byte: %s' % [op_code])
+    
+    emit_signal('end')
