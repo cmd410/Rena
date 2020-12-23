@@ -44,8 +44,9 @@ func cleanup(text: String) -> RenResult:
     # Removes comments from code
     # Determines indent character
     # Does not allow to mix tabs and spaces as indents
+
     var line_regex = RegEx.new()
-    line_regex.compile('^(?P<indent>[ \\t]*)(?P<logic>[^#\\n\\t]*)[ \\t]*#?.*$')
+    line_regex.compile('^(?P<indent>[ \\t]*)(?P<logic>.*)$')
 
     var lines = text.split('\n')
     var new_text: String = ''
@@ -58,6 +59,40 @@ func cleanup(text: String) -> RenResult:
         
         var logic_line = mat.get_string('logic')
         if logic_line:
+            
+            if logic_line[0] == '#':
+                new_text += '\n'
+                continue
+
+            if '#' in logic_line:
+                var dq_in_line = '\"' in logic_line
+                var sq_in_line = '\'' in logic_line
+                
+                if dq_in_line or sq_in_line:
+                    var in_str = false
+                    var last_c = ''
+                    var new_logic = ''
+                    var last_str_delim = ''
+                    for c in logic_line:
+                        if c == '#' and not in_str:
+                            break
+                        elif c in ['\'', '\"'] and last_c != '\\':
+                            new_logic += c
+                            if not in_str:
+                                last_str_delim = c
+                                in_str = true
+                            else:
+                                if c == last_str_delim:
+                                    in_str = false
+                                else:
+                                    last_c = c
+                        else:
+                            last_c = c
+                            new_logic += c
+                    logic_line = new_logic
+                else:
+                    logic_line = logic_line.substr(0, logic_line.find('#'))
+            
             new_line = logic_line
            
             var indent = mat.get_string('indent')
@@ -255,11 +290,14 @@ func string() -> RenResult:
                                         'Cannot parse character \"\\%s%s\"' % [form, a+b]
                                     )
                             c = char(hex.hex_to_int())
-
-                    result += c
-                    l = c
-                    last_char = l
-                    advance()
+                    if c:
+                        result += c
+                        l = c
+                        last_char = l
+                        advance()
+                    else:
+                        last_char = '\\'
+                        advance()
             '':
                 return error(RenERR.PARSING_ERROR, 'Unexpected EOF while parsing string.')
             '\n':
