@@ -3,8 +3,12 @@ extends EditorPlugin
 
 
 func _enter_tree():
-    pass
+    add_custom_type(
+        'RenaVM', 'Node',
+        load('res://addons/Rena/RVM.gd'),
+        load('res://addons/Rena/icon.png')
+    )
 
 
 func _exit_tree():
-    pass
+    remove_custom_type('RenaVM')

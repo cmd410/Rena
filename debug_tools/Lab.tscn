@@ -123,14 +123,6 @@ margin_bottom = 320.0
 size_flags_horizontal = 3
 theme = ExtResource( 3 )
 custom_fonts/font = SubResource( 3 )
-text = "define a = True
-label start:
-	menu:
-		\"hi\":
-			\"hello\"
-		\"bye\":
-			\"oh.. ok. bye\"
-	\"The end\""
 highlight_current_line = true
 syntax_highlighting = true
 show_line_numbers = true
