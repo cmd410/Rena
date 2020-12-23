@@ -28,8 +28,9 @@ const KEYWORDS = {
 
 
 func _ready():
-    add_color_region("\'", "\'", COLORS[1])
-    add_color_region('\"', '\"', COLORS[1])
+    add_color_region("\'", "\'", COLORS[1], true)
+    add_color_region('\"', '\"', COLORS[1], true)
+    add_color_region('#', '', Color(0.4, 0.4, 0.4), true)
     for key in KEYWORDS:
         add_keyword_color(key, KEYWORDS[key])
 
