@@ -150,17 +150,6 @@ func factor() -> RenResult:
             token = self.current_token
             eat(RenToken.POW).value
             return RenOK.new(RenBinOp.new(node, token, factor().value))
-        
-        # Parse nested namespaces
-        elif self.current_token.token_type == RenToken.PERIOD:
-            while self.current_token.token_type == RenToken.PERIOD:
-                eat(RenToken.PERIOD).value
-                var new_node = variable().value
-                if new_node is RenVar:
-                    new_node.add_child(node)
-                elif new_node is RenInvoke or new_node is RenKeyAccess:
-                    new_node.get_child(0).add_child(node)
-                node = new_node
         return RenOK.new(node)
     
     # Parse Unary Operators
@@ -278,9 +267,21 @@ func expr() -> RenResult:
 
 
 func variable() -> RenResult:
+    # Read ID token
     var token = self.current_token
     eat(RenToken.ID).value
+    
     var var_obj = RenVar.new(token)
+
+    while self.current_token.token_type == RenToken.PERIOD:
+        eat(RenToken.PERIOD).value
+        var node = variable().value
+        if node is RenVar:
+            node.add_child(var_obj)
+        elif node is RenInvoke or node is RenKeyAccess:
+            node.get_child(0).add_child(var_obj)
+        var_obj = node
+
     while self.current_token.is_type([RenToken.LBRACK, RenToken.LPAREN]):
         token = self.current_token
         var current_namespace = var_obj
@@ -444,6 +445,9 @@ func statement() -> RenResult:
             var token = self.current_token
             eat(RenToken.ID).value
             node = RenCall.new(token)
+        RenToken.DO:
+            eat(RenToken.DO).value
+            node = variable().value
         RenToken.RETURN:
             eat(RenToken.RETURN).value
             node = RenReturn.new()
@@ -462,7 +466,8 @@ func compound() -> RenResult:
 
     var node = RenCompound.new()
     while self.current_token.token_type != RenToken.BLOCK_END:
-        node.add_child(statement().value)
+        var st = statement().value
+        node.add_child(st)
         skip_lines()
     eat(RenToken.BLOCK_END).value
     return RenOK.new(node)
