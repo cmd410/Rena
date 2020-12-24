@@ -1,5 +1,5 @@
-extends RenAST
-class_name RenMenu
+extends "AST.gd"
+
 
 
 var prompt = null

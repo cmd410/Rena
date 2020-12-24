@@ -7,6 +7,32 @@ signal ast_built(ast)
 var lexer: RenLexer = null
 var current_token: RenToken = null
 
+# preload AST nodes classes
+const AST =       preload('ast/AST.gd')
+const BinOp =     preload("ast/BinOp.gd")
+const Bool =      preload("ast/Bool.gd")
+const Call =      preload("ast/Call.gd")
+const Compound =  preload("ast/Compound.gd")
+const Condition = preload("ast/Contition.gd")
+const Def =       preload("ast/Def.gd")
+const Dict =      preload("ast/Dict.gd")
+const DictItem =  preload("ast/DictItem.gd")
+const IfCase =    preload("ast/IfCase.gd")
+const Invoke =    preload("ast/Invoke.gd")
+const Jump =      preload("ast/Jump.gd")
+const KeyAccess = preload("ast/KeyAccess.gd")
+const Label =     preload("ast/Label.gd")
+const List =      preload("ast/List.gd")
+const Menu =      preload("ast/Menu.gd")
+const Num =       preload("ast/Num.gd")
+const Option =    preload("ast/Option.gd")
+const Return =    preload("ast/Return.gd")
+const Say =       preload("ast/Say.gd")
+const Str =       preload("ast/String.gd")
+const UnOp =      preload("ast/UnOp.gd")
+const Value =     preload("ast/Value.gd")
+const Var =       preload("ast/Var.gd")
+
 
 func _init(lexer: RenLexer):
     self.lexer = lexer as RenLexer
@@ -46,7 +72,7 @@ func skip_lines():
 
 
 func list() -> RenResult:
-    var node = RenList.new(self.current_token)
+    var node = List.new(self.current_token)
     eat(RenToken.LBRACK).value
 
     skip_lines()
@@ -68,7 +94,7 @@ func list() -> RenResult:
 
 func dict() -> RenResult:
     # Create new dict AST item
-    var node = RenDict.new(self.current_token)
+    var node = Dict.new(self.current_token)
     eat(RenToken.LCURL).value
     
     skip_lines()
@@ -81,7 +107,7 @@ func dict() -> RenResult:
         # Parse dict value
         var value = expr().value
         # Add DictItem
-        node.add_child(RenDictItem.new(key, value))
+        node.add_child(DictItem.new(key, value))
         skip_lines()
         # After each item we expect either a comma or closing curly bracket
         if self.current_token.is_type(RenToken.COMMA):
@@ -126,15 +152,15 @@ func factor() -> RenResult:
         var node = null
         match token.token_type:
             RenToken.INT, RenToken.FLOAT:
-                node = RenNum.new(token)
+                node = Num.new(token)
                 eat(RenToken.DATA_UNIT).value
             
             RenToken.BOOL:
-                node = RenBool.new(token)
+                node = Bool.new(token)
                 eat(RenToken.DATA_UNIT).value
             
             RenToken.STR:
-                node = RenString.new(token)
+                node = Str.new(token)
                 eat(RenToken.DATA_UNIT).value
             
             RenToken.ID:
@@ -149,7 +175,7 @@ func factor() -> RenResult:
         if self.current_token.token_type == RenToken.POW:
             token = self.current_token
             eat(RenToken.POW).value
-            return RenOK.new(RenBinOp.new(node, token, factor().value))
+            return RenOK.new(BinOp.new(node, token, factor().value))
         return RenOK.new(node)
     
     # Parse Unary Operators
@@ -157,7 +183,7 @@ func factor() -> RenResult:
         var token = self.current_token
         eat([RenToken.PLUS, RenToken.MINUS, RenToken.NOT]).value
         var res = factor()
-        return RenOK.new(RenUnOp.new(token, res.value))
+        return RenOK.new(UnOp.new(token, res.value))
     # Parse expressions in parenthesis
     elif self.current_token.token_type == RenToken.LPAREN:
         eat(RenToken.LPAREN).value
@@ -181,7 +207,7 @@ func term() -> RenResult:
     while self.current_token.is_type(RenToken.TERM):
         var token = self.current_token
         eat(RenToken.TERM).value
-        node = RenBinOp.new(node, token, factor().value)
+        node = BinOp.new(node, token, factor().value)
     return RenOK.new(node)
 
 
@@ -190,7 +216,7 @@ func arithm() -> RenResult:
     while self.current_token.is_type(RenToken.ARITHM):
         var token = self.current_token
         eat(RenToken.ARITHM).value
-        node = RenBinOp.new(node, token, term().value)
+        node = BinOp.new(node, token, term().value)
     return RenOK.new(node)
 
 
@@ -199,7 +225,7 @@ func shifts() -> RenResult:
     while self.current_token.is_type(RenToken.SHIFTS):
         var token = self.current_token
         eat(RenToken.SHIFTS).value
-        node = RenBinOp.new(node, token, arithm().value)
+        node = BinOp.new(node, token, arithm().value)
     return RenOK.new(node)
 
 
@@ -208,7 +234,7 @@ func cmp() -> RenResult:
     while self.current_token.is_type(RenToken.CMP):
         var token = self.current_token
         eat(RenToken.CMP).value
-        node = RenBinOp.new(node, token, shifts().value)
+        node = BinOp.new(node, token, shifts().value)
     return RenOK.new(node)
 
 
@@ -217,7 +243,7 @@ func exact() -> RenResult:
     while self.current_token.is_type(RenToken.EXACT):
         var token = self.current_token
         eat(RenToken.EXACT).value
-        node = RenBinOp.new(node, token, cmp().value)
+        node = BinOp.new(node, token, cmp().value)
     return RenOK.new(node)
 
 
@@ -226,7 +252,7 @@ func band() -> RenResult:
     while self.current_token.is_type(RenToken.BAND):
         var token = self.current_token
         eat(RenToken.BAND).value
-        node = RenBinOp.new(node, token, exact().value)
+        node = BinOp.new(node, token, exact().value)
     return RenOK.new(node)
 
 
@@ -235,7 +261,7 @@ func xor() -> RenResult:
     while self.current_token.is_type(RenToken.XOR):
         var token = self.current_token
         eat(RenToken.XOR).value
-        node = RenBinOp.new(node, token, band().value)
+        node = BinOp.new(node, token, band().value)
     return RenOK.new(node)
 
 
@@ -244,7 +270,7 @@ func bor() -> RenResult:
     while self.current_token.is_type(RenToken.BOR):
         var token = self.current_token
         eat(RenToken.BOR).value
-        node = RenBinOp.new(node, token, xor().value)
+        node = BinOp.new(node, token, xor().value)
     return RenOK.new(node)
 
 
@@ -253,7 +279,7 @@ func land() -> RenResult:
     while self.current_token.is_type(RenToken.AND):
         var token = self.current_token
         eat(RenToken.AND).value
-        node = RenBinOp.new(node, token, bor().value)
+        node = BinOp.new(node, token, bor().value)
     return RenOK.new(node)
 
 
@@ -262,7 +288,7 @@ func expr() -> RenResult:
     while self.current_token.is_type(RenToken.OR):
         var token = self.current_token
         eat(RenToken.OR).value
-        node = RenBinOp.new(node, token, land().value)
+        node = BinOp.new(node, token, land().value)
     return RenOK.new(node)
 
 
@@ -271,14 +297,14 @@ func variable() -> RenResult:
     var token = self.current_token
     eat(RenToken.ID).value
     
-    var var_obj = RenVar.new(token)
+    var var_obj = Var.new(token)
 
     while self.current_token.token_type == RenToken.PERIOD:
         eat(RenToken.PERIOD).value
         var node = variable().value
-        if node is RenVar:
+        if node is Var:
             node.add_child(var_obj)
-        elif node is RenInvoke or node is RenKeyAccess:
+        elif node is Invoke or node is KeyAccess:
             node.get_child(0).add_child(var_obj)
         var_obj = node
 
@@ -290,7 +316,7 @@ func variable() -> RenResult:
         match token.token_type:
             # Function call
             RenToken.LPAREN:
-                var invoke_obj = RenInvoke.new()
+                var invoke_obj = Invoke.new()
                 invoke_obj.add_child(current_namespace)
                 var values = comma_separated_exprs(RenToken.RPAREN).value
                 
@@ -301,7 +327,7 @@ func variable() -> RenResult:
                 var_obj = invoke_obj
             # Key access
             RenToken.LBRACK:
-                var_obj = RenKeyAccess.new(current_namespace, expr().value)
+                var_obj = KeyAccess.new(current_namespace, expr().value)
                 eat(RenToken.RBRACK).value
 
     return RenOK.new(var_obj)
@@ -311,7 +337,7 @@ func assignment() -> RenResult:
     var id = variable().value
     var op = self.current_token
     eat(RenToken.EQUAL).value
-    return RenOK.new(RenBinOp.new(id, op, expr().value))
+    return RenOK.new(BinOp.new(id, op, expr().value))
 
 # End of Expression parsing frunctions
 func label() -> RenResult:
@@ -321,7 +347,7 @@ func label() -> RenResult:
 
     eat_chain([RenToken.ID, RenToken.COLON, RenToken.EOL]).value
 
-    var node = RenLabel.new(token)
+    var node = Label.new(token)
     node.add_child(compound().value)
     return RenOK.new(node)
 
@@ -337,13 +363,13 @@ func say() -> RenResult:
                 return error(RenERR.TOKEN_UNEXPECTED, 'Unexpected token in say statement: %s' % [self.current_token])
     if tokens.empty():
         return error(RenERR.TOKEN_UNEXPECTED, 'Unexpected end of say statement')
-    var node = RenSay.new()
+    var node = Say.new()
     for token in tokens:
         match token.token_type:
             RenToken.ID:
-                node.add_child(RenVar.new(token))
+                node.add_child(Var.new(token))
             RenToken.STR:
-                node.add_child(RenString.new(token))
+                node.add_child(Str.new(token))
     return RenOK.new(node)
 
 
@@ -360,11 +386,11 @@ func menu() -> RenResult:
     # Parsing first menu option or line
     match current_token.token_type:
         RenToken.EOL:
-            menu = RenMenu.new(token.value)
+            menu = Menu.new(token.value)
             eat(RenToken.EOL).value
         RenToken.COLON:
-            var option = RenOption.new(token)
-            menu = RenMenu.new()
+            var option = Option.new(token)
+            menu = Menu.new()
             menu.add_child(option)
             eat(RenToken.COLON).value
             eat(RenToken.EOL).value
@@ -380,7 +406,7 @@ func menu() -> RenResult:
         
         skip_lines()
         
-        var option = RenOption.new(token)
+        var option = Option.new(token)
         option.add_child(compound().value)
         menu.add_child(option)
         skip_lines()
@@ -391,11 +417,11 @@ func menu() -> RenResult:
 
 func ifcase() -> RenResult:
     eat(RenToken.IF).value
-    var ic = RenIfCase.new()
+    var ic = IfCase.new()
     var condition = expr().value
     eat_chain([RenToken.COLON, RenToken.EOL])
     var outcome = compound().value
-    ic.add_child(RenCondition.new(condition, outcome))
+    ic.add_child(Condition.new(condition, outcome))
     skip_lines()
     while self.current_token.is_type(RenToken.ELIF):
         eat(RenToken.ELIF).value
@@ -403,16 +429,16 @@ func ifcase() -> RenResult:
         eat_chain([RenToken.COLON, RenToken.EOL]).value
         
         outcome = compound().value
-        ic.add_child(RenCondition.new(condition, outcome))
+        ic.add_child(Condition.new(condition, outcome))
         skip_lines()
     if self.current_token.is_type(RenToken.ELSE):
         eat(RenToken.ELSE).value
     
-        condition = RenBool.new(RenToken.new(RenToken.BOOL, true))
+        condition = Bool.new(RenToken.new(RenToken.BOOL, true))
         eat_chain([RenToken.COLON, RenToken.EOL]).value
         
         outcome = compound().value
-        ic.add_child(RenCondition.new(condition, outcome))
+        ic.add_child(Condition.new(condition, outcome))
         skip_lines()
     return RenOK.new(ic)
 
@@ -425,7 +451,7 @@ func statement() -> RenResult:
             var token = self.current_token
             eat([RenToken.DEFINE, RenToken.DEFAULT, RenToken.REASSIGN]).value
             
-            node = RenDef.new(token)
+            node = Def.new(token)
             node.add_child(assignment().value)
         RenToken.LABEL:
             node = label().value
@@ -439,18 +465,18 @@ func statement() -> RenResult:
             eat(RenToken.JUMP).value
             var token = self.current_token
             eat(RenToken.ID).value
-            node = RenJump.new(token)
+            node = Jump.new(token)
         RenToken.CALL:
             eat(RenToken.CALL).value
             var token = self.current_token
             eat(RenToken.ID).value
-            node = RenCall.new(token)
+            node = Call.new(token)
         RenToken.DO:
             eat(RenToken.DO).value
             node = variable().value
         RenToken.RETURN:
             eat(RenToken.RETURN).value
-            node = RenReturn.new()
+            node = Return.new()
         RenToken.EOL:
             eat(RenToken.EOL).value
         RenToken.BLOCK_END:
@@ -464,7 +490,7 @@ func compound() -> RenResult:
     skip_lines()
     eat(RenToken.BLOCK_START).value
 
-    var node = RenCompound.new()
+    var node = Compound.new()
     while self.current_token.token_type != RenToken.BLOCK_END:
         var st = statement().value
         node.add_child(st)

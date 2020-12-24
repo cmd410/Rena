@@ -13,6 +13,7 @@ onready var option_box: HBoxContainer = get_node("VBox/HBox2/HBox/HBox2/VBox2/Op
 
 var interp = null
 
+const RenAST = preload('res://addons/Rena/VM/ast/AST.gd')
 # TODO cleanup this script
 
 

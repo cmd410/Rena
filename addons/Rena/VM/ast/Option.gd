@@ -1,5 +1,5 @@
-extends RenAST
-class_name RenOption
+extends "AST.gd"
+
 
 
 func _init(token):

@@ -1,6 +1,7 @@
-extends RenAST
-class_name RenCompound
+extends "AST.gd"
 
+const Label = preload('Label.gd')
+const Invoke = preload('Invoke.gd')
 
 var labels: Dictionary = {}
 var current_progress: int = 0
@@ -13,7 +14,7 @@ func _to_string():
 func find_labels(interp):
     var i = 0
     for child in get_children():
-        if child is RenLabel:
+        if child is Label:
             labels[child.id] = i
         i += 1
     interp.label_stack.append(labels)
@@ -44,7 +45,7 @@ func compiled(compiler, offset: int) -> PoolByteArray:
 
         bytes_io.put_data(compiled_statement)
 
-        if i is RenInvoke:
+        if i is Invoke:
             bytes_io.put_8(compiler.BCode.POP_TOP)
             offset += 1
     

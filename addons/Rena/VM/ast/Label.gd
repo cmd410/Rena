@@ -1,5 +1,5 @@
-extends RenAST
-class_name RenLabel
+extends "AST.gd"
+
 
 
 func _init(token: RenToken):

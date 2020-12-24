@@ -1,5 +1,5 @@
-extends RenAST
-class_name RenUnOp
+extends "AST.gd"
+
 
 
 var token_map = {
@@ -9,7 +9,7 @@ var token_map = {
 }
 
 
-func _init(token: RenToken, right: RenAST):
+func _init(token: RenToken, right):
     self.token = token
     add_child(right)
 

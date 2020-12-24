@@ -1,8 +1,8 @@
-extends RenAST
-class_name RenDictItem
+extends "AST.gd"
 
 
-func _init(key: RenAST, value: RenAST):
+
+func _init(key, value):
     add_child(key)
     add_child(value) 
 

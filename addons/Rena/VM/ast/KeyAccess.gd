@@ -1,8 +1,8 @@
-extends RenAST
-class_name RenKeyAccess
+extends "AST.gd"
 
 
-func _init(obj: RenAST, key: RenAST):
+
+func _init(obj, key):
     add_child(obj)
     add_child(key)
 

@@ -1,5 +1,5 @@
-extends RenAST
-class_name RenJump
+extends "AST.gd"
+
 
 
 var dest: String

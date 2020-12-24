@@ -1,5 +1,5 @@
-extends RenAST
-class_name RenReturn
+extends "AST.gd"
+
 
 
 func _to_string():

@@ -1,5 +1,5 @@
-extends RenAST
-class_name RenCall
+extends "AST.gd"
+
 
 var dest
 

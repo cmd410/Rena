@@ -1,5 +1,5 @@
-extends RenValue
-class_name RenString
+extends "Value.gd"
+
 
 
 func _init(t).(t):

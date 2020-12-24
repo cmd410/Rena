@@ -65,14 +65,14 @@ enum DataTypes {
 }
 
 
-func compile(tree: RenAST, free_tree:bool = true) -> PoolByteArray:
+func compile(tree, free_tree:bool = true) -> PoolByteArray:
     var bytes = tree.compiled(self, 0)
     if free_tree:
         tree.queue_free()
     return post_process(bytes)
 
 
-func compile_into_file(tree: RenAST, filename: String, free_tree:bool = true) -> PoolByteArray:
+func compile_into_file(tree, filename: String, free_tree:bool = true) -> PoolByteArray:
     var bytes = compile(tree, free_tree)
     
     var out = File.new()

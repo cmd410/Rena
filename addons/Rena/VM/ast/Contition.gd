@@ -1,8 +1,7 @@
-extends RenAST
-class_name RenCondition
+extends "AST.gd"
 
 
-func _init(condition: RenAST, compound: RenAST):
+func _init(condition, compound):
     add_child(condition)
     add_child(compound)
 

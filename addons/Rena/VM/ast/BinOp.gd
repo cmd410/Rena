@@ -1,5 +1,5 @@
-extends RenAST
-class_name RenBinOp
+extends "AST.gd"
+
 
 var token_map = {
         RenToken.PLUS: RenCompiler.BCode.ADD,
@@ -25,7 +25,7 @@ var token_map = {
     }
 
 
-func _init(left: RenAST, token: RenToken, right: RenAST):
+func _init(left, token: RenToken, right):
     self.token = token
     add_child(left)
     add_child(right)

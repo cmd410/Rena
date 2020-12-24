@@ -1,5 +1,5 @@
-extends RenAST
-class_name RenValue
+extends "AST.gd"
+
 
 
 var value
