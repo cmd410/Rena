@@ -152,7 +152,7 @@ func _on_Compile_pressed():
     var parser = RenParser.new(lexer)
     parser.connect("ast_built", self, 'build_ast')
     var compiler = RenCompiler.new()
-    compiler.compile_into_file(parser.script().value, 'res://testcompile.rgc')
+    compiler.compile_into_file(parser.script().value, 'res://testcompile.rc')
 
 
 func _on_option_chosen(op: String):
