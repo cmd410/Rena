@@ -35,7 +35,7 @@ const CMP      = [LESS, GREATER, LEQ, GEQ]
 const EXACT    = [EXEQ, NOEQ]
 const SHIFTS   = [LSHIFT, RSHIFT]
 const ARITHM   = [PLUS, MINUS]
-const TERM     = [MUL, DIV, MOD, FLOORDIV, POW]
+const TERM     = [MUL, DIV, MOD, FLOORDIV]
 const OPERATOR = [PLUS, MINUS, MUL, DIV, MOD,
                   FLOORDIV, EQUAL, POW]
 

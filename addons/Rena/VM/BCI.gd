@@ -186,7 +186,7 @@ func intepret(bytecode: PoolByteArray) -> void:
                 var count = bytes_io.get_u32()
                 if count == 1:
                     var what = data_stack.pop_back()
-                    emit_signal('say', '', what, true)
+                    emit_signal('say', null, what, true)
                     yield(self, 'next')
                 else:
                     var data = pop_n(count, false)
