@@ -7,7 +7,7 @@ Blocks of code in Rena are defined by its indentation, one can use either **spac
 Script consist of a series of **statements** that tell interpreter what to do. The default statement in Rena is so called **Say statement**, it consists of any number of identifiers or strings:
 
 ```renpy
-"Robert" "Hi, I'm Robert!"  # Rebert is who speaks
+"Robert" "Hi, I'm Robert!"  # Robert is who speaks
 "Robert entered the room and sat next to you"  # Author speech
 ```
 
