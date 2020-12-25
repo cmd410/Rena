@@ -13,6 +13,7 @@ signal end()
 var data_stack: Array = []
 var jump_stack: Array = []
 var globals: Dictionary = {}
+var runtime_vars: Array = []
 
 var bytes_io: StreamPeerBuffer
 var bc = RenCompiler.BCode
@@ -27,11 +28,12 @@ func _init(globals: Dictionary = {}):
     self.globals['null'] = null
 
 
-func choose(option: String):
+func choose(option: String) -> bool:
     if option in current_menu:
         emit_signal("choosen_option", option)
+        return true
     else:
-        push_error('Option \"%s\" is not in current menu!' % [option])
+        return false
 
 
 func next():
@@ -71,12 +73,30 @@ func load_constant():
     data_stack.push_back(value)
 
 
+func get_runtime_varialbes() -> Dictionary:
+    var vars = {}
+    var valid_names = []
+    
+    while runtime_vars:
+        var name = runtime_vars.pop_back()
+        if not globals.has(name):
+            continue
+        vars[name] = globals[name]
+        valid_names.append(name)
+    
+    runtime_vars = valid_names
+    return vars
+
+
 func assign_name(overwrite: bool = true, must_exist: bool = false):
     var name = bytes_io.get_utf8_string()
     var value = data_stack.pop_back()
     
     var name_exists = self.globals.has(name)
     assert(not must_exist or name_exists, 'Name %s does not exist' % [name])
+    
+    if not name_exists:
+        runtime_vars.append(name)
     
     if overwrite or not name_exists:
         self.globals[name] = value

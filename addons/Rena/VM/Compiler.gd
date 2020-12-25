@@ -7,6 +7,7 @@ var jump_table: Dictionary = {}
 # Store offsets that require jump indexes to labels
 # that were not defined before jump statement
 var pending_jumps: Dictionary = {}
+var current_offset: int = 0
 
 
 enum BCode {
@@ -66,7 +67,8 @@ enum DataTypes {
 
 
 func compile(tree, free_tree:bool = true) -> PoolByteArray:
-    var bytes = tree.compiled(self, 0)
+    var bytes = tree.compiled(self, current_offset)
+    current_offset += len(bytes)
     if free_tree:
         tree.queue_free()
     return post_process(bytes)
