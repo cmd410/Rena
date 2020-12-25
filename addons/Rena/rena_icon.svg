@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:export-ydpi="385.21335"
+   inkscape:export-xdpi="385.21335"
+   inkscape:export-filename="K:\CODING\CODE\RenGo\icon.png"
+   width="16"
+   height="16"
+   viewBox="0 0 4.2333333 4.2333333"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="rena_icon.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="22.4"
+     inkscape:cx="6.6076476"
+     inkscape:cy="9.7893368"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1027"
+     inkscape:window-x="-8"
+     inkscape:window-y="22"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Слой 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:#373737;fill-opacity:1;stroke:none;stroke-width:0.397288;stroke-linecap:round;stroke-dasharray:0.0397288, 0.0397288"
+       id="path841"
+       sodipodi:type="arc"
+       sodipodi:cx="2.113718"
+       sodipodi:cy="2.1172633"
+       sodipodi:rx="2.1063778"
+       sodipodi:ry="2.1099997"
+       sodipodi:start="0"
+       sodipodi:end="6.2800686"
+       sodipodi:arc-type="arc"
+       d="M 4.2200959,2.1172633 A 2.1063778,2.1099997 0 0 1 2.1153593,4.2272623 2.1063778,2.1099997 0 0 1 0.00734275,2.1205514 2.1063778,2.1099997 0 0 1 2.1087943,0.00726942 2.1063778,2.1099997 0 0 1 4.2200856,2.1106871"
+       sodipodi:open="true" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.01159px;line-height:1.25;font-family:'Ink Free';-inkscape-font-specification:'Ink Free, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.10029"
+       x="1.2043517"
+       y="3.4032454"
+       id="text839"
+       transform="scale(0.96293889,1.0384875)"><tspan
+         sodipodi:role="line"
+         id="tspan837"
+         x="1.2043517"
+         y="3.4032454"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.01159px;font-family:'Ink Free';-inkscape-font-specification:'Ink Free, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1;stroke-width:0.10029">R</tspan></text>
+  </g>
+</svg>
