@@ -21,7 +21,8 @@ var token_map = {
         RenToken.LEQ: RenCompiler.BCode.LEQ,
         RenToken.GEQ: RenCompiler.BCode.GEQ,
         RenToken.AND: RenCompiler.BCode.AND,
-        RenToken.OR: RenCompiler.BCode.OR
+        RenToken.OR: RenCompiler.BCode.OR,
+        RenToken.IN: RenCompiler.BCode.IN
     }
 
 

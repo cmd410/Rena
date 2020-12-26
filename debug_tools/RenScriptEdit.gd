@@ -18,6 +18,7 @@ const KEYWORDS = {
     'jump': COLORS[2],
     'return': COLORS[2],
     'call': COLORS[2],
+    'in': COLORS[2],
     'and': COLORS[3],
     'or': COLORS[3],
     'True': COLORS[3],

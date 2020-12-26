@@ -342,6 +342,10 @@ func intepret(bytecode: PoolByteArray) -> void:
                 var right = data_stack.pop_back()
                 var left = data_stack.pop_back()
                 data_stack.push_back(left or right)
+            bc.IN:
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left in right)
             
             bc.POP_TOP:
                 data_stack.pop_back()

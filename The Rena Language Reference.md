@@ -47,7 +47,8 @@ Expression is an operation that returns some value. Expressions can consist of s
 | \|       | bitwise or          | 10               |
 | and      | logical and         | 11               |
 | or       | logical or          | 12               |
-| =        | assign              | 13               |
+| in       | in                  | 13               |
+| =        | assign              | 14               |
 
 
 
