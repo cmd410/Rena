@@ -1,5 +1,5 @@
 extends "internal/Ref.gd"
-class_name RenLexer
+
 
 
 signal exception(err)
@@ -28,6 +28,7 @@ var depleted: bool = false
 const RenResult = preload('internal/Result.gd')
 const RenOK = preload('internal/OK.gd')
 const RenERR = preload('internal/ERR.gd')
+const RenToken = preload('internal/Token.gd')
 
 const VALID_IDS = ('qwertyuiopasdfghjklzxcvbnm' +
                    'QWERTYUIOPASDFGHJKLZXCVBNM' +

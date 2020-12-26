@@ -1,5 +1,5 @@
 extends "internal/Ref.gd"
-class_name RenCompiler
+
 
 # Mapping labels to index in bytecode
 var jump_table: Dictionary = {}

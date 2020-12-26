@@ -9,42 +9,12 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "",
-"class": "RenBCI",
-"language": "GDScript",
-"path": "res://addons/Rena/VM/BCI.gd"
-}, {
-"base": "",
-"class": "RenCompiler",
-"language": "GDScript",
-"path": "res://addons/Rena/VM/Compiler.gd"
-}, {
-"base": "",
-"class": "RenInterp",
-"language": "GDScript",
-"path": "res://addons/Rena/VM/Interpreter.gd"
-}, {
-"base": "",
-"class": "RenLexer",
-"language": "GDScript",
-"path": "res://addons/Rena/VM/Lexer.gd"
-}, {
-"base": "",
-"class": "RenParser",
-"language": "GDScript",
-"path": "res://addons/Rena/VM/Parser.gd"
-}, {
 "base": "Reference",
 "class": "RenRef",
 "language": "GDScript",
 "path": "res://addons/Rena/VM/internal/Ref.gd"
 } ]
 _global_script_class_icons={
-"RenBCI": "",
-"RenCompiler": "",
-"RenInterp": "",
-"RenLexer": "",
-"RenParser": "",
 "RenRef": ""
 }
 

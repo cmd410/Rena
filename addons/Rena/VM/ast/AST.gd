@@ -2,7 +2,7 @@ extends Node
 
 
 var id = null
-var token: RenToken = null
+var token = null
 
 
 func is_constant() -> bool:

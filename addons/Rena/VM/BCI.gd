@@ -1,14 +1,18 @@
 extends "internal/Ref.gd"
-class_name RenBCI
+
 # ByteCode Interpreter
 
 signal say(who, what, flush)
 signal menu(prompt, options)
-signal choosen_option(option)
 signal state_changed(interp)
-signal next()
 signal start()
 signal end()
+
+signal next()
+signal choosen_option(option)
+
+const RenCompiler = preload('Compiler.gd')
+
 
 var data_stack: Array = []
 var jump_stack: Array = []

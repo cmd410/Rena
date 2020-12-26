@@ -1,6 +1,10 @@
 extends "AST.gd"
 
 
+const RenCompiler = preload('../Compiler.gd')
+const RenToken    = preload('../internal/Token.gd')
+
+
 var token_map = {
         RenToken.PLUS: RenCompiler.BCode.ADD,
         RenToken.MINUS: RenCompiler.BCode.SUB,
