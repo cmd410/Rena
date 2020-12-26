@@ -78,7 +78,7 @@ func compile_into_file(tree, filename: String, free_tree:bool = true) -> PoolByt
     var bytes = compile(tree, free_tree)
     
     var out = File.new()
-    out.open('res://testcompile.rgc', File.WRITE)
+    out.open(filename, File.WRITE)
     out.store_buffer(bytes)
     out.close()
 
