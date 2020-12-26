@@ -16,7 +16,6 @@ var text: String = ''
 
 var compiler: RenCompiler = RenCompiler.new()
 var bci: RenBCI = RenBCI.new()
-var exec_state = null
 
 
 func _ready():
@@ -107,7 +106,7 @@ func start() -> void:
     if bci.globals != default_globals:
         bci.globals = default_globals.duplicate()
 
-    exec_state = bci.intepret(bytecode)
+    var exec_state = bci.intepret(bytecode)
 
     if exec_state is GDScriptFunctionState and exec_state.is_valid():
         yield(exec_state, 'completed')
