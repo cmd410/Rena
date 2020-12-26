@@ -19,6 +19,8 @@ enum BCode {
     ASSIGN_NAME
     ASSIGN_IF_NONE
     ASSIGN_IF_EXISTS
+    ASSIGN_KEY
+    ASSIGN_ATTR
     
     JUMP
     JUMP_IF_FALSE
