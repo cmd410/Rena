@@ -14,17 +14,17 @@ var default_globals: Dictionary = {}
 
 var text: String = ''
 
-var compiler: RenCompiler = RenCompiler.new()
-var bci: RenBCI = RenBCI.new()
-var exec_state = null
+var compiler: RenCompiler = null
+var bci: RenBCI = null
 
 
 func _ready():
     _preset_defaults()
-    _connect_signals()
+    reset()
 
 
 func _preset_defaults() -> void:
+    # Can be overriden by subclasses to initialise globals on _ready
     default_globals = {}
 
 
@@ -36,17 +36,11 @@ func _connect_signals() -> void:
     bci.connect('state_changed', self, '_on_state_changed')
 
 
-func reset(reset_defaults: bool = false) -> void:
+func reset() -> void:
     # Clear compiler-interpreter state
     compiler = RenCompiler.new()
-    bci = RenBCI.new()
+    bci = RenBCI.new(default_globals)
     _connect_signals()
-    if reset_defaults:
-        clear_default_globals()
-
-
-func clear_default_globals() -> void:
-    default_globals.clear()
 
 
 func set_default_global(name: String, value) -> void:
@@ -99,6 +93,9 @@ func compile() -> PoolByteArray:
 
 
 func start() -> void:
+    if compiler == null or bci == null:
+        reset()
+
     var bytecode = compile()
 
     print_debug('Starting interpreter...')
@@ -107,7 +104,7 @@ func start() -> void:
     if bci.globals != default_globals:
         bci.globals = default_globals.duplicate()
 
-    exec_state = bci.intepret(bytecode)
+    var exec_state = bci.intepret(bytecode)
 
     if exec_state is GDScriptFunctionState and exec_state.is_valid():
         yield(exec_state, 'completed')

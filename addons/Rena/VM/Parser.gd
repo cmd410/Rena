@@ -384,12 +384,18 @@ func menu() -> RenResult:
     
     var menu = null
     # Parsing first menu option or line
-    match current_token.token_type:
+    match self.current_token.token_type:
         RenToken.EOL:
             menu = Menu.new(token.value)
             eat(RenToken.EOL).value
-        RenToken.COLON:
+        RenToken.COLON, RenToken.IF:
             var option = Option.new(token)
+            
+            if self.current_token.is_type(RenToken.IF):
+                eat(RenToken.IF).value
+                var condition = expr().value
+                option.add_child(condition)
+
             menu = Menu.new()
             menu.add_child(option)
             eat(RenToken.COLON).value
@@ -397,16 +403,26 @@ func menu() -> RenResult:
             skip_lines()
             option.add_child(compound().value)
         _:
-            return error(RenERR.TOKEN_UNKNOWN, 'Unexpected token while p: %s')
+            return error(
+                RenERR.TOKEN_UNKNOWN,
+                'Unexpected token while parsing menu: %s' % [self.current_token]
+                )
     skip_lines()
     
     while self.current_token.token_type == RenToken.STR:
         token = self.current_token
-        eat_chain([RenToken.STR, RenToken.COLON, RenToken.EOL]).value
-        
-        skip_lines()
+        eat(RenToken.STR).value
         
         var option = Option.new(token)
+        if self.current_token.is_type(RenToken.IF):
+            eat(RenToken.IF).value
+            var condition = expr().value
+            option.add_child(condition)
+
+        eat_chain([RenToken.COLON, RenToken.EOL])
+
+        skip_lines()
+        
         option.add_child(compound().value)
         menu.add_child(option)
         skip_lines()

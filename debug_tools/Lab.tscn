@@ -124,6 +124,23 @@ margin_bottom = 320.0
 size_flags_horizontal = 3
 theme = ExtResource( 3 )
 custom_fonts/font = SubResource( 3 )
+text = "define c = \"The Chef\"
+define money = 5
+
+label start:
+	c \"Hi, what would you like today?\"
+	menu:
+		\"Cup noodles\" if money >= 2:
+			c \"Here you go, thats 2 bucks\"
+			$ money = money - 2
+		\"A steak.\" if money >= 5:
+			c \"Nice choice! That'll be 5 bucks\"
+			$ money = money - 5
+		\"nothin\":
+			c \"oh, okay...\"
+			\"<The End>\"
+			return
+	jump start"
 highlight_current_line = true
 syntax_highlighting = true
 show_line_numbers = true

@@ -124,9 +124,10 @@ func make_menu():
     var data = pop_n(count * 2, false)
     for i in range(count):
         var option = data.pop_back()
-        var idx = data.pop_back()
-
-        self.current_menu[option] = idx
+        match data.pop_back():
+            [var idx, var condition]:
+                if condition:
+                    self.current_menu[option] = idx
 
 
 func pop_n(n: int, reverse: bool = true) -> Array:
