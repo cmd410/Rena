@@ -32,9 +32,18 @@ func compiled(compiler, offset: int) -> PoolByteArray:
         bytes_io.put_8(compiler.DataTypes.UINT32)
         pending_jump_options[option.id] = bytes_io.get_size()
         bytes_io.put_u32(0)  # Placeholder u32 jump index for option
+        # Put condition
+        if option.get_child_count() > 1:
+            bytes_io.put_data(option.get_child(0).compiled(compiler, offset + bytes_io.get_size()))
+        else:
+            compiler.put_constant(true, bytes_io)
+        
+        bytes_io.put_8(compiler.BCode.BUILD_LIST)
+        bytes_io.put_u32(2)
     
     bytes_io.put_8(compiler.BCode.MENU)
     bytes_io.put_u32(len(options))
+
     if prompt is String:
         bytes_io.put_utf8_string(prompt)
     else:
@@ -46,7 +55,11 @@ func compiled(compiler, offset: int) -> PoolByteArray:
 
     for option in options:
         var op_id = option.id
-        var compound = option.get_child(0)
+        var compound = null
+        if option.get_child_count() == 1:
+            compound = option.get_child(0)
+        else:
+            compound = option.get_child(1)
         var option_offset = offset + local_offset
         
         # Put option offset into jump table
