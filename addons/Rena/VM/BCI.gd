@@ -157,6 +157,30 @@ func intepret(bytecode: PoolByteArray) -> void:
                 assign_name(false)
             bc.ASSIGN_IF_EXISTS:
                 assign_name(true, true)
+            
+            bc.ASSIGN_ATTR:
+                var obj = data_stack.pop_back()
+                var value = data_stack.pop_back()
+                var attr = bytes_io.get_utf8_string()
+                if obj is Dictionary:
+                    obj[attr] = value
+                else:
+                    obj.set(attr, value)
+                
+                emit_signal('state_changed', self)
+            
+            bc.ASSIGN_KEY:
+                var key = data_stack.pop_back()
+                var obj = data_stack.pop_back()
+                var value = data_stack.pop_back()
+
+                if obj is Dictionary:
+                    obj[key] = value
+                else:
+                    obj.set(key, value)
+                
+                emit_signal('state_changed', self)
+
             bc.LOAD_NAME:
                 var name = bytes_io.get_utf8_string()
                 assert(globals.has(name), 'Name "%s" is not defined' % [name])
