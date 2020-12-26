@@ -1,4 +1,4 @@
-extends RenRef
+extends "internal/Ref.gd"
 class_name RenParser
 
 signal exception(err)
@@ -6,6 +6,10 @@ signal ast_built(ast)
 
 var lexer: RenLexer = null
 var current_token: RenToken = null
+
+const RenResult = preload('internal/Result.gd')
+const RenOK = preload('internal/OK.gd')
+const RenERR = preload('internal/ERR.gd')
 
 # preload AST nodes classes
 const AST =       preload('ast/AST.gd')

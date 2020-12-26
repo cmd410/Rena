@@ -1,5 +1,4 @@
-extends RenResult
-class_name RenERR
+extends "Result.gd"
 
 
 # Error types

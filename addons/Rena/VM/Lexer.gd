@@ -1,4 +1,4 @@
-extends RenRef
+extends "internal/Ref.gd"
 class_name RenLexer
 
 
@@ -25,6 +25,9 @@ var no_block = 0
 var started: bool = false
 var depleted: bool = false
 
+const RenResult = preload('internal/Result.gd')
+const RenOK = preload('internal/OK.gd')
+const RenERR = preload('internal/ERR.gd')
 
 const VALID_IDS = ('qwertyuiopasdfghjklzxcvbnm' +
                    'QWERTYUIOPASDFGHJKLZXCVBNM' +

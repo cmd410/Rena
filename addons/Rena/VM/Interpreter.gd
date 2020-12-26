@@ -1,4 +1,4 @@
-extends RenRef
+extends "internal/Ref.gd"
 class_name RenInterp
 
 
@@ -8,6 +8,8 @@ signal proceed()
 
 
 var parser: RenParser = null
+
+const RenERR = preload('internal/ERR.gd')
 
 var defaults: Dictionary = {}
 var defines: Dictionary = {}

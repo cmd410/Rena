@@ -1,4 +1,4 @@
-extends RenRef
+extends "internal/Ref.gd"
 class_name RenBCI
 # ByteCode Interpreter
 

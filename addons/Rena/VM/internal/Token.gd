@@ -1,5 +1,5 @@
-extends RenRef
-class_name RenToken
+extends "Ref.gd"
+
 
 
 const EOL = 'EOL'
