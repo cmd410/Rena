@@ -22,8 +22,20 @@ var text: String = ''
 var compiler: RenCompiler = null
 var bci: RenBCI = null
 
+var globals setget set_globals, get_globals
+
+
+func set_globals(value):
+    bci.globals = value
+
+
+func get_globals():
+    return bci.globals
+
 
 func _ready():
+    if source_filename:
+        set_text_from_file(source_filename)
     _preset_defaults()
     reset()
 
@@ -50,10 +62,6 @@ func reset() -> void:
 
 func set_default_global(name: String, value) -> void:
     default_globals[name] = value
-
-
-func get_globals() -> Dictionary:
-    return bci.globals
 
 
 func get_runtime_variables() -> Dictionary:
@@ -91,10 +99,13 @@ func build_ast() -> AST:
     return RenParser.new(RenLexer.new(self.text)).script().value
 
 
-func compile() -> PoolByteArray:
+func compile(output_file: String = '') -> PoolByteArray:
     print_debug('Compiling bytecode...')
     assert(compiler != null, 'Compiler is not set!')
-    return compiler.compile(build_ast())
+    if output_file:
+        return compiler.compile_into_file(build_ast(), output_file)
+    else:
+        return compiler.compile(build_ast())
 
 
 func start() -> void:

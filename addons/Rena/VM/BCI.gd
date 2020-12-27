@@ -151,7 +151,7 @@ func intepret(bytecode: PoolByteArray) -> void:
     emit_signal('start')
     while bytes_io.get_position() < bytes_io.get_size():
         var op_code = bytes_io.get_u8()
-        #print('%s - %s' % [bytes_io.get_position(), op_code])
+
         match op_code:
             bc.LOAD_CONST:
                 load_constant()
