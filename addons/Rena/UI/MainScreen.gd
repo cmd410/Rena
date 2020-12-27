@@ -153,7 +153,6 @@ func _run_linting() -> void:
         var label = result.get_string(1)
         label_map[label] = result.get_end()
         label_list.add_item(label)
-    print(label_map)
 
 
 func _on_TextEdit_text_changed():
