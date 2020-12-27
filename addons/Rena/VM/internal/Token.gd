@@ -1,5 +1,5 @@
-extends RenRef
-class_name RenToken
+extends "Ref.gd"
+
 
 
 const EOL = 'EOL'
@@ -74,6 +74,7 @@ const JUMP     = 'JUMP'
 const RETURN   = 'RETURN'
 const CALL     = 'CALL'
 const DO       = 'DO'
+const IN       = 'IN'
 
 const KEYWORDS = {
     'True': BOOL,
@@ -91,7 +92,8 @@ const KEYWORDS = {
     'jump': JUMP,
     'return': RETURN,
     'call': CALL,
-    'do': DO
+    'do': DO,
+    'in': IN
 }
 
 

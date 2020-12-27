@@ -1,5 +1,5 @@
-extends RenRef
-class_name RenCompiler
+extends "internal/Ref.gd"
+
 
 # Mapping labels to index in bytecode
 var jump_table: Dictionary = {}
@@ -31,6 +31,7 @@ enum BCode {
     ADD, SUB, MUL, DIV, FLOORDIV, POW
     MOD, LSHIFT, RSHIFT, XOR, BOR, BAND,
     EXEQ, NOEQ, LESS, GREATER, LEQ, GEQ, AND, OR
+    IN
 
     # UnaryOps
     POSITIVE, NEGATIVE, NOT

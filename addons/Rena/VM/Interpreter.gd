@@ -1,5 +1,4 @@
-extends RenRef
-class_name RenInterp
+extends "internal/Ref.gd"
 
 
 signal state_changed(interp)
@@ -7,13 +6,15 @@ signal say(who, what)
 signal proceed()
 
 
-var parser: RenParser = null
+var parser = null
+
+const RenERR = preload('internal/ERR.gd')
 
 var defaults: Dictionary = {}
 var defines: Dictionary = {}
 
 
-func _init(parser: RenParser):
+func _init(parser):
     self.parser = parser
     assert(self.parser != null)
 

@@ -1,5 +1,5 @@
-extends RenRef
-class_name RenResult
+extends "Ref.gd"
+
 
 
 var value setget set_value, get_value

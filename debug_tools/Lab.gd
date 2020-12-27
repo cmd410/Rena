@@ -14,6 +14,15 @@ onready var option_box: HBoxContainer = get_node("VBox/HBox2/HBox/HBox2/VBox2/Op
 var interp = null
 
 const RenAST = preload('res://addons/Rena/VM/ast/AST.gd')
+const RenLexer = preload('res://addons/Rena/VM/Lexer.gd')
+const RenParser = preload('res://addons/Rena/VM/Parser.gd')
+const RenInterp = preload('res://addons/Rena/VM/Interpreter.gd')
+const RenCompiler = preload('res://addons/Rena/VM/Compiler.gd')
+const RenBCI = preload('res://addons/Rena/VM/BCI.gd')
+
+const RenOK = preload('res://addons/Rena/VM/internal/OK.gd')
+const RenERR = preload('res://addons/Rena/VM/internal/ERR.gd')
+
 # TODO cleanup this script
 
 

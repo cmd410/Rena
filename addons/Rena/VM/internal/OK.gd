@@ -1,5 +1,5 @@
-extends RenResult
-class_name RenOK
+extends "Result.gd"
+
 
 
 func _init(value=null):

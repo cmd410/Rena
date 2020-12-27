@@ -1,14 +1,18 @@
-extends RenRef
-class_name RenBCI
+extends "internal/Ref.gd"
+
 # ByteCode Interpreter
 
 signal say(who, what, flush)
 signal menu(prompt, options)
-signal choosen_option(option)
 signal state_changed(interp)
-signal next()
 signal start()
 signal end()
+
+signal next()
+signal choosen_option(option)
+
+const RenCompiler = preload('Compiler.gd')
+
 
 var data_stack: Array = []
 var jump_stack: Array = []
@@ -342,6 +346,10 @@ func intepret(bytecode: PoolByteArray) -> void:
                 var right = data_stack.pop_back()
                 var left = data_stack.pop_back()
                 data_stack.push_back(left or right)
+            bc.IN:
+                var right = data_stack.pop_back()
+                var left = data_stack.pop_back()
+                data_stack.push_back(left in right)
             
             bc.POP_TOP:
                 data_stack.pop_back()

@@ -1,6 +1,6 @@
 extends "AST.gd"
 
-
+const RenToken = preload('../internal/Token.gd')
 
 var value
 

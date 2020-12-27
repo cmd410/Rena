@@ -7,8 +7,8 @@ const COLORS = [
 ]
 
 const KEYWORDS = {
-    'label': COLORS[0],
-    'menu': COLORS[0],
+    'label': COLORS[2],
+    'menu': COLORS[2],
     'define': COLORS[2],
     'default': COLORS[2],
     '$': COLORS[2],
@@ -34,4 +34,3 @@ func _ready():
     add_color_region('#', '', Color(0.4, 0.4, 0.4), true)
     for key in KEYWORDS:
         add_keyword_color(key, KEYWORDS[key])
-

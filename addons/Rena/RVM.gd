@@ -8,6 +8,11 @@ signal menu(prompt, options)
 signal ended()
 signal state_changed()
 
+const RenCompiler = preload('VM/Compiler.gd')
+const RenBCI = preload('VM/BCI.gd')
+const RenLexer = preload('VM/Lexer.gd')
+const RenParser = preload('VM/Parser.gd')
+
 export(String, FILE) var source_filename
 
 var default_globals: Dictionary = {}

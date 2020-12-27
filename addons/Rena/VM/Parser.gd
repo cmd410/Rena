@@ -1,8 +1,15 @@
-extends RenRef
-class_name RenParser
+extends "internal/Ref.gd"
+
 
 signal exception(err)
 signal ast_built(ast)
+
+const RenResult = preload('internal/Result.gd')
+const RenOK = preload('internal/OK.gd')
+const RenERR = preload('internal/ERR.gd')
+const RenToken = preload('internal/Token.gd')
+
+const RenLexer = preload('Lexer.gd')
 
 var lexer: RenLexer = null
 var current_token: RenToken = null
@@ -283,12 +290,21 @@ func land() -> RenResult:
     return RenOK.new(node)
 
 
-func expr() -> RenResult:
+func lor() -> RenResult:
     var node = land().value
     while self.current_token.is_type(RenToken.OR):
         var token = self.current_token
         eat(RenToken.OR).value
         node = BinOp.new(node, token, land().value)
+    return RenOK.new(node)
+
+
+func expr() -> RenResult:
+    var node = lor().value
+    while self.current_token.is_type(RenToken.IN):
+        var token = self.current_token
+        eat(RenToken.IN).value
+        node = BinOp.new(node, token, lor().value)
     return RenOK.new(node)
 
 

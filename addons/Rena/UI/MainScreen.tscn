@@ -1,0 +1,109 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/Rena/UI/ScriptEditor.gd" type="Script" id=1]
+[ext_resource path="res://addons/Rena/UI/MainScreen.gd" type="Script" id=2]
+
+[node name="Control" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Confirmation" type="ConfirmationDialog" parent="."]
+margin_right = 200.0
+margin_bottom = 70.0
+popup_exclusive = true
+dialog_text = "Current script was not saved! Are you sure you want to create a new one?"
+dialog_autowrap = true
+
+[node name="FileDialog" type="FileDialog" parent="."]
+margin_right = 603.0
+margin_bottom = 379.0
+window_title = "Сохранить файл"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBox" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MenuContainer" type="HBoxContainer" parent="VBox"]
+margin_right = 1024.0
+margin_bottom = 28.0
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="FileButton" type="MenuButton" parent="VBox/MenuContainer"]
+margin_right = 35.0
+margin_bottom = 28.0
+text = "File"
+
+[node name="EditButton" type="MenuButton" parent="VBox/MenuContainer"]
+margin_left = 39.0
+margin_right = 75.0
+margin_bottom = 28.0
+text = "Edit"
+
+[node name="HSplitContainer" type="HSplitContainer" parent="VBox"]
+margin_top = 32.0
+margin_right = 1024.0
+margin_bottom = 600.0
+size_flags_vertical = 3
+
+[node name="ListsContainer" type="VSplitContainer" parent="VBox/HSplitContainer"]
+margin_right = 164.0
+margin_bottom = 568.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.2
+
+[node name="RecentFilesList" type="ItemList" parent="VBox/HSplitContainer/ListsContainer"]
+margin_right = 164.0
+margin_bottom = 278.0
+size_flags_vertical = 3
+
+[node name="VBox" type="VBoxContainer" parent="VBox/HSplitContainer/ListsContainer"]
+margin_top = 290.0
+margin_right = 164.0
+margin_bottom = 568.0
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="VBox/HSplitContainer/ListsContainer/VBox"]
+margin_right = 164.0
+margin_bottom = 14.0
+text = "Labels"
+align = 1
+
+[node name="LabelsList" type="ItemList" parent="VBox/HSplitContainer/ListsContainer/VBox"]
+margin_top = 18.0
+margin_right = 164.0
+margin_bottom = 278.0
+size_flags_vertical = 3
+
+[node name="TextEdit" type="TextEdit" parent="VBox/HSplitContainer"]
+margin_left = 176.0
+margin_right = 1024.0
+margin_bottom = 568.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+highlight_current_line = true
+syntax_highlighting = true
+show_line_numbers = true
+draw_tabs = true
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LintingTimer" type="Timer" parent="."]
+one_shot = true
+[connection signal="item_selected" from="VBox/HSplitContainer/ListsContainer/VBox/LabelsList" to="." method="_on_LabelsList_item_selected"]
+[connection signal="text_changed" from="VBox/HSplitContainer/TextEdit" to="." method="_on_TextEdit_text_changed"]
+[connection signal="timeout" from="LintingTimer" to="." method="_on_LintingTimer_timeout"]
