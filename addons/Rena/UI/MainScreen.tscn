@@ -13,6 +13,21 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Confirmation" type="ConfirmationDialog" parent="."]
+margin_right = 200.0
+margin_bottom = 70.0
+popup_exclusive = true
+dialog_text = "Current script was not saved! Are you sure you want to create a new one?"
+dialog_autowrap = true
+
+[node name="FileDialog" type="FileDialog" parent="."]
+margin_right = 603.0
+margin_bottom = 379.0
+window_title = "Сохранить файл"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="VBox" type="VBoxContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
