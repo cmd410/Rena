@@ -45,12 +45,14 @@ size_flags_stretch_ratio = 0.05
 margin_right = 35.0
 margin_bottom = 28.0
 text = "File"
+items = [ "New", null, 0, false, false, 0, 0, null, "", false, "Open", null, 0, false, false, 1, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "Save", null, 0, false, false, 3, 0, null, "", false, "Save as...", null, 0, false, false, 4, 0, null, "", false ]
 
 [node name="EditButton" type="MenuButton" parent="VBox/MenuContainer"]
 margin_left = 39.0
 margin_right = 75.0
 margin_bottom = 28.0
 text = "Edit"
+items = [ "Undo", null, 0, false, false, 0, 0, null, "", false, "Redo", null, 0, false, false, 1, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "Cut", null, 0, false, false, 3, 0, null, "", false, "Copy", null, 0, false, false, 4, 0, null, "", false, "Paste", null, 0, false, false, 5, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "Select All", null, 0, false, false, 7, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "Find", null, 0, false, false, 9, 0, null, "", false, "Repalce", null, 0, false, false, 10, 0, null, "", false ]
 
 [node name="HSplitContainer" type="HSplitContainer" parent="VBox"]
 margin_top = 32.0
