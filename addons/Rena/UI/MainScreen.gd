@@ -3,7 +3,7 @@ extends Control
 
 signal action_verdict(is_allowed)
 
-onready var script_editor = get_node("VBox/HSplitContainer/TextEdit")
+onready var tabs: TabContainer = get_node("VBox/HSplitContainer/TabContainer")
 onready var label_list = get_node("VBox/HSplitContainer/ListsContainer/VBox/LabelsList")
 onready var confirm_dialog = get_node("Confirmation")
 onready var file_dialog = get_node("FileDialog")
@@ -11,15 +11,12 @@ onready var file_dialog = get_node("FileDialog")
 var file_popup: PopupMenu
 var edit_popup: PopupMenu
 
-# True if script was changed without saving
-var script_is_dirty: bool = false
-var current_save_path: String = ''
-
 var label_map: Dictionary = {}
 
 const file_menu_layout = [
     ['New', 'Open'],
-    ['Save', 'Save as...']
+    ['Save', 'Save as...'],
+    ['Close']
    ]
 
 const edit_menu_layout = [
@@ -28,6 +25,10 @@ const edit_menu_layout = [
     ['Select All'],
     ['Find', 'Repalce']
    ]
+
+
+func get_current_editor() -> Node:
+    return tabs.get_child(tabs.current_tab)
 
 
 func _ready():
@@ -40,6 +41,8 @@ func _ready():
 
     _setup_menus()
 
+    tabs.set_popup(file_popup)
+
 
 func _on_action_confirmed():
     emit_signal("action_verdict", true)
@@ -50,6 +53,7 @@ func _on_action_canceled():
 
 
 func _set_menu_layout(menu: PopupMenu, layout: Array) -> void:
+    menu.clear()
     var i = 0
     for section in layout:
         i += 1
@@ -68,46 +72,57 @@ func _setup_menus() -> void:
     var edit_menu_button = get_node("VBox/MenuContainer/EditButton")
     edit_popup = edit_menu_button.get_popup()
     _set_menu_layout(edit_popup, edit_menu_layout)
+    edit_popup.connect("index_pressed", self, "_on_edit_idx_pressed")
+
+
+func _on_edit_idx_pressed(idx: int):
+    var editor: TextEdit = get_current_editor()
+    match edit_popup.get_item_text(idx):
+        'Undo':
+            editor.undo()
+        'Redo':
+            editor.redo()
+        'Cut':
+            editor.cut()
+        'Copy':
+            editor.copy()
+        'Paste':
+            editor.paste()
+        'Select All':
+            editor.select_all()
 
 
 func _on_file_idx_pressed(idx: int):
     match file_popup.get_item_text(idx):
         'New':
-            if script_is_dirty:
-                confirm_dialog.dialog_text = """Current script was not saved! Are you sure you want to create a new one?"""
-                confirm_dialog.popup_centered()
-                var accept = yield(self, "action_verdict")
-                if accept:
-                    script_editor.text = ''
-                    current_save_path = ''
-                    script_is_dirty = false
-            else:
-                script_editor.text = ''
-                current_save_path = ''
+            create_new_editor('New Script')
+            get_current_editor().text = ''
+            get_current_editor().current_save_path = ''
         'Open':
-            if script_is_dirty:
-                confirm_dialog.dialog_text = """Current script was not saved! Are you sure you want to open other one?"""
-                confirm_dialog.popup_centered()
-                var accept = yield(self, "action_verdict")
-                if accept:
-                    _open_file()
-            else:
-                _open_file()
+            _open_file()
         'Save':
-            if not current_save_path:
+            if not get_current_editor().current_save_path:
                 _save_as()
             else:
-                _save(current_save_path)
+                _save(get_current_editor().current_save_path)
         'Save as...':
             _save_as()
+        'Close':
+            if get_current_editor().is_dirty:
+                confirm_dialog.dialog_text = 'File was not saved! Are you sure you want to close it?'
+                confirm_dialog.popup_centered()
+                var accept = yield(self, 'action_verdict')
+                if not accept:
+                    return
+            tabs.get_child(tabs.current_tab).queue_free()
 
 
 func _save(filename):
     var file = File.new()
     file.open(filename, File.WRITE)
-    file.store_string(script_editor.text)
+    file.store_string(get_current_editor().text)
     file.close()
-    script_is_dirty = false
+    get_current_editor().is_dirty = false
 
 
 func _save_as():
@@ -120,7 +135,8 @@ func _save_as():
 func _on_save_file(filename):
     if file_dialog.mode == file_dialog.MODE_SAVE_FILE:
         _save(filename)
-        current_save_path = filename
+        get_current_editor().current_save_path = filename
+        tabs.set_tab_title(tabs.current_tab, filename.get_file())
 
 
 func _open_file():
@@ -129,17 +145,35 @@ func _open_file():
     file_dialog.mode = file_dialog.MODE_OPEN_FILE
     file_dialog.popup_centered()
 
+func create_new_editor(title):
+    var new_editor: TextEdit = load('res://addons/Rena/UI/ScriptEditor.gd').new()
+    
+    new_editor.syntax_highlighting = true
+    new_editor.highlight_all_occurrences = true
+    new_editor.highlight_current_line = true
+    new_editor.show_line_numbers = true
+    new_editor.draw_tabs = true
+    new_editor.minimap_draw = true
 
-func _on_open_file(filename):
+    new_editor.connect('text_changed', self, '_on_TextEdit_text_changed')
+    
+    tabs.add_child(new_editor)
+    tabs.current_tab += 1
+    tabs.set_tab_title(tabs.current_tab, title)
+
+func _on_open_file(filename: String):
     if file_dialog.mode == file_dialog.MODE_OPEN_FILE:
         var file = File.new()
         file.open(filename, File.READ)
-        script_editor.text = file.get_as_text()
+
+        create_new_editor(filename.get_file())
+
+        get_current_editor().text = file.get_as_text()
         _on_TextEdit_text_changed()
-        script_is_dirty = false
+        get_current_editor().is_dirty = false
         file.close()
         
-        current_save_path = filename
+        get_current_editor().current_save_path = filename
 
 
 func _run_linting() -> void:
@@ -149,14 +183,17 @@ func _run_linting() -> void:
     
     label_list.clear()
     label_map.clear()
-    for result in label_regex.search_all(script_editor.text):
+    for result in label_regex.search_all(get_current_editor().text):
         var label = result.get_string(1)
         label_map[label] = result.get_end()
         label_list.add_item(label)
 
 
 func _on_TextEdit_text_changed():
-    script_is_dirty = true
+    get_current_editor().is_dirty = true
+    _start_linting()
+
+func _start_linting():
     $LintingTimer.stop()
     $LintingTimer.start()
 
@@ -171,7 +208,7 @@ func _on_LabelsList_item_selected(index):
     var current_pos = 0
     var line_no = -1
     var column = 0
-    for line in script_editor.text.split('\n'):
+    for line in get_current_editor().text.split('\n'):
         line_no += 1
         current_pos += len(line)
         if current_pos >= label_pos:
@@ -183,5 +220,10 @@ func _on_LabelsList_item_selected(index):
                 else:
                     column = current_pos
             break
-    script_editor.cursor_set_line(line_no)
-    script_editor.cursor_set_column(column)
+
+    get_current_editor().cursor_set_line(line_no)
+    get_current_editor().cursor_set_column(column)
+
+
+func _on_TabContainer_tab_changed(tab):
+    _start_linting()

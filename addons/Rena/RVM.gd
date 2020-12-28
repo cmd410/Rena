@@ -15,22 +15,18 @@ const RenParser = preload('VM/Parser.gd')
 
 export(String, FILE) var source_filename
 
-var default_globals: Dictionary = {}
-
 var text: String = ''
 
 var compiler: RenCompiler = null
 var bci: RenBCI = null
 
+var globals: Dictionary = {}
+
 
 func _ready():
-    _preset_defaults()
+    if source_filename:
+        set_text_from_file(source_filename)
     reset()
-
-
-func _preset_defaults() -> void:
-    # Can be overriden by subclasses to initialise globals on _ready
-    default_globals = {}
 
 
 func _connect_signals() -> void:
@@ -44,16 +40,8 @@ func _connect_signals() -> void:
 func reset() -> void:
     # Clear compiler-interpreter state
     compiler = RenCompiler.new()
-    bci = RenBCI.new(default_globals)
+    bci = RenBCI.new(globals)
     _connect_signals()
-
-
-func set_default_global(name: String, value) -> void:
-    default_globals[name] = value
-
-
-func get_globals() -> Dictionary:
-    return bci.globals
 
 
 func get_runtime_variables() -> Dictionary:
@@ -80,6 +68,7 @@ func append_text_from_file(filename: String) -> void:
     file.open(filename, File.READ)
     text += '\n%s' % [file.get_as_text()]
     file.close()
+    reset()
 
 
 func clear_text() -> void:
@@ -91,10 +80,13 @@ func build_ast() -> AST:
     return RenParser.new(RenLexer.new(self.text)).script().value
 
 
-func compile() -> PoolByteArray:
+func compile(output_file: String = '') -> PoolByteArray:
     print_debug('Compiling bytecode...')
     assert(compiler != null, 'Compiler is not set!')
-    return compiler.compile(build_ast())
+    if output_file:
+        return compiler.compile_into_file(build_ast(), output_file)
+    else:
+        return compiler.compile(build_ast())
 
 
 func start() -> void:
@@ -106,8 +98,7 @@ func start() -> void:
     print_debug('Starting interpreter...')
     assert(bci != null, 'Interpreter is not set!')
     
-    if bci.globals != default_globals:
-        bci.globals = default_globals.duplicate()
+    bci.globals = globals
 
     var exec_state = bci.intepret(bytecode)
 

@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://examples/the_question/ui/Dialog.tscn" type="PackedScene" id=1]
+[ext_resource path="res://addons/Rena/RVM.gd" type="Script" id=2]
+[ext_resource path="res://examples/the_question/Main.gd" type="Script" id=3]
+
+[node name="Main" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 128, 128 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RenaVM" type="Node" parent="."]
+script = ExtResource( 2 )
+source_filename = "res://examples/the_question/story/test.rena"
+
+[node name="Dialog" parent="." instance=ExtResource( 1 )]
+visible = false
+VirtualMachine = NodePath("../../Main/RenaVM")
