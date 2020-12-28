@@ -206,8 +206,10 @@ func intepret(bytecode: PoolByteArray) -> void:
             bc.LOAD_ATTR:
                 var namespace = data_stack.pop_back()
                 var name = bytes_io.get_utf8_string()
-                assert(namespace.has(name), '%s has no attribute %s' % [namespace, name])
-                data_stack.push_back(namespace.get(name))
+                if namespace.has_method(name):
+                    data_stack.push_back(funcref(namespace, name))
+                else:
+                    data_stack.push_back(namespace.get(name))
             
             bc.LOAD_KEY:
                 var name = data_stack.pop_back()
