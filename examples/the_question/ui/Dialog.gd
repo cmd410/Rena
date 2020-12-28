@@ -30,7 +30,7 @@ func set_vm(vm):
     VM.connect("menu", self, "_on_menu")
 
 
-func _process(delta):
+func _process(_delta):
     if Input.is_action_just_pressed("ui_accept"):
         next()
 
@@ -50,14 +50,14 @@ func set_character(character) -> void:
     name_label.bbcode_text = ''
     name_label.push_align(RichTextLabel.ALIGN_CENTER)
     name_label.push_color(color)
-    name_label.append_bbcode(name)
+    assert(not name_label.append_bbcode(name), 'Failed to append bbcode')
     current_name = name
 
 
 func set_speech(text):
     speech_label.bbcode_text = ''
     speech_label.push_align(RichTextLabel.ALIGN_CENTER)
-    speech_label.append_bbcode(text)
+    assert(not speech_label.append_bbcode(text), 'Failed to append bbcode')
     speech_label.visible_characters = 0
     while speech_label.visible_characters < len(text):
         speech_label.visible_characters += 1
