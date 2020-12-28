@@ -19,7 +19,7 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
-    _teardown_ui()
+    main_screen_instance.queue_free()
     remove_custom_type('RenaVM')
 
 
@@ -31,10 +31,6 @@ func _setup_ui() -> void:
     ed_viewport.add_child(main_screen_instance)
 
     make_visible(false)
-
-
-func _teardown_ui() -> void:
-    pass
 
 
 func has_main_screen() -> bool:
