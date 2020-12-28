@@ -88,6 +88,7 @@ func append_text_from_file(filename: String) -> void:
     file.open(filename, File.READ)
     text += '\n%s' % [file.get_as_text()]
     file.close()
+    reset()
 
 
 func clear_text() -> void:
