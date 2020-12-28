@@ -16,7 +16,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Rena"
-run/main_scene="res://debug_tools/Lab.tscn"
+run/main_scene="res://examples/the_question/Main.tscn"
 config/icon="res://icon.png"
 
 [debug]
