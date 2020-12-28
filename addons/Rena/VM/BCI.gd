@@ -206,7 +206,7 @@ func intepret(bytecode: PoolByteArray) -> void:
             bc.LOAD_ATTR:
                 var namespace = data_stack.pop_back()
                 var name = bytes_io.get_utf8_string()
-                if namespace.has_method(name):
+                if not namespace is Dictionary and namespace.has_method(name):
                     data_stack.push_back(funcref(namespace, name))
                 else:
                     data_stack.push_back(namespace.get(name))
@@ -236,14 +236,14 @@ func intepret(bytecode: PoolByteArray) -> void:
             bc.SAY:
                 var count = bytes_io.get_u32()
                 if count == 1:
-                    var what = data_stack.pop_back()
+                    var what = data_stack.pop_back().format(globals)
                     emit_signal('say', null, what, true)
                     yield(self, 'next')
                 else:
                     var data = pop_n(count, false)
                     var who = data.pop_back()
                     while not data.empty():
-                        var what = data.pop_back()
+                        var what = data.pop_back().format(globals)
                         var flush = data.empty()
                         emit_signal('say', who, what, flush)
                         yield(self, 'next')
