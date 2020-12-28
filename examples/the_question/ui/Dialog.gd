@@ -28,7 +28,6 @@ func set_vm(vm):
     VM.connect("ended", self, "_on_ended")
     VM.connect("said", self, "_on_said")
     VM.connect("menu", self, "_on_menu")
-    VM.start()
 
 
 func _process(delta):

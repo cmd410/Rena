@@ -34,16 +34,16 @@ __meta__ = {
 
 [node name="HSeparator" type="HSeparator" parent="VBox"]
 margin_right = 1024.0
-margin_bottom = 397.0
+margin_bottom = 425.0
 size_flags_vertical = 3
 custom_styles/separator = SubResource( 1 )
 
 [node name="SpeechRect" type="ColorRect" parent="VBox"]
-margin_top = 401.0
+margin_top = 429.0
 margin_right = 1024.0
 margin_bottom = 600.0
 size_flags_vertical = 3
-size_flags_stretch_ratio = 0.5
+size_flags_stretch_ratio = 0.4
 color = Color( 0.14902, 0.14902, 0.14902, 0.592157 )
 
 [node name="HBox" type="HBoxContainer" parent="VBox/SpeechRect"]
@@ -55,7 +55,7 @@ __meta__ = {
 
 [node name="VSeparator" type="VSeparator" parent="VBox/SpeechRect/HBox"]
 margin_right = 84.0
-margin_bottom = 199.0
+margin_bottom = 171.0
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 custom_styles/separator = SubResource( 2 )
@@ -63,7 +63,7 @@ custom_styles/separator = SubResource( 2 )
 [node name="VBox" type="VBoxContainer" parent="VBox/SpeechRect/HBox"]
 margin_left = 88.0
 margin_right = 935.0
-margin_bottom = 199.0
+margin_bottom = 171.0
 size_flags_horizontal = 3
 
 [node name="HSeparator" type="HSeparator" parent="VBox/SpeechRect/HBox/VBox"]
@@ -75,7 +75,7 @@ custom_styles/separator = SubResource( 3 )
 [node name="NameLabel" type="RichTextLabel" parent="VBox/SpeechRect/HBox/VBox"]
 margin_top = 20.0
 margin_right = 847.0
-margin_bottom = 60.0
+margin_bottom = 53.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.3
@@ -85,9 +85,9 @@ bbcode_text = "[center]Character Name"
 text = "Character Name"
 
 [node name="SpeechLabel" type="RichTextLabel" parent="VBox/SpeechRect/HBox/VBox"]
-margin_top = 64.0
+margin_top = 57.0
 margin_right = 847.0
-margin_bottom = 199.0
+margin_bottom = 171.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_fonts/normal_font = SubResource( 5 )
@@ -99,7 +99,7 @@ text = "Character Speech here"
 [node name="VSeparator2" type="VSeparator" parent="VBox/SpeechRect/HBox"]
 margin_left = 939.0
 margin_right = 1024.0
-margin_bottom = 199.0
+margin_bottom = 171.0
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 custom_styles/separator = SubResource( 2 )
