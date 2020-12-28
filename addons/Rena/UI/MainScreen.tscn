@@ -45,7 +45,7 @@ size_flags_stretch_ratio = 0.05
 margin_right = 35.0
 margin_bottom = 28.0
 text = "File"
-items = [ "New", null, 0, false, false, 0, 0, null, "", false, "Open", null, 0, false, false, 1, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "Save", null, 0, false, false, 3, 0, null, "", false, "Save as...", null, 0, false, false, 4, 0, null, "", false ]
+items = [ "New", null, 0, false, false, 0, 0, null, "", false, "Open", null, 0, false, false, 1, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "Save", null, 0, false, false, 3, 0, null, "", false, "Save as...", null, 0, false, false, 4, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "Close", null, 0, false, false, 6, 0, null, "", false ]
 
 [node name="EditButton" type="MenuButton" parent="VBox/MenuContainer"]
 margin_left = 39.0
@@ -89,16 +89,30 @@ margin_right = 164.0
 margin_bottom = 278.0
 size_flags_vertical = 3
 
-[node name="TextEdit" type="TextEdit" parent="VBox/HSplitContainer"]
+[node name="TabContainer" type="TabContainer" parent="VBox/HSplitContainer"]
 margin_left = 176.0
 margin_right = 1024.0
 margin_bottom = 568.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+tab_align = 0
+drag_to_rearrange_enabled = true
+
+[node name="New Script" type="TextEdit" parent="VBox/HSplitContainer/TabContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 32.0
+margin_right = -4.0
+margin_bottom = -4.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 highlight_current_line = true
 syntax_highlighting = true
 show_line_numbers = true
 draw_tabs = true
+highlight_all_occurrences = true
+minimap_draw = true
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -107,5 +121,6 @@ __meta__ = {
 [node name="LintingTimer" type="Timer" parent="."]
 one_shot = true
 [connection signal="item_selected" from="VBox/HSplitContainer/ListsContainer/VBox/LabelsList" to="." method="_on_LabelsList_item_selected"]
-[connection signal="text_changed" from="VBox/HSplitContainer/TextEdit" to="." method="_on_TextEdit_text_changed"]
+[connection signal="tab_changed" from="VBox/HSplitContainer/TabContainer" to="." method="_on_TabContainer_tab_changed"]
+[connection signal="text_changed" from="VBox/HSplitContainer/TabContainer/New Script" to="." method="_on_TextEdit_text_changed"]
 [connection signal="timeout" from="LintingTimer" to="." method="_on_LintingTimer_timeout"]

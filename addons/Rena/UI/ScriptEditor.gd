@@ -28,7 +28,22 @@ const KEYWORDS = {
    }
 
 
+var current_save_path = ''
+var is_dirty: bool = false
+
+
 func _ready():
+    setup_highlighting()
+    connect("text_changed", self, "_on_text_changed")
+    
+
+func _on_text_changed():
+    is_dirty = true
+
+
+func setup_highlighting():
+    clear_colors()
+    
     add_color_region("\'", "\'", COLORS[1])
     add_color_region('\"', '\"', COLORS[1])
     add_color_region('#', '', Color(0.4, 0.4, 0.4), true)
