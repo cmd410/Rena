@@ -1,9 +1,9 @@
 [gd_scene load_steps=14 format=2]
 
-[ext_resource path="res://examples/the_question/resources/fonts/Comfortaa-Regular.ttf" type="DynamicFontData" id=1]
-[ext_resource path="res://examples/the_question/ui/Dialog.gd" type="Script" id=2]
-[ext_resource path="res://examples/the_question/resources/fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=3]
-[ext_resource path="res://examples/the_question/resources/fonts/Comfortaa-Light.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://examples/informator/resources/fonts/Comfortaa-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://examples/informator/ui/Dialog.gd" type="Script" id=2]
+[ext_resource path="res://examples/informator/resources/fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://examples/informator/resources/fonts/Comfortaa-Light.ttf" type="DynamicFontData" id=4]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 

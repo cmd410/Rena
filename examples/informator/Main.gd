@@ -5,7 +5,7 @@ const RVM = preload('res://addons/Rena/RVM.gd')
 
 
 func _ready():
-    init_dialog('res://examples/the_question/story/script.rena')
+    init_dialog('res://examples/informator/story/script.rena')
 
 
 func init_dialog(source: String):
