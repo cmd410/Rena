@@ -24,20 +24,16 @@ func compiled(compiler, offset: int) -> PoolByteArray:
     var bytes_io = StreamPeerBuffer.new()
     
     var compiled_condition = get_child(0).compiled(compiler, offset)
-    offset += len(compiled_condition)
-
-    var compiled_branch = get_child(1).compiled(compiler, offset)
-    
-    offset += len(compiled_branch)
-    
-    # offset = ... + condition + jump + u32 + branch
-
     bytes_io.put_data(compiled_condition)
-    
     bytes_io.put_8(compiler.BCode.JUMP_IF_FALSE)
-    offset += 1
-    bytes_io.put_u32(offset + 5 + 4)
+    var branch_offset = offset + len(compiled_condition) + 5
+
+    var compiled_branch = get_child(1).compiled(compiler, branch_offset)
     
+    offset = branch_offset + len(compiled_branch)
+
+    bytes_io.put_u32(offset+5)
+
     bytes_io.put_data(compiled_branch)
     bytes_io.put_8(compiler.BCode.JUMP)
     bytes_io.put_u32(0)

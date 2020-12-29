@@ -15,6 +15,7 @@ var current_color = Color('#ffffff')
 export(NodePath) var VirtualMachine: NodePath
 var VM
 
+var should_flush: bool = true
 
 func _ready():
     set_process(false)   # Disable _process when not needed
@@ -63,7 +64,7 @@ func set_character(character) -> void:
     
     # Set name label text 
     name_label.bbcode_text = ''
-    name_label.push_align(RichTextLabel.ALIGN_CENTER)
+    #name_label.push_align(RichTextLabel.ALIGN_CENTER)
     name_label.push_color(color)
     
     assert(not name_label.append_bbcode(name), 'Failed to append bbcode')
@@ -74,13 +75,20 @@ func set_character(character) -> void:
 func set_speech(text):
     # Set speech text
     speech_label.bbcode_text = ''
-    speech_label.push_align(RichTextLabel.ALIGN_CENTER)
+    #speech_label.push_align(RichTextLabel.ALIGN_CENTER)
     
     assert(not speech_label.append_bbcode(text), 'Failed to append bbcode')
     
     # imitate typewriter
     speech_label.visible_characters = 0
     while speech_label.visible_characters < len(text):
+        speech_label.visible_characters += 1
+        yield(get_tree().create_timer(1/100), 'timeout')
+
+
+func add_speech(text):
+    assert(not speech_label.append_bbcode(' ' + text))
+    while speech_label.visible_characters < len(speech_label.text):
         speech_label.visible_characters += 1
         yield(get_tree().create_timer(1/100), 'timeout')
 
@@ -102,9 +110,13 @@ func _on_ended():
     visible = false     # Hide dialog ui
 
 
-func _on_said(who, what, _flush):
-    set_character(who)
-    set_speech(what)
+func _on_said(who, what, flush):
+    if should_flush:
+        set_character(who)
+        set_speech(what)
+    else:
+        add_speech(what)
+    should_flush = flush
 
 
 func _on_option_chosen(which):
