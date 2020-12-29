@@ -1,7 +1,9 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://examples/the_question/resources/fonts/Comfortaa-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://examples/the_question/ui/Dialog.gd" type="Script" id=2]
+[ext_resource path="res://examples/the_question/resources/fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://examples/the_question/resources/fonts/Comfortaa-Light.ttf" type="DynamicFontData" id=4]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -9,9 +11,25 @@
 
 [sub_resource type="StyleBoxEmpty" id=3]
 
+[sub_resource type="DynamicFont" id=6]
+size = 20
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=7]
+size = 20
+font_data = ExtResource( 3 )
+
 [sub_resource type="DynamicFont" id=4]
 size = 20
 font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=8]
+size = 18
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=9]
+size = 18
+font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=5]
 size = 18
@@ -79,9 +97,11 @@ margin_bottom = 53.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.3
+custom_fonts/italics_font = SubResource( 6 )
+custom_fonts/bold_font = SubResource( 7 )
 custom_fonts/normal_font = SubResource( 4 )
 bbcode_enabled = true
-bbcode_text = "[center]Character Name"
+bbcode_text = "Character Name"
 text = "Character Name"
 
 [node name="SpeechLabel" type="RichTextLabel" parent="VBox/SpeechRect/HBox/VBox"]
@@ -90,9 +110,11 @@ margin_right = 847.0
 margin_bottom = 171.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+custom_fonts/italics_font = SubResource( 8 )
+custom_fonts/bold_font = SubResource( 9 )
 custom_fonts/normal_font = SubResource( 5 )
 bbcode_enabled = true
-bbcode_text = "[center]Character Speech here"
+bbcode_text = "Character Speech here"
 visible_characters = 0
 text = "Character Speech here"
 

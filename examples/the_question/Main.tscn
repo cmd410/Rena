@@ -15,7 +15,6 @@ __meta__ = {
 
 [node name="RenaVM" type="Node" parent="."]
 script = ExtResource( 2 )
-source_filename = "res://examples/the_question/story/test.rena"
 
 [node name="Dialog" parent="." instance=ExtResource( 1 )]
 visible = false

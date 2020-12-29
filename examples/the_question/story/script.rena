@@ -1,0 +1,202 @@
+
+# Define characters
+define b = {"name": "Bartender", "color": "#faac6b"}
+define me = {"name": "Me", "color": "#7da8ff"}
+define c  = {"name": "The Woman", "color": "#ff512e"}
+
+# default only sets value if it doesn't exist in globals
+default money = 15
+default drinker = True
+default bought_a_drink = False
+default got_info = False
+
+define drinks = {
+	"whiskey": 5,
+	"beer": 2,
+	"water": 1
+}
+default current_drink = "water"
+default current_price = drinks[current_drink]
+
+
+label enter_bar:
+	# Author speech
+	"You enter the Bar."
+	"There are a few customers. They look at you for a moment and then tend back to their drinks."
+	"You make you way to the counter."
+	
+	b "A drink, sir?"
+	
+	menu:
+		"Sure, what you\'ve got?":
+			
+			me "Sure, what you\'ve got?"
+			
+			jump what_you_got
+		
+		"No, I\'m not a drinker myself.":
+			
+			# $ changes value of a variable
+			$ drinker = False
+			
+			me "No, I\'m not a drinker myself."
+			
+			jump not_a_drinker
+
+
+label what_you_got:
+	b "Well, I have whiskey, beer and water."
+	
+	menu:
+		"whiskey":
+			$ current_drink = "whiskey"
+			$ current_price = drinks[current_drink]  # we can of course access dictionary keys
+			jump drink
+		"beer":
+			$ current_drink = "beer"
+			$ current_price = drinks[current_drink]
+			jump drink
+		"water":
+			$ current_drink = "water"
+			$ current_price = drinks[current_drink]
+			jump drink
+
+
+label not_a_drinker:
+	b "I got water as well."
+	menu:
+		"I\'ll have some water.":
+			
+			me "I\'ll have some water."
+			
+			$ current_drink = "water"
+			$ current_price = drinks[current_drink]
+			
+			jump drink
+
+		"I\'m not thirsty.":
+			me "I\'m not thirsty."
+			"Bartender shrugs and leaves you."
+			jump wait
+
+
+label drink:
+	b "Well, {current_drink} will be ${current_price}"
+	
+	"You look inside you wallet. You have ${money}."
+	
+	menu:
+		
+		"Okay." if money >= current_price:
+			
+			me "Okay."
+			$ money = money - current_price
+			"You gulp some {current_drink}."
+			
+			if current_drink != "water":
+				"You feel a little bit relaxed, but its not enough to make you drunk."
+			"Got info = {got_info}"
+			if got_info:
+				jump end
+			else:
+				jump wait
+		
+		"I\'ll pass." if money >= current_price:
+			
+			me "I\'ll pass."
+			"Bartender shrugs and leaves you."
+			
+			if got_info:
+				jump end
+			else:
+				jump wait
+		
+		"Well, I don\'t have that much." if money < current_price:
+			
+			me "Well, I don\'t have that much."
+			b "Well, sorry, but no money - no drink."
+			me "..."
+			
+			if got_info:
+				jump end
+			else:
+				jump wait
+		
+		"How about a discount?" if money >= 0:
+			
+			me "How about a discount?"
+			
+			jump discount
+
+
+label discount:
+	b "What kind of discount are you talking about?"
+	
+	menu:
+		"Nevermind.":
+			me "Nevermind."
+			"Bartender shrugs and leaves you."
+			
+			if got_info:
+				jump end
+			else:
+				jump wait
+
+		"Like, friends discount?":
+			me "Like, friends discount?"
+			b "Do I know you?"
+			me "Not really..."
+			b "Then what are you babbling about?"
+			me "..."
+			"Bartender shrugs and leaves you."
+			
+			if got_info:
+				jump end
+			else:
+				jump wait
+
+
+label wait:
+	"..."
+	
+	# null takes place of character, its still authors speech 
+	null "A few minutes pass but your informant is not there yet." "And you thought they were serious..."
+	null "You decide to just leave, but then hear a welcoming chime from the door." "Blonde woman walks in."
+	
+	"She looks around, and when your eyes meet, she confidently approaches you."
+	
+	c "John Garcin?"
+	me "Yeah..."
+
+	$ c.name = "Caroline"
+	c "Good, I\'m Caroline."
+	me "Took you long to get here..."
+	
+	c "Yeah, there were some... [i]complications[/i] on the way."
+	c "Nevermind. Let\'s get straight to buisness." "I got information about our targets."
+	
+	me "Well, I\'m all ears."
+	"She reaches for her bag and shows you a small USB stick."
+	c "This flash drive contains enough information about their project. And..."
+	
+	$ got_info = True
+	me "And what?"
+	c "No... Nothing. Just make sure to put this information to good use."
+	"She swiftly stands up from her place and leaves."
+	
+	"Bartender looks at you."
+	
+	menu:
+		"Yeah..":
+			
+			me "Yeah.."
+			
+			jump what_you_got
+		
+		"...":
+			jump end
+
+
+label end:
+	"You take the drive and leave the bar."
+	"<THE END>"
