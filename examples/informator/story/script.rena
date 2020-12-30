@@ -91,11 +91,12 @@ label drink:
 			
 			me "Okay."
 			$ money = money - current_price
+			$ bought_a_drink = True
 			"You gulp some {current_drink}."
 			
 			if current_drink != "water":
 				"You feel a little bit relaxed, but its not enough to make you drunk."
-			"Got info = {got_info}"
+
 			if got_info:
 				jump end
 			else:
@@ -186,6 +187,10 @@ label wait:
 	
 	"Bartender looks at you."
 	
+	if bought_a_drink:
+		b "Another one?"
+	else:
+		b "Wanna drink?"
 	menu:
 		"Yeah..":
 			
