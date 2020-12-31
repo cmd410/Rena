@@ -19,12 +19,13 @@ var jump_stack: Array = []
 var globals: Dictionary = {}
 var runtime_vars: Array = []
 
-var bytes_io: StreamPeerBuffer
+var bytes_io: StreamPeerBuffer = StreamPeerBuffer.new()
 var bc = RenCompiler.BCode
 var dt = RenCompiler.DataTypes
 
 var current_menu: Dictionary = {}
 var current_menu_prompt: String = ''
+var position: int = 0
 
 
 func _init(globals: Dictionary = {}):
@@ -143,13 +144,68 @@ func pop_n(n: int, reverse: bool = true) -> Array:
     return arr
         
 
-func intepret(bytecode: PoolByteArray) -> void:
-    bytes_io = StreamPeerBuffer.new()
+func _update_position():
+    position = bytes_io.get_position()
+
+
+func get_save_data() -> Dictionary:
+    var data = {
+        'position': self.position,
+        'globals': self.globals.duplicate(),
+    }
+    data['hash'] = hash(bytes_io.data_array.subarray(0, self.position - 1))
+    return data
+
+
+func load_save_data(bytecode: PoolByteArray, data: Dictionary) -> void:
+    self.globals = data.get('globals', {'null': null}).duplicate()
+    self.position = data.get('position', 0)
+    assert(
+        validate_bytecode(
+                bytecode,
+                data.get('hash', PoolByteArray())
+                ),
+            "Cannot load save, bytecode changed!"
+        )
+
+
+func set_bytecode(bytecode: PoolByteArray) -> void:
     bytes_io.data_array = bytecode
-    bytes_io.seek(0)
+
+
+func validate_bytecode(bytecode: PoolByteArray, bytecode_hash: int):
+    # Ensure bytecode is the same up until current position
+    if self.position == 0:
+        return true
+    
+    var current_hash = hash(bytecode.subarray(0, self.position - 1))
+    
+    return bytecode_hash == current_hash
+
+
+
+func start_from_save(bytecode: PoolByteArray, data: Dictionary):
+    load_save_data(bytecode, data)
+    return start(bytecode)
+
+
+func start(bytecode: PoolByteArray) -> void:
+    set_bytecode(bytecode)
+
+    var exec_state = intepret()
+    if exec_state is GDScriptFunctionState and exec_state.is_valid():
+        yield(exec_state, 'completed')
+
+
+func intepret() -> void:
+    bytes_io.seek(self.position)
 
     emit_signal('start')
     while bytes_io.get_position() < bytes_io.get_size():
+
+        if data_stack.empty():
+            _update_position()
+
         var op_code = bytes_io.get_u8()
 
         match op_code:
@@ -172,7 +228,7 @@ func intepret(bytecode: PoolByteArray) -> void:
                     obj.set(attr, value)
                 
                 emit_signal('state_changed', self)
-            
+
             bc.ASSIGN_KEY:
                 var key = data_stack.pop_back()
                 var obj = data_stack.pop_back()
@@ -193,15 +249,18 @@ func intepret(bytecode: PoolByteArray) -> void:
             bc.JUMP:
                 var dest = bytes_io.get_u32()
                 bytes_io.seek(dest)
+
             bc.JUMP_IF_FALSE:
                 var dest = bytes_io.get_u32()
                 var value = data_stack.pop_back()
                 if not value:
                     bytes_io.seek(dest)
+
             bc.CALL:
                 var dest = bytes_io.get_u32()
                 jump_stack.push_back(bytes_io.get_position())
                 bytes_io.seek(dest)
+
             
             bc.LOAD_ATTR:
                 var namespace = data_stack.pop_back()

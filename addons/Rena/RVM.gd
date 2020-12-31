@@ -16,6 +16,7 @@ const RenParser = preload('VM/Parser.gd')
 export(String, FILE) var source_filename
 
 var text: String = ''
+var path: String = ''
 
 var compiler: RenCompiler = null
 var bci: RenBCI = null
@@ -49,6 +50,7 @@ func get_runtime_variables() -> Dictionary:
 
 
 func set_text_from_file(filename: String) -> void:
+    path = filename
     var file = File.new()
     file.open(filename, File.READ)
     text = file.get_as_text()
@@ -56,14 +58,17 @@ func set_text_from_file(filename: String) -> void:
 
 
 func set_text(text: String) -> void:
+    path = ''
     self.text = text
 
 
 func append_text(text: String) -> void:
+    path = ''
     self.text += '\n%s' % [text]
 
 
 func append_text_from_file(filename: String) -> void:
+    path = ''
     var file = File.new()
     file.open(filename, File.READ)
     text += '\n%s' % [file.get_as_text()]
@@ -100,7 +105,7 @@ func start() -> void:
     
     bci.globals = globals
 
-    var exec_state = bci.intepret(bytecode)
+    var exec_state = bci.start(bytecode)
 
     if exec_state is GDScriptFunctionState and exec_state.is_valid():
         yield(exec_state, 'completed')
@@ -113,6 +118,32 @@ func next() -> void:
 func choose_option(option: String) -> bool:
     # Choose option from menu, returns false if option does not exist
     return bci.choose(option)
+
+
+func get_save_data() -> Dictionary:
+    var data = bci.get_save_data()
+
+    data['path'] = path
+    if not path:
+        data['text'] = text
+
+    return data
+
+
+func start_from_save(data: Dictionary):
+    var filename = data.get('path', '')
+    if not filename:
+        set_text(data.get('text', ''))
+    else:
+        set_text_from_file(filename)
+    
+    globals = data.get('globals', globals)
+    
+    reset()
+
+    var bytecode = compile()
+
+    return bci.start_from_save(bytecode, data)
 
 
 func _on_say(who, what, flush: bool) -> void:
