@@ -101,6 +101,7 @@ func next():
 func _on_started():
     # When vm starts dialog
     set_process(true)  # Start processing next button
+    clear_menu()
     visible = true     # Set dialog ui visible
 
 
@@ -124,8 +125,11 @@ func _on_option_chosen(which):
     
     if VM.choose_option(which):
         # If option chosen is a valid option, clear menu
-        for i in menu_container.get_children():
-            i.queue_free()
+        clear_menu()
+
+func clear_menu():
+    for i in menu_container.get_children():
+        i.queue_free()
 
 
 func _on_menu(prompt, options: Array):

@@ -11,27 +11,27 @@
 
 [sub_resource type="StyleBoxEmpty" id=3]
 
-[sub_resource type="DynamicFont" id=6]
+[sub_resource type="DynamicFont" id=4]
 size = 20
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=7]
+[sub_resource type="DynamicFont" id=5]
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=6]
 size = 20
 font_data = ExtResource( 1 )
 
-[sub_resource type="DynamicFont" id=8]
+[sub_resource type="DynamicFont" id=7]
 size = 18
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=9]
+[sub_resource type="DynamicFont" id=8]
 size = 18
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=5]
+[sub_resource type="DynamicFont" id=9]
 size = 18
 font_data = ExtResource( 1 )
 
@@ -97,9 +97,9 @@ margin_bottom = 53.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.3
-custom_fonts/italics_font = SubResource( 6 )
-custom_fonts/bold_font = SubResource( 7 )
-custom_fonts/normal_font = SubResource( 4 )
+custom_fonts/italics_font = SubResource( 4 )
+custom_fonts/bold_font = SubResource( 5 )
+custom_fonts/normal_font = SubResource( 6 )
 bbcode_enabled = true
 bbcode_text = "Character Name"
 text = "Character Name"
@@ -110,9 +110,9 @@ margin_right = 847.0
 margin_bottom = 171.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_fonts/italics_font = SubResource( 8 )
-custom_fonts/bold_font = SubResource( 9 )
-custom_fonts/normal_font = SubResource( 5 )
+custom_fonts/italics_font = SubResource( 7 )
+custom_fonts/bold_font = SubResource( 8 )
+custom_fonts/normal_font = SubResource( 9 )
 bbcode_enabled = true
 bbcode_text = "Character Speech here"
 visible_characters = 0
