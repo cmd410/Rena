@@ -25,11 +25,9 @@ Its not a framework. It does not enforce certain project structure or anything l
 
 - **Arrays** and **Dictionaries** fully supported
 
-  
+- **save/load system**, to be able to save game during the dialogue and load it back
 
 ### Planned features
-
-- **save/load system**, to be able to save game during the dialogue and load it back
 
 - **multiline strings**
 
