@@ -146,6 +146,10 @@ func start_from_save(data: Dictionary):
     return bci.start_from_save(bytecode, data)
 
 
+func get_backlog() -> Array:
+    return bci.backlog
+
+
 func _on_say(who, what, flush: bool) -> void:
     emit_signal('said', who, what, flush)
 

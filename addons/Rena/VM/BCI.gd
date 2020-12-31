@@ -16,6 +16,9 @@ const RenCompiler = preload('Compiler.gd')
 
 var data_stack: Array = []
 var jump_stack: Array = []
+var backlog: Array = []
+var backlog_limit = 64
+
 var globals: Dictionary = {}
 var runtime_vars: Array = []
 
@@ -26,6 +29,7 @@ var dt = RenCompiler.DataTypes
 var current_menu: Dictionary = {}
 var current_menu_prompt: String = ''
 var position: int = 0
+var last_position: int = 0
 
 
 func _init(globals: Dictionary = {}):
@@ -145,6 +149,7 @@ func pop_n(n: int, reverse: bool = true) -> Array:
         
 
 func _update_position():
+    last_position = position
     position = bytes_io.get_position()
 
 
@@ -152,6 +157,7 @@ func get_save_data() -> Dictionary:
     var data = {
         'position': self.position,
         'globals': self.globals.duplicate(),
+        'backlog': self.backlog
     }
     data['hash'] = hash(bytes_io.data_array.subarray(0, self.position - 1))
     return data
@@ -160,6 +166,7 @@ func get_save_data() -> Dictionary:
 func load_save_data(bytecode: PoolByteArray, data: Dictionary) -> void:
     self.globals = data.get('globals', {'null': null}).duplicate()
     self.position = data.get('position', 0)
+    self.backlog = data.get('backlog', [])
     assert(
         validate_bytecode(
                 bytecode,
@@ -181,7 +188,6 @@ func validate_bytecode(bytecode: PoolByteArray, bytecode_hash: int):
     var current_hash = hash(bytecode.subarray(0, self.position - 1))
     
     return bytecode_hash == current_hash
-
 
 
 func start_from_save(bytecode: PoolByteArray, data: Dictionary):
@@ -294,18 +300,27 @@ func intepret() -> void:
             
             bc.SAY:
                 var count = bytes_io.get_u32()
+                var who = null
+                var full_text: String = ''
                 if count == 1:
                     var what = data_stack.pop_back().format(globals)
+                    full_text = what
                     emit_signal('say', null, what, true)
                     yield(self, 'next')
                 else:
                     var data = pop_n(count, false)
-                    var who = data.pop_back()
+                    who = data.pop_back()
                     while not data.empty():
                         var what = data.pop_back().format(globals)
                         var flush = data.empty()
                         emit_signal('say', who, what, flush)
+                        if full_text:
+                            full_text += ''
+                        full_text += what
                         yield(self, 'next')
+                backlog.append({'position': position, 'who': who, 'what': full_text})
+                if len(backlog) > backlog_limit:
+                    backlog.pop_front()
             
             bc.CALL_FUNC:
                 var function = data_stack.pop_back() as FuncRef
