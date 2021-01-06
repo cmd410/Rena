@@ -27,9 +27,9 @@ Its not a framework. It does not enforce certain project structure or anything l
 
 - **save/load system**, to be able to save game during the dialogue and load it back
 
-### Planned features
-
 - **multiline strings**
+
+### Planned features
 
 - **ACTUAL DOCUMENTATION**
 
