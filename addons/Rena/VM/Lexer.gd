@@ -239,6 +239,9 @@ func id() -> RenResult:
 
 func string() -> RenResult:
     var quote_type = self.current_char
+    var is_multiline = peek(1) == quote_type and peek(2) == quote_type
+    if is_multiline:
+        hop(2)
     advance()
     var result: String = ''
     var end: bool = false
@@ -251,9 +254,19 @@ func string() -> RenResult:
                     last_char = self.current_char
                     advance()
                 elif self.current_char == quote_type:
-                    end = true
-                    advance()
-                    break
+                    if is_multiline:
+                        if peek(1) == quote_type and peek(2) == quote_type:
+                            end = true
+                            hop(3)
+                            break
+                        else:
+                            result += self.current_char
+                            last_char = self.current_char
+                            advance()
+                    else:
+                        end = true
+                        advance()
+                        break
                 else:
                     result += self.current_char
                     last_char = self.current_char
@@ -305,8 +318,12 @@ func string() -> RenResult:
             '':
                 return error(RenERR.PARSING_ERROR, 'Unexpected EOF while parsing string.')
             '\n':
-                # TODO implement multiline strings at some point, for now they have to go
-                return error(RenERR.PARSING_ERROR, 'Unexpected end of line while parsing string.')
+                if is_multiline:
+                    result += '\n'
+                    last_char = '\n'
+                    advance()
+                else:
+                    return error(RenERR.PARSING_ERROR, 'Unexpected end of line while parsing string.')
             _:
                 result += self.current_char
                 last_char = self.current_char
